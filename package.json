@@ -1,0 +1,11 @@
+{
+  "name": "2024-3-ISC09-Sistema-de-Riego-Inteligente-Basado-en-Imagenes",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "react-dom": "^18.3.1"
+  },
+  "packageManager": "yarn@3.6.4"
+}
