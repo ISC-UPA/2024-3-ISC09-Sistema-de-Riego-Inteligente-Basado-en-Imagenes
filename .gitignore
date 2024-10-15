@@ -4,10 +4,11 @@
 /node_modules
 package-lock.json
 yarn.lock
+*/.yarn
 
 #KeystoneJS
-packages/vive-hub-api/.keystone/
-packages/vive-hub-api/db/
+agronova-api/.keystone/
+agronova-api/db/
 *.log
 
 # Logs
@@ -18,19 +19,19 @@ yarn-debug.log*
 yarn-error.log*
 
 # Dependency directories
-packages/*/node_modules/
+*/node_modules/
 
 # Build directories
-packages/*/build/
-packages/*/dist/
+*/build/
+*/dist/
 
 # Expo
-packages/*/node_modules/
-packages/*/.expo/
-packages/*/.expo-shared/
-packages/*/dist/
-packages/*/npm-debug.*
-packages/*/web-build/
+agronova-app/node_modules/
+agronova-app/.expo/
+agronova-app/.expo-shared/
+agronova-app/dist/
+agronova-app/npm-debug.*
+agronova-app/web-build/
 *.jks
 *.p8
 *.p12
