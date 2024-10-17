@@ -1,6 +1,5 @@
 {
   "name": "agronova-api",
-  "packageManager": "yarn@3.6.4",
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",
     "@keystone-6/core": "^6.3.0",
