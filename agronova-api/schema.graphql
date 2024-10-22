@@ -379,6 +379,72 @@ input TreatmentCreateInput {
   name: String
 }
 
+type crops {
+  id: ID!
+  crop_name: String
+  temperature: Float
+  humidity: Float
+  ph: Float
+  status: String
+}
+
+input cropsWhereUniqueInput {
+  id: ID
+}
+
+input cropsWhereInput {
+  AND: [cropsWhereInput!]
+  OR: [cropsWhereInput!]
+  NOT: [cropsWhereInput!]
+  id: IDFilter
+  crop_name: StringFilter
+  temperature: FloatNullableFilter
+  humidity: FloatNullableFilter
+  ph: FloatNullableFilter
+  status: StringFilter
+}
+
+input FloatNullableFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatNullableFilter
+}
+
+input cropsOrderByInput {
+  id: OrderDirection
+  crop_name: OrderDirection
+  temperature: OrderDirection
+  humidity: OrderDirection
+  ph: OrderDirection
+  status: OrderDirection
+}
+
+input cropsUpdateInput {
+  crop_name: String
+  temperature: Float
+  humidity: Float
+  ph: Float
+  status: String
+}
+
+input cropsUpdateArgs {
+  where: cropsWhereUniqueInput!
+  data: cropsUpdateInput!
+}
+
+input cropsCreateInput {
+  crop_name: String
+  temperature: Float
+  humidity: Float
+  ph: Float
+  status: String
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -421,6 +487,12 @@ type Mutation {
   updateTreatments(data: [TreatmentUpdateArgs!]!): [Treatment]
   deleteTreatment(where: TreatmentWhereUniqueInput!): Treatment
   deleteTreatments(where: [TreatmentWhereUniqueInput!]!): [Treatment]
+  createcrops(data: cropsCreateInput!): crops
+  createCrops(data: [cropsCreateInput!]!): [crops]
+  updatecrops(where: cropsWhereUniqueInput!, data: cropsUpdateInput!): crops
+  updateCrops(data: [cropsUpdateArgs!]!): [crops]
+  deletecrops(where: cropsWhereUniqueInput!): crops
+  deleteCrops(where: [cropsWhereUniqueInput!]!): [crops]
 }
 
 type Query {
@@ -442,6 +514,8 @@ type Query {
   treatment(where: TreatmentWhereUniqueInput!): Treatment
   treatments(where: TreatmentWhereInput! = {}, orderBy: [TreatmentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TreatmentWhereUniqueInput): [Treatment!]
   treatmentsCount(where: TreatmentWhereInput! = {}): Int
+  crops(where: cropsWhereInput! = {}, orderBy: [cropsOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: cropsWhereUniqueInput): [crops!]
+  cropsCount(where: cropsWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 

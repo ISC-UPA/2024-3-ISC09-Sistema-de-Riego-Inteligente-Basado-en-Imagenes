@@ -5,7 +5,7 @@ import { irrigation } from './irrigations';
 import { life_cicle } from './life_cicle';
 import { sickness } from './sickness';
 import { treatments } from './treatments';
-
+import { crops } from './crops'; 
 
 
 export const lists = {
@@ -14,7 +14,7 @@ export const lists = {
   Irrigation : irrigation,
   LifeCicle : life_cicle,
   Sick : sickness,
-  Treatment: treatments
-
+  Treatment: treatments,
+  crops: crops
 
 } satisfies Lists

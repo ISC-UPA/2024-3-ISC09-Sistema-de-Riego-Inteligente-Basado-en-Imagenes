@@ -56,3 +56,12 @@ model Treatment {
   id_treatments Int
   name          String @default("")
 }
+
+model crops {
+  id          String @id @default(cuid())
+  crop_name   String @default("")
+  temperature Float?
+  humidity    Float?
+  ph          Float?
+  status      String @default("healthy")
+}
