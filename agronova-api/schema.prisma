@@ -30,3 +30,29 @@ model User {
   accountStatus          String? @default("active")
   adAuthenticationStatus Boolean @default(false)
 }
+
+model Irrigation {
+  id            String   @id @default(cuid())
+  id_irrigation Int
+  crop_id       Int
+  date          DateTime @default(now())
+  duration      Int      @default(0)
+}
+
+model LifeCicle {
+  id            String @id @default(cuid())
+  id_life_cicle Int
+  name          String @default("")
+}
+
+model Sick {
+  id          String @id @default(cuid())
+  id_sickness Int
+  name        String @default("")
+}
+
+model Treatment {
+  id            String @id @default(cuid())
+  id_treatments Int
+  name          String @default("")
+}

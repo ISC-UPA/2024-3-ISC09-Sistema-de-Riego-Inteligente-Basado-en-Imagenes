@@ -185,6 +185,200 @@ input UserCreateInput {
   adAuthenticationStatus: Boolean
 }
 
+type Irrigation {
+  id: ID!
+  id_irrigation: Int
+  crop_id: Int
+  date: DateTime
+  duration: Int
+}
+
+scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input IrrigationWhereUniqueInput {
+  id: ID
+}
+
+input IrrigationWhereInput {
+  AND: [IrrigationWhereInput!]
+  OR: [IrrigationWhereInput!]
+  NOT: [IrrigationWhereInput!]
+  id: IDFilter
+  id_irrigation: IntFilter
+  crop_id: IntFilter
+  date: DateTimeFilter
+  duration: IntFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input IrrigationOrderByInput {
+  id: OrderDirection
+  id_irrigation: OrderDirection
+  crop_id: OrderDirection
+  date: OrderDirection
+  duration: OrderDirection
+}
+
+input IrrigationUpdateInput {
+  id_irrigation: Int
+  crop_id: Int
+  date: DateTime
+  duration: Int
+}
+
+input IrrigationUpdateArgs {
+  where: IrrigationWhereUniqueInput!
+  data: IrrigationUpdateInput!
+}
+
+input IrrigationCreateInput {
+  id_irrigation: Int
+  crop_id: Int
+  date: DateTime
+  duration: Int
+}
+
+type LifeCicle {
+  id: ID!
+  id_life_cicle: Int
+  name: String
+}
+
+input LifeCicleWhereUniqueInput {
+  id: ID
+}
+
+input LifeCicleWhereInput {
+  AND: [LifeCicleWhereInput!]
+  OR: [LifeCicleWhereInput!]
+  NOT: [LifeCicleWhereInput!]
+  id: IDFilter
+  id_life_cicle: IntFilter
+  name: StringFilter
+}
+
+input LifeCicleOrderByInput {
+  id: OrderDirection
+  id_life_cicle: OrderDirection
+  name: OrderDirection
+}
+
+input LifeCicleUpdateInput {
+  id_life_cicle: Int
+  name: String
+}
+
+input LifeCicleUpdateArgs {
+  where: LifeCicleWhereUniqueInput!
+  data: LifeCicleUpdateInput!
+}
+
+input LifeCicleCreateInput {
+  id_life_cicle: Int
+  name: String
+}
+
+type Sick {
+  id: ID!
+  id_sickness: Int
+  name: String
+}
+
+input SickWhereUniqueInput {
+  id: ID
+}
+
+input SickWhereInput {
+  AND: [SickWhereInput!]
+  OR: [SickWhereInput!]
+  NOT: [SickWhereInput!]
+  id: IDFilter
+  id_sickness: IntFilter
+  name: StringFilter
+}
+
+input SickOrderByInput {
+  id: OrderDirection
+  id_sickness: OrderDirection
+  name: OrderDirection
+}
+
+input SickUpdateInput {
+  id_sickness: Int
+  name: String
+}
+
+input SickUpdateArgs {
+  where: SickWhereUniqueInput!
+  data: SickUpdateInput!
+}
+
+input SickCreateInput {
+  id_sickness: Int
+  name: String
+}
+
+type Treatment {
+  id: ID!
+  id_treatments: Int
+  name: String
+}
+
+input TreatmentWhereUniqueInput {
+  id: ID
+}
+
+input TreatmentWhereInput {
+  AND: [TreatmentWhereInput!]
+  OR: [TreatmentWhereInput!]
+  NOT: [TreatmentWhereInput!]
+  id: IDFilter
+  id_treatments: IntFilter
+  name: StringFilter
+}
+
+input TreatmentOrderByInput {
+  id: OrderDirection
+  id_treatments: OrderDirection
+  name: OrderDirection
+}
+
+input TreatmentUpdateInput {
+  id_treatments: Int
+  name: String
+}
+
+input TreatmentUpdateArgs {
+  where: TreatmentWhereUniqueInput!
+  data: TreatmentUpdateInput!
+}
+
+input TreatmentCreateInput {
+  id_treatments: Int
+  name: String
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -203,6 +397,30 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
+  createIrrigation(data: IrrigationCreateInput!): Irrigation
+  createIrrigations(data: [IrrigationCreateInput!]!): [Irrigation]
+  updateIrrigation(where: IrrigationWhereUniqueInput!, data: IrrigationUpdateInput!): Irrigation
+  updateIrrigations(data: [IrrigationUpdateArgs!]!): [Irrigation]
+  deleteIrrigation(where: IrrigationWhereUniqueInput!): Irrigation
+  deleteIrrigations(where: [IrrigationWhereUniqueInput!]!): [Irrigation]
+  createLifeCicle(data: LifeCicleCreateInput!): LifeCicle
+  createLifeCicles(data: [LifeCicleCreateInput!]!): [LifeCicle]
+  updateLifeCicle(where: LifeCicleWhereUniqueInput!, data: LifeCicleUpdateInput!): LifeCicle
+  updateLifeCicles(data: [LifeCicleUpdateArgs!]!): [LifeCicle]
+  deleteLifeCicle(where: LifeCicleWhereUniqueInput!): LifeCicle
+  deleteLifeCicles(where: [LifeCicleWhereUniqueInput!]!): [LifeCicle]
+  createSick(data: SickCreateInput!): Sick
+  createSicks(data: [SickCreateInput!]!): [Sick]
+  updateSick(where: SickWhereUniqueInput!, data: SickUpdateInput!): Sick
+  updateSicks(data: [SickUpdateArgs!]!): [Sick]
+  deleteSick(where: SickWhereUniqueInput!): Sick
+  deleteSicks(where: [SickWhereUniqueInput!]!): [Sick]
+  createTreatment(data: TreatmentCreateInput!): Treatment
+  createTreatments(data: [TreatmentCreateInput!]!): [Treatment]
+  updateTreatment(where: TreatmentWhereUniqueInput!, data: TreatmentUpdateInput!): Treatment
+  updateTreatments(data: [TreatmentUpdateArgs!]!): [Treatment]
+  deleteTreatment(where: TreatmentWhereUniqueInput!): Treatment
+  deleteTreatments(where: [TreatmentWhereUniqueInput!]!): [Treatment]
 }
 
 type Query {
@@ -212,6 +430,18 @@ type Query {
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   usersCount(where: UserWhereInput! = {}): Int
+  irrigation(where: IrrigationWhereUniqueInput!): Irrigation
+  irrigations(where: IrrigationWhereInput! = {}, orderBy: [IrrigationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: IrrigationWhereUniqueInput): [Irrigation!]
+  irrigationsCount(where: IrrigationWhereInput! = {}): Int
+  lifeCicle(where: LifeCicleWhereUniqueInput!): LifeCicle
+  lifeCicles(where: LifeCicleWhereInput! = {}, orderBy: [LifeCicleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LifeCicleWhereUniqueInput): [LifeCicle!]
+  lifeCiclesCount(where: LifeCicleWhereInput! = {}): Int
+  sick(where: SickWhereUniqueInput!): Sick
+  sicks(where: SickWhereInput! = {}, orderBy: [SickOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SickWhereUniqueInput): [Sick!]
+  sicksCount(where: SickWhereInput! = {}): Int
+  treatment(where: TreatmentWhereUniqueInput!): Treatment
+  treatments(where: TreatmentWhereInput! = {}, orderBy: [TreatmentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TreatmentWhereUniqueInput): [Treatment!]
+  treatmentsCount(where: TreatmentWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
