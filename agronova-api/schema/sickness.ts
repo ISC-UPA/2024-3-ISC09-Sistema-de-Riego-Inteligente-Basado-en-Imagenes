@@ -1,5 +1,5 @@
 import { allowAll } from '@keystone-6/core/access';
-import { text, select, checkbox, integer, timestamp } from '@keystone-6/core/fields';
+import { text, calendarDay, select, checkbox, integer, timestamp } from '@keystone-6/core/fields';
 
 export const sickness = {
   access: allowAll,
@@ -10,5 +10,8 @@ export const sickness = {
     name: text({ 
         validation: { isRequired: true } 
     }),    
+    detection_date: calendarDay({ 
+      validation: { isRequired: true } 
+  }),
   },
 };

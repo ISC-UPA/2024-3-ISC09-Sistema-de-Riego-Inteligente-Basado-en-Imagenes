@@ -111,7 +111,6 @@ type User {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -129,7 +128,6 @@ input UserWhereInput {
   fullName: StringFilter
   email: StringFilter
   phoneNumber: StringFilter
-  userRole: StringNullableFilter
   profilePicture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
@@ -154,7 +152,6 @@ input UserOrderByInput {
   fullName: OrderDirection
   email: OrderDirection
   phoneNumber: OrderDirection
-  userRole: OrderDirection
   profilePicture: OrderDirection
   accountStatus: OrderDirection
   adAuthenticationStatus: OrderDirection
@@ -164,7 +161,6 @@ input UserUpdateInput {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -179,7 +175,6 @@ input UserCreateInput {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -303,7 +298,10 @@ type Sick {
   id: ID!
   id_sickness: Int
   name: String
+  detection_date: CalendarDay
 }
+
+scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
 
 input SickWhereUniqueInput {
   id: ID
@@ -316,17 +314,31 @@ input SickWhereInput {
   id: IDFilter
   id_sickness: IntFilter
   name: StringFilter
+  detection_date: CalendarDayFilter
+}
+
+input CalendarDayFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayFilter
 }
 
 input SickOrderByInput {
   id: OrderDirection
   id_sickness: OrderDirection
   name: OrderDirection
+  detection_date: OrderDirection
 }
 
 input SickUpdateInput {
   id_sickness: Int
   name: String
+  detection_date: CalendarDay
 }
 
 input SickUpdateArgs {
@@ -337,12 +349,16 @@ input SickUpdateArgs {
 input SickCreateInput {
   id_sickness: Int
   name: String
+  detection_date: CalendarDay
 }
 
 type Treatment {
   id: ID!
   id_treatments: Int
+  id_sickness: Int
   name: String
+  application_date: CalendarDay
+  notes: String
 }
 
 input TreatmentWhereUniqueInput {
@@ -355,18 +371,38 @@ input TreatmentWhereInput {
   NOT: [TreatmentWhereInput!]
   id: IDFilter
   id_treatments: IntFilter
+  id_sickness: IntFilter
   name: StringFilter
+  application_date: CalendarDayNullableFilter
+  notes: StringFilter
+}
+
+input CalendarDayNullableFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayNullableFilter
 }
 
 input TreatmentOrderByInput {
   id: OrderDirection
   id_treatments: OrderDirection
+  id_sickness: OrderDirection
   name: OrderDirection
+  application_date: OrderDirection
+  notes: OrderDirection
 }
 
 input TreatmentUpdateInput {
   id_treatments: Int
+  id_sickness: Int
   name: String
+  application_date: CalendarDay
+  notes: String
 }
 
 input TreatmentUpdateArgs {
@@ -376,15 +412,17 @@ input TreatmentUpdateArgs {
 
 input TreatmentCreateInput {
   id_treatments: Int
+  id_sickness: Int
   name: String
+  application_date: CalendarDay
+  notes: String
 }
 
 type crops {
   id: ID!
+  crop_id: Int
   crop_name: String
-  temperature: Float
-  humidity: Float
-  ph: Float
+  location: String
   status: String
 }
 
@@ -397,38 +435,24 @@ input cropsWhereInput {
   OR: [cropsWhereInput!]
   NOT: [cropsWhereInput!]
   id: IDFilter
+  crop_id: IntFilter
   crop_name: StringFilter
-  temperature: FloatNullableFilter
-  humidity: FloatNullableFilter
-  ph: FloatNullableFilter
+  location: StringFilter
   status: StringFilter
-}
-
-input FloatNullableFilter {
-  equals: Float
-  in: [Float!]
-  notIn: [Float!]
-  lt: Float
-  lte: Float
-  gt: Float
-  gte: Float
-  not: FloatNullableFilter
 }
 
 input cropsOrderByInput {
   id: OrderDirection
+  crop_id: OrderDirection
   crop_name: OrderDirection
-  temperature: OrderDirection
-  humidity: OrderDirection
-  ph: OrderDirection
+  location: OrderDirection
   status: OrderDirection
 }
 
 input cropsUpdateInput {
+  crop_id: Int
   crop_name: String
-  temperature: Float
-  humidity: Float
-  ph: Float
+  location: String
   status: String
 }
 
@@ -438,10 +462,9 @@ input cropsUpdateArgs {
 }
 
 input cropsCreateInput {
+  crop_id: Int
   crop_name: String
-  temperature: Float
-  humidity: Float
-  ph: Float
+  location: String
   status: String
 }
 

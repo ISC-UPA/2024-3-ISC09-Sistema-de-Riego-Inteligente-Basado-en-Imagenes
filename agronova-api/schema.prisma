@@ -25,7 +25,6 @@ model User {
   fullName               String  @default("")
   email                  String  @default("")
   phoneNumber            String  @default("")
-  userRole               String? @default("resident")
   profilePicture         String  @default("")
   accountStatus          String? @default("active")
   adAuthenticationStatus Boolean @default(false)
@@ -46,22 +45,25 @@ model LifeCicle {
 }
 
 model Sick {
-  id          String @id @default(cuid())
-  id_sickness Int
-  name        String @default("")
+  id             String @id @default(cuid())
+  id_sickness    Int
+  name           String @default("")
+  detection_date String
 }
 
 model Treatment {
-  id            String @id @default(cuid())
-  id_treatments Int
-  name          String @default("")
+  id               String  @id @default(cuid())
+  id_treatments    Int
+  id_sickness      Int
+  name             String  @default("")
+  application_date String?
+  notes            String  @default("")
 }
 
 model crops {
-  id          String @id @default(cuid())
-  crop_name   String @default("")
-  temperature Float?
-  humidity    Float?
-  ph          Float?
-  status      String @default("healthy")
+  id        String @id @default(cuid())
+  crop_id   Int
+  crop_name String @default("")
+  location  String @default("")
+  status    String @default("healthy")
 }
