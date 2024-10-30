@@ -111,7 +111,6 @@ type User {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -129,7 +128,6 @@ input UserWhereInput {
   fullName: StringFilter
   email: StringFilter
   phoneNumber: StringFilter
-  userRole: StringNullableFilter
   profilePicture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
@@ -154,7 +152,6 @@ input UserOrderByInput {
   fullName: OrderDirection
   email: OrderDirection
   phoneNumber: OrderDirection
-  userRole: OrderDirection
   profilePicture: OrderDirection
   accountStatus: OrderDirection
   adAuthenticationStatus: OrderDirection
@@ -164,7 +161,6 @@ input UserUpdateInput {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -179,10 +175,221 @@ input UserCreateInput {
   fullName: String
   email: String
   phoneNumber: String
-  userRole: String
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
+}
+
+type Irrigation {
+  id: ID!
+  crop_id: Crop
+  start_time: DateTime
+  duration_minutes: Int
+}
+
+scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input IrrigationWhereUniqueInput {
+  id: ID
+}
+
+input IrrigationWhereInput {
+  AND: [IrrigationWhereInput!]
+  OR: [IrrigationWhereInput!]
+  NOT: [IrrigationWhereInput!]
+  id: IDFilter
+  crop_id: CropWhereInput
+  start_time: DateTimeFilter
+  duration_minutes: IntFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
+input IrrigationOrderByInput {
+  id: OrderDirection
+  start_time: OrderDirection
+  duration_minutes: OrderDirection
+}
+
+input IrrigationUpdateInput {
+  crop_id: CropRelateToOneForUpdateInput
+  start_time: DateTime
+  duration_minutes: Int
+}
+
+input CropRelateToOneForUpdateInput {
+  create: CropCreateInput
+  connect: CropWhereUniqueInput
+  disconnect: Boolean
+}
+
+input IrrigationUpdateArgs {
+  where: IrrigationWhereUniqueInput!
+  data: IrrigationUpdateInput!
+}
+
+input IrrigationCreateInput {
+  crop_id: CropRelateToOneForCreateInput
+  start_time: DateTime
+  duration_minutes: Int
+}
+
+input CropRelateToOneForCreateInput {
+  create: CropCreateInput
+  connect: CropWhereUniqueInput
+}
+
+type Crop {
+  id: ID!
+  user_id: User
+  crop_name: String
+  location: String
+}
+
+input CropWhereUniqueInput {
+  id: ID
+}
+
+input CropWhereInput {
+  AND: [CropWhereInput!]
+  OR: [CropWhereInput!]
+  NOT: [CropWhereInput!]
+  id: IDFilter
+  user_id: UserWhereInput
+  crop_name: StringFilter
+  location: StringFilter
+}
+
+input CropOrderByInput {
+  id: OrderDirection
+  crop_name: OrderDirection
+  location: OrderDirection
+}
+
+input CropUpdateInput {
+  user_id: UserRelateToOneForUpdateInput
+  crop_name: String
+  location: String
+}
+
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
+input CropUpdateArgs {
+  where: CropWhereUniqueInput!
+  data: CropUpdateInput!
+}
+
+input CropCreateInput {
+  user_id: UserRelateToOneForCreateInput
+  crop_name: String
+  location: String
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+type Statistic {
+  id: ID!
+  crop_id: Crop
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
+}
+
+scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input StatisticWhereUniqueInput {
+  id: ID
+}
+
+input StatisticWhereInput {
+  AND: [StatisticWhereInput!]
+  OR: [StatisticWhereInput!]
+  NOT: [StatisticWhereInput!]
+  id: IDFilter
+  crop_id: CropWhereInput
+  timestamp: CalendarDayFilter
+  soil_moisture: FloatFilter
+  air_humidity: FloatFilter
+  air_temperature: FloatFilter
+}
+
+input CalendarDayFilter {
+  equals: CalendarDay
+  in: [CalendarDay!]
+  notIn: [CalendarDay!]
+  lt: CalendarDay
+  lte: CalendarDay
+  gt: CalendarDay
+  gte: CalendarDay
+  not: CalendarDayFilter
+}
+
+input FloatFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatFilter
+}
+
+input StatisticOrderByInput {
+  id: OrderDirection
+  timestamp: OrderDirection
+  soil_moisture: OrderDirection
+  air_humidity: OrderDirection
+  air_temperature: OrderDirection
+}
+
+input StatisticUpdateInput {
+  crop_id: CropRelateToOneForUpdateInput
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
+}
+
+input StatisticUpdateArgs {
+  where: StatisticWhereUniqueInput!
+  data: StatisticUpdateInput!
+}
+
+input StatisticCreateInput {
+  crop_id: CropRelateToOneForCreateInput
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
 }
 
 """
@@ -203,6 +410,24 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
+  createIrrigation(data: IrrigationCreateInput!): Irrigation
+  createIrrigations(data: [IrrigationCreateInput!]!): [Irrigation]
+  updateIrrigation(where: IrrigationWhereUniqueInput!, data: IrrigationUpdateInput!): Irrigation
+  updateIrrigations(data: [IrrigationUpdateArgs!]!): [Irrigation]
+  deleteIrrigation(where: IrrigationWhereUniqueInput!): Irrigation
+  deleteIrrigations(where: [IrrigationWhereUniqueInput!]!): [Irrigation]
+  createCrop(data: CropCreateInput!): Crop
+  createCrops(data: [CropCreateInput!]!): [Crop]
+  updateCrop(where: CropWhereUniqueInput!, data: CropUpdateInput!): Crop
+  updateCrops(data: [CropUpdateArgs!]!): [Crop]
+  deleteCrop(where: CropWhereUniqueInput!): Crop
+  deleteCrops(where: [CropWhereUniqueInput!]!): [Crop]
+  createStatistic(data: StatisticCreateInput!): Statistic
+  createStatistics(data: [StatisticCreateInput!]!): [Statistic]
+  updateStatistic(where: StatisticWhereUniqueInput!, data: StatisticUpdateInput!): Statistic
+  updateStatistics(data: [StatisticUpdateArgs!]!): [Statistic]
+  deleteStatistic(where: StatisticWhereUniqueInput!): Statistic
+  deleteStatistics(where: [StatisticWhereUniqueInput!]!): [Statistic]
 }
 
 type Query {
@@ -212,6 +437,15 @@ type Query {
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   usersCount(where: UserWhereInput! = {}): Int
+  irrigation(where: IrrigationWhereUniqueInput!): Irrigation
+  irrigations(where: IrrigationWhereInput! = {}, orderBy: [IrrigationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: IrrigationWhereUniqueInput): [Irrigation!]
+  irrigationsCount(where: IrrigationWhereInput! = {}): Int
+  crop(where: CropWhereUniqueInput!): Crop
+  crops(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
+  cropsCount(where: CropWhereInput! = {}): Int
+  statistic(where: StatisticWhereUniqueInput!): Statistic
+  statistics(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
+  statisticsCount(where: StatisticWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
