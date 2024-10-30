@@ -28,42 +28,39 @@ model User {
   profilePicture         String  @default("")
   accountStatus          String? @default("active")
   adAuthenticationStatus Boolean @default(false)
+  from_Crop_user_id      Crop[]  @relation("Crop_user_id")
 }
 
 model Irrigation {
-  id            String   @id @default(cuid())
-  id_irrigation Int
-  crop_id       Int
-  date          DateTime @default(now())
-  duration      Int      @default(0)
+  id        String   @id @default(cuid())
+  crop_id   Crop?    @relation("Irrigation_crop_id", fields: [crop_idId], references: [id])
+  crop_idId String?  @map("crop_id")
+  date      DateTime @default(now())
+  duration  Int      @default(0)
+
+  @@index([crop_idId])
 }
 
-model LifeCicle {
-  id            String @id @default(cuid())
-  id_life_cicle Int
-  name          String @default("")
+model Crop {
+  id                      String       @id @default(cuid())
+  user_id                 User?        @relation("Crop_user_id", fields: [user_idId], references: [id])
+  user_idId               String?      @map("user_id")
+  crop_name               String       @default("")
+  location                String       @default("")
+  from_Irrigation_crop_id Irrigation[] @relation("Irrigation_crop_id")
+  from_Statistic_crop_id  Statistic[]  @relation("Statistic_crop_id")
+
+  @@index([user_idId])
 }
 
-model Sick {
-  id             String @id @default(cuid())
-  id_sickness    Int
-  name           String @default("")
-  detection_date String
-}
+model Statistic {
+  id              String  @id @default(cuid())
+  crop_id         Crop?   @relation("Statistic_crop_id", fields: [crop_idId], references: [id])
+  crop_idId       String? @map("crop_id")
+  timestamp       String
+  soil_moisture   Float
+  air_humidity    Float
+  air_temperature Float
 
-model Treatment {
-  id               String  @id @default(cuid())
-  id_treatments    Int
-  id_sickness      Int
-  name             String  @default("")
-  application_date String?
-  notes            String  @default("")
-}
-
-model crops {
-  id        String @id @default(cuid())
-  crop_id   Int
-  crop_name String @default("")
-  location  String @default("")
-  status    String @default("healthy")
+  @@index([crop_idId])
 }

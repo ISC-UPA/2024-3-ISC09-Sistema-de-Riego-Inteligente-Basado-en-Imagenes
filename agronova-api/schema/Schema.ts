@@ -1,20 +1,16 @@
 import { type Lists } from '.keystone/types';
 import { azureADIntegration } from './AzureADIntegration';
 import { user } from './User';
-import { irrigation } from './irrigations';
-import { life_cicle } from './life_cicle';
-import { sickness } from './sickness';
-import { treatments } from './treatments';
-import { crops } from './crops'; 
+import { irrigation } from './Irrigation';
+import { crop } from './Crop'; 
+import { statistic } from './Statistic';
 
 
 export const lists = {
   AzureADIntegration: azureADIntegration,
   User: user,
   Irrigation : irrigation,
-  LifeCicle : life_cicle,
-  Sick : sickness,
-  Treatment: treatments,
-  crops: crops
+  Crop: crop,
+  Statistic: statistic
 
 } satisfies Lists

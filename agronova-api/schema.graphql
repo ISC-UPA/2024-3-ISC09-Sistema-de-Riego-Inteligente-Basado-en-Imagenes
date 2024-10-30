@@ -182,8 +182,7 @@ input UserCreateInput {
 
 type Irrigation {
   id: ID!
-  id_irrigation: Int
-  crop_id: Int
+  crop_id: Crop
   date: DateTime
   duration: Int
 }
@@ -199,21 +198,9 @@ input IrrigationWhereInput {
   OR: [IrrigationWhereInput!]
   NOT: [IrrigationWhereInput!]
   id: IDFilter
-  id_irrigation: IntFilter
-  crop_id: IntFilter
+  crop_id: CropWhereInput
   date: DateTimeFilter
   duration: IntFilter
-}
-
-input IntFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: IntFilter
 }
 
 input DateTimeFilter {
@@ -227,19 +214,33 @@ input DateTimeFilter {
   not: DateTimeFilter
 }
 
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
 input IrrigationOrderByInput {
   id: OrderDirection
-  id_irrigation: OrderDirection
-  crop_id: OrderDirection
   date: OrderDirection
   duration: OrderDirection
 }
 
 input IrrigationUpdateInput {
-  id_irrigation: Int
-  crop_id: Int
+  crop_id: CropRelateToOneForUpdateInput
   date: DateTime
   duration: Int
+}
+
+input CropRelateToOneForUpdateInput {
+  create: CropCreateInput
+  connect: CropWhereUniqueInput
+  disconnect: Boolean
 }
 
 input IrrigationUpdateArgs {
@@ -248,73 +249,96 @@ input IrrigationUpdateArgs {
 }
 
 input IrrigationCreateInput {
-  id_irrigation: Int
-  crop_id: Int
+  crop_id: CropRelateToOneForCreateInput
   date: DateTime
   duration: Int
 }
 
-type LifeCicle {
-  id: ID!
-  id_life_cicle: Int
-  name: String
+input CropRelateToOneForCreateInput {
+  create: CropCreateInput
+  connect: CropWhereUniqueInput
 }
 
-input LifeCicleWhereUniqueInput {
+type Crop {
+  id: ID!
+  user_id: User
+  crop_name: String
+  location: String
+}
+
+input CropWhereUniqueInput {
   id: ID
 }
 
-input LifeCicleWhereInput {
-  AND: [LifeCicleWhereInput!]
-  OR: [LifeCicleWhereInput!]
-  NOT: [LifeCicleWhereInput!]
+input CropWhereInput {
+  AND: [CropWhereInput!]
+  OR: [CropWhereInput!]
+  NOT: [CropWhereInput!]
   id: IDFilter
-  id_life_cicle: IntFilter
-  name: StringFilter
+  user_id: UserWhereInput
+  crop_name: StringFilter
+  location: StringFilter
 }
 
-input LifeCicleOrderByInput {
+input CropOrderByInput {
   id: OrderDirection
-  id_life_cicle: OrderDirection
-  name: OrderDirection
+  crop_name: OrderDirection
+  location: OrderDirection
 }
 
-input LifeCicleUpdateInput {
-  id_life_cicle: Int
-  name: String
+input CropUpdateInput {
+  user_id: UserRelateToOneForUpdateInput
+  crop_name: String
+  location: String
 }
 
-input LifeCicleUpdateArgs {
-  where: LifeCicleWhereUniqueInput!
-  data: LifeCicleUpdateInput!
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
 }
 
-input LifeCicleCreateInput {
-  id_life_cicle: Int
-  name: String
+input CropUpdateArgs {
+  where: CropWhereUniqueInput!
+  data: CropUpdateInput!
 }
 
-type Sick {
+input CropCreateInput {
+  user_id: UserRelateToOneForCreateInput
+  crop_name: String
+  location: String
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+type Statistic {
   id: ID!
-  id_sickness: Int
-  name: String
-  detection_date: CalendarDay
+  crop_id: Crop
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
 }
 
 scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
 
-input SickWhereUniqueInput {
+input StatisticWhereUniqueInput {
   id: ID
 }
 
-input SickWhereInput {
-  AND: [SickWhereInput!]
-  OR: [SickWhereInput!]
-  NOT: [SickWhereInput!]
+input StatisticWhereInput {
+  AND: [StatisticWhereInput!]
+  OR: [StatisticWhereInput!]
+  NOT: [StatisticWhereInput!]
   id: IDFilter
-  id_sickness: IntFilter
-  name: StringFilter
-  detection_date: CalendarDayFilter
+  crop_id: CropWhereInput
+  timestamp: CalendarDayFilter
+  soil_moisture: FloatFilter
+  air_humidity: FloatFilter
+  air_temperature: FloatFilter
 }
 
 input CalendarDayFilter {
@@ -328,144 +352,44 @@ input CalendarDayFilter {
   not: CalendarDayFilter
 }
 
-input SickOrderByInput {
+input FloatFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatFilter
+}
+
+input StatisticOrderByInput {
   id: OrderDirection
-  id_sickness: OrderDirection
-  name: OrderDirection
-  detection_date: OrderDirection
+  timestamp: OrderDirection
+  soil_moisture: OrderDirection
+  air_humidity: OrderDirection
+  air_temperature: OrderDirection
 }
 
-input SickUpdateInput {
-  id_sickness: Int
-  name: String
-  detection_date: CalendarDay
+input StatisticUpdateInput {
+  crop_id: CropRelateToOneForUpdateInput
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
 }
 
-input SickUpdateArgs {
-  where: SickWhereUniqueInput!
-  data: SickUpdateInput!
+input StatisticUpdateArgs {
+  where: StatisticWhereUniqueInput!
+  data: StatisticUpdateInput!
 }
 
-input SickCreateInput {
-  id_sickness: Int
-  name: String
-  detection_date: CalendarDay
-}
-
-type Treatment {
-  id: ID!
-  id_treatments: Int
-  id_sickness: Int
-  name: String
-  application_date: CalendarDay
-  notes: String
-}
-
-input TreatmentWhereUniqueInput {
-  id: ID
-}
-
-input TreatmentWhereInput {
-  AND: [TreatmentWhereInput!]
-  OR: [TreatmentWhereInput!]
-  NOT: [TreatmentWhereInput!]
-  id: IDFilter
-  id_treatments: IntFilter
-  id_sickness: IntFilter
-  name: StringFilter
-  application_date: CalendarDayNullableFilter
-  notes: StringFilter
-}
-
-input CalendarDayNullableFilter {
-  equals: CalendarDay
-  in: [CalendarDay!]
-  notIn: [CalendarDay!]
-  lt: CalendarDay
-  lte: CalendarDay
-  gt: CalendarDay
-  gte: CalendarDay
-  not: CalendarDayNullableFilter
-}
-
-input TreatmentOrderByInput {
-  id: OrderDirection
-  id_treatments: OrderDirection
-  id_sickness: OrderDirection
-  name: OrderDirection
-  application_date: OrderDirection
-  notes: OrderDirection
-}
-
-input TreatmentUpdateInput {
-  id_treatments: Int
-  id_sickness: Int
-  name: String
-  application_date: CalendarDay
-  notes: String
-}
-
-input TreatmentUpdateArgs {
-  where: TreatmentWhereUniqueInput!
-  data: TreatmentUpdateInput!
-}
-
-input TreatmentCreateInput {
-  id_treatments: Int
-  id_sickness: Int
-  name: String
-  application_date: CalendarDay
-  notes: String
-}
-
-type crops {
-  id: ID!
-  crop_id: Int
-  crop_name: String
-  location: String
-  status: String
-}
-
-input cropsWhereUniqueInput {
-  id: ID
-}
-
-input cropsWhereInput {
-  AND: [cropsWhereInput!]
-  OR: [cropsWhereInput!]
-  NOT: [cropsWhereInput!]
-  id: IDFilter
-  crop_id: IntFilter
-  crop_name: StringFilter
-  location: StringFilter
-  status: StringFilter
-}
-
-input cropsOrderByInput {
-  id: OrderDirection
-  crop_id: OrderDirection
-  crop_name: OrderDirection
-  location: OrderDirection
-  status: OrderDirection
-}
-
-input cropsUpdateInput {
-  crop_id: Int
-  crop_name: String
-  location: String
-  status: String
-}
-
-input cropsUpdateArgs {
-  where: cropsWhereUniqueInput!
-  data: cropsUpdateInput!
-}
-
-input cropsCreateInput {
-  crop_id: Int
-  crop_name: String
-  location: String
-  status: String
+input StatisticCreateInput {
+  crop_id: CropRelateToOneForCreateInput
+  timestamp: CalendarDay
+  soil_moisture: Float
+  air_humidity: Float
+  air_temperature: Float
 }
 
 """
@@ -492,30 +416,18 @@ type Mutation {
   updateIrrigations(data: [IrrigationUpdateArgs!]!): [Irrigation]
   deleteIrrigation(where: IrrigationWhereUniqueInput!): Irrigation
   deleteIrrigations(where: [IrrigationWhereUniqueInput!]!): [Irrigation]
-  createLifeCicle(data: LifeCicleCreateInput!): LifeCicle
-  createLifeCicles(data: [LifeCicleCreateInput!]!): [LifeCicle]
-  updateLifeCicle(where: LifeCicleWhereUniqueInput!, data: LifeCicleUpdateInput!): LifeCicle
-  updateLifeCicles(data: [LifeCicleUpdateArgs!]!): [LifeCicle]
-  deleteLifeCicle(where: LifeCicleWhereUniqueInput!): LifeCicle
-  deleteLifeCicles(where: [LifeCicleWhereUniqueInput!]!): [LifeCicle]
-  createSick(data: SickCreateInput!): Sick
-  createSicks(data: [SickCreateInput!]!): [Sick]
-  updateSick(where: SickWhereUniqueInput!, data: SickUpdateInput!): Sick
-  updateSicks(data: [SickUpdateArgs!]!): [Sick]
-  deleteSick(where: SickWhereUniqueInput!): Sick
-  deleteSicks(where: [SickWhereUniqueInput!]!): [Sick]
-  createTreatment(data: TreatmentCreateInput!): Treatment
-  createTreatments(data: [TreatmentCreateInput!]!): [Treatment]
-  updateTreatment(where: TreatmentWhereUniqueInput!, data: TreatmentUpdateInput!): Treatment
-  updateTreatments(data: [TreatmentUpdateArgs!]!): [Treatment]
-  deleteTreatment(where: TreatmentWhereUniqueInput!): Treatment
-  deleteTreatments(where: [TreatmentWhereUniqueInput!]!): [Treatment]
-  createcrops(data: cropsCreateInput!): crops
-  createCrops(data: [cropsCreateInput!]!): [crops]
-  updatecrops(where: cropsWhereUniqueInput!, data: cropsUpdateInput!): crops
-  updateCrops(data: [cropsUpdateArgs!]!): [crops]
-  deletecrops(where: cropsWhereUniqueInput!): crops
-  deleteCrops(where: [cropsWhereUniqueInput!]!): [crops]
+  createCrop(data: CropCreateInput!): Crop
+  createCrops(data: [CropCreateInput!]!): [Crop]
+  updateCrop(where: CropWhereUniqueInput!, data: CropUpdateInput!): Crop
+  updateCrops(data: [CropUpdateArgs!]!): [Crop]
+  deleteCrop(where: CropWhereUniqueInput!): Crop
+  deleteCrops(where: [CropWhereUniqueInput!]!): [Crop]
+  createStatistic(data: StatisticCreateInput!): Statistic
+  createStatistics(data: [StatisticCreateInput!]!): [Statistic]
+  updateStatistic(where: StatisticWhereUniqueInput!, data: StatisticUpdateInput!): Statistic
+  updateStatistics(data: [StatisticUpdateArgs!]!): [Statistic]
+  deleteStatistic(where: StatisticWhereUniqueInput!): Statistic
+  deleteStatistics(where: [StatisticWhereUniqueInput!]!): [Statistic]
 }
 
 type Query {
@@ -528,17 +440,12 @@ type Query {
   irrigation(where: IrrigationWhereUniqueInput!): Irrigation
   irrigations(where: IrrigationWhereInput! = {}, orderBy: [IrrigationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: IrrigationWhereUniqueInput): [Irrigation!]
   irrigationsCount(where: IrrigationWhereInput! = {}): Int
-  lifeCicle(where: LifeCicleWhereUniqueInput!): LifeCicle
-  lifeCicles(where: LifeCicleWhereInput! = {}, orderBy: [LifeCicleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: LifeCicleWhereUniqueInput): [LifeCicle!]
-  lifeCiclesCount(where: LifeCicleWhereInput! = {}): Int
-  sick(where: SickWhereUniqueInput!): Sick
-  sicks(where: SickWhereInput! = {}, orderBy: [SickOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: SickWhereUniqueInput): [Sick!]
-  sicksCount(where: SickWhereInput! = {}): Int
-  treatment(where: TreatmentWhereUniqueInput!): Treatment
-  treatments(where: TreatmentWhereInput! = {}, orderBy: [TreatmentOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TreatmentWhereUniqueInput): [Treatment!]
-  treatmentsCount(where: TreatmentWhereInput! = {}): Int
-  crops(where: cropsWhereInput! = {}, orderBy: [cropsOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: cropsWhereUniqueInput): [crops!]
-  cropsCount(where: cropsWhereInput! = {}): Int
+  crop(where: CropWhereUniqueInput!): Crop
+  crops(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
+  cropsCount(where: CropWhereInput! = {}): Int
+  statistic(where: StatisticWhereUniqueInput!): Statistic
+  statistics(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
+  statisticsCount(where: StatisticWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
