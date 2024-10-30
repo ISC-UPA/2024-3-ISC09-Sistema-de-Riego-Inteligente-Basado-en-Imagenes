@@ -32,11 +32,11 @@ model User {
 }
 
 model Irrigation {
-  id        String   @id @default(cuid())
-  crop_id   Crop?    @relation("Irrigation_crop_id", fields: [crop_idId], references: [id])
-  crop_idId String?  @map("crop_id")
-  date      DateTime @default(now())
-  duration  Int      @default(0)
+  id               String   @id @default(cuid())
+  crop_id          Crop?    @relation("Irrigation_crop_id", fields: [crop_idId], references: [id])
+  crop_idId        String?  @map("crop_id")
+  start_time       DateTime @default(now())
+  duration_minutes Int      @default(0)
 
   @@index([crop_idId])
 }

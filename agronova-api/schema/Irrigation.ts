@@ -7,11 +7,11 @@ export const irrigation = {
     crop_id: relationship({ 
         ref:"Crop", many:false
     }),
-    date: timestamp({ 
+    start_time: timestamp({ 
         validation: { isRequired: true  },
         defaultValue: {kind: 'now'},
     }),
-    duration: integer({
+    duration_minutes: integer({
         validation:{isRequired: true, min: 0 },
         defaultValue: 0,
     }),

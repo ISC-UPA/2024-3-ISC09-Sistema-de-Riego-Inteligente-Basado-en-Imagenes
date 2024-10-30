@@ -183,8 +183,8 @@ input UserCreateInput {
 type Irrigation {
   id: ID!
   crop_id: Crop
-  date: DateTime
-  duration: Int
+  start_time: DateTime
+  duration_minutes: Int
 }
 
 scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -199,8 +199,8 @@ input IrrigationWhereInput {
   NOT: [IrrigationWhereInput!]
   id: IDFilter
   crop_id: CropWhereInput
-  date: DateTimeFilter
-  duration: IntFilter
+  start_time: DateTimeFilter
+  duration_minutes: IntFilter
 }
 
 input DateTimeFilter {
@@ -227,14 +227,14 @@ input IntFilter {
 
 input IrrigationOrderByInput {
   id: OrderDirection
-  date: OrderDirection
-  duration: OrderDirection
+  start_time: OrderDirection
+  duration_minutes: OrderDirection
 }
 
 input IrrigationUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
-  date: DateTime
-  duration: Int
+  start_time: DateTime
+  duration_minutes: Int
 }
 
 input CropRelateToOneForUpdateInput {
@@ -250,8 +250,8 @@ input IrrigationUpdateArgs {
 
 input IrrigationCreateInput {
   crop_id: CropRelateToOneForCreateInput
-  date: DateTime
-  duration: Int
+  start_time: DateTime
+  duration_minutes: Int
 }
 
 input CropRelateToOneForCreateInput {
