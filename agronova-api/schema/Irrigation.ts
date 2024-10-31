@@ -1,5 +1,5 @@
 import { allowAll } from '@keystone-6/core/access';
-import { integer, relationship, timestamp } from '@keystone-6/core/fields';
+import { integer, relationship, timestamp, checkbox} from '@keystone-6/core/fields';
 
 export const irrigation = {
   access: allowAll,
@@ -15,6 +15,6 @@ export const irrigation = {
         validation:{isRequired: true, min: 0 },
         defaultValue: 0,
     }),
-    
+    scheduled: checkbox({ defaultValue: false, label: 'Scheduled' }),  
   },
 };

@@ -7,6 +7,8 @@ export const user = {
     fullName: text({ validation: { isRequired: true } }),
     email: text({ validation: { isRequired: true } }),
     phoneNumber: text({ validation: { isRequired: true } }),
+    billing_plan_id: relationship({ ref: 'BillingPlan.users', many: false }),
+    crops: relationship({ ref: 'Crop.user_id', many: true }),
    
     profilePicture: text(),
     accountStatus: select({
