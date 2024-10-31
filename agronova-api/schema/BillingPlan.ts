@@ -7,7 +7,7 @@ export const BillingPlan = {
     billing_plan_name: text({ validation: { isRequired: true } }),
     description: text({ validation: { isRequired: true } }),
     cost: float({ validation: { isRequired: true } }),
-    users: relationship({ ref: 'User.billing_plan_id', many: true }),
-    features: relationship({ ref: 'FeaturePlan.billing_plan_id', many: true }),
+    user: relationship({ ref: 'User.billing_plan', many: false }),
+    
   },
 };

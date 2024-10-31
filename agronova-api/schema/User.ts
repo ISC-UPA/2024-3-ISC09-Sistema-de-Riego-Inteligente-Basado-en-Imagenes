@@ -1,5 +1,5 @@
 import { allowAll } from '@keystone-6/core/access';
-import { text, select, checkbox } from '@keystone-6/core/fields';
+import { text, select, checkbox, relationship } from '@keystone-6/core/fields';
 
 export const user = {
   access: allowAll,
@@ -7,8 +7,8 @@ export const user = {
     fullName: text({ validation: { isRequired: true } }),
     email: text({ validation: { isRequired: true } }),
     phoneNumber: text({ validation: { isRequired: true } }),
-    billing_plan_id: relationship({ ref: 'BillingPlan.users', many: false }),
-    crops: relationship({ ref: 'Crop.user_id', many: true }),
+    billing_plan: relationship({ ref: 'BillingPlan.user', many: false }),
+    
    
     profilePicture: text(),
     accountStatus: select({

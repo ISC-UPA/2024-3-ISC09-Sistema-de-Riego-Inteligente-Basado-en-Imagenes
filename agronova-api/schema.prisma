@@ -21,14 +21,15 @@ model AzureADIntegration {
 }
 
 model User {
-  id                     String  @id @default(cuid())
-  fullName               String  @default("")
-  email                  String  @default("")
-  phoneNumber            String  @default("")
-  profilePicture         String  @default("")
-  accountStatus          String? @default("active")
-  adAuthenticationStatus Boolean @default(false)
-  from_Crop_user_id      Crop[]  @relation("Crop_user_id")
+  id                     String       @id @default(cuid())
+  fullName               String       @default("")
+  email                  String       @default("")
+  phoneNumber            String       @default("")
+  billing_plan           BillingPlan? @relation("BillingPlan_user")
+  profilePicture         String       @default("")
+  accountStatus          String?      @default("active")
+  adAuthenticationStatus Boolean      @default(false)
+  from_Crop_user_id      Crop[]       @relation("Crop_user_id")
 }
 
 model Irrigation {
@@ -37,6 +38,7 @@ model Irrigation {
   crop_idId        String?  @map("crop_id")
   start_time       DateTime @default(now())
   duration_minutes Int      @default(0)
+  scheduled        Boolean  @default(false)
 
   @@index([crop_idId])
 }
@@ -49,6 +51,7 @@ model Crop {
   location                String       @default("")
   from_Irrigation_crop_id Irrigation[] @relation("Irrigation_crop_id")
   from_Statistic_crop_id  Statistic[]  @relation("Statistic_crop_id")
+  from_CropMedia_crop_id  CropMedia[]  @relation("CropMedia_crop_id")
 
   @@index([user_idId])
 }
@@ -61,6 +64,34 @@ model Statistic {
   soil_moisture   Float
   air_humidity    Float
   air_temperature Float
+
+  @@index([crop_idId])
+}
+
+model BillingPlan {
+  id                               String        @id @default(cuid())
+  billing_plan_name                String        @default("")
+  description                      String        @default("")
+  cost                             Float
+  user                             User?         @relation("BillingPlan_user", fields: [userId], references: [id])
+  userId                           String?       @unique @map("user")
+  from_FeaturePlan_billing_plan_id FeaturePlan[] @relation("FeaturePlan_billing_plan_id")
+}
+
+model FeaturePlan {
+  id                String       @id @default(cuid())
+  billing_plan_id   BillingPlan? @relation("FeaturePlan_billing_plan_id", fields: [billing_plan_idId], references: [id])
+  billing_plan_idId String?      @map("billing_plan_id")
+  feature           String       @default("")
+
+  @@index([billing_plan_idId])
+}
+
+model CropMedia {
+  id        String  @id @default(cuid())
+  crop_id   Crop?   @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
+  crop_idId String? @map("crop_id")
+  address   String  @default("")
 
   @@index([crop_idId])
 }

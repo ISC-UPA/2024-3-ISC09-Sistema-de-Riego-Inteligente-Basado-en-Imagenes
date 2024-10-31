@@ -111,6 +111,7 @@ type User {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlan
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -128,6 +129,7 @@ input UserWhereInput {
   fullName: StringFilter
   email: StringFilter
   phoneNumber: StringFilter
+  billing_plan: BillingPlanWhereInput
   profilePicture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
@@ -161,9 +163,16 @@ input UserUpdateInput {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlanRelateToOneForUpdateInput
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
+}
+
+input BillingPlanRelateToOneForUpdateInput {
+  create: BillingPlanCreateInput
+  connect: BillingPlanWhereUniqueInput
+  disconnect: Boolean
 }
 
 input UserUpdateArgs {
@@ -175,9 +184,15 @@ input UserCreateInput {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlanRelateToOneForCreateInput
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
+}
+
+input BillingPlanRelateToOneForCreateInput {
+  create: BillingPlanCreateInput
+  connect: BillingPlanWhereUniqueInput
 }
 
 type Irrigation {
@@ -185,6 +200,7 @@ type Irrigation {
   crop_id: Crop
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -201,6 +217,7 @@ input IrrigationWhereInput {
   crop_id: CropWhereInput
   start_time: DateTimeFilter
   duration_minutes: IntFilter
+  scheduled: BooleanFilter
 }
 
 input DateTimeFilter {
@@ -229,12 +246,14 @@ input IrrigationOrderByInput {
   id: OrderDirection
   start_time: OrderDirection
   duration_minutes: OrderDirection
+  scheduled: OrderDirection
 }
 
 input IrrigationUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 input CropRelateToOneForUpdateInput {
@@ -252,6 +271,7 @@ input IrrigationCreateInput {
   crop_id: CropRelateToOneForCreateInput
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 input CropRelateToOneForCreateInput {
@@ -392,6 +412,133 @@ input StatisticCreateInput {
   air_temperature: Float
 }
 
+type BillingPlan {
+  id: ID!
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: User
+}
+
+input BillingPlanWhereUniqueInput {
+  id: ID
+}
+
+input BillingPlanWhereInput {
+  AND: [BillingPlanWhereInput!]
+  OR: [BillingPlanWhereInput!]
+  NOT: [BillingPlanWhereInput!]
+  id: IDFilter
+  billing_plan_name: StringFilter
+  description: StringFilter
+  cost: FloatFilter
+  user: UserWhereInput
+}
+
+input BillingPlanOrderByInput {
+  id: OrderDirection
+  billing_plan_name: OrderDirection
+  description: OrderDirection
+  cost: OrderDirection
+}
+
+input BillingPlanUpdateInput {
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: UserRelateToOneForUpdateInput
+}
+
+input BillingPlanUpdateArgs {
+  where: BillingPlanWhereUniqueInput!
+  data: BillingPlanUpdateInput!
+}
+
+input BillingPlanCreateInput {
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: UserRelateToOneForCreateInput
+}
+
+type FeaturePlan {
+  id: ID!
+  billing_plan_id: BillingPlan
+  feature: String
+}
+
+input FeaturePlanWhereUniqueInput {
+  id: ID
+}
+
+input FeaturePlanWhereInput {
+  AND: [FeaturePlanWhereInput!]
+  OR: [FeaturePlanWhereInput!]
+  NOT: [FeaturePlanWhereInput!]
+  id: IDFilter
+  billing_plan_id: BillingPlanWhereInput
+  feature: StringFilter
+}
+
+input FeaturePlanOrderByInput {
+  id: OrderDirection
+  feature: OrderDirection
+}
+
+input FeaturePlanUpdateInput {
+  billing_plan_id: BillingPlanRelateToOneForUpdateInput
+  feature: String
+}
+
+input FeaturePlanUpdateArgs {
+  where: FeaturePlanWhereUniqueInput!
+  data: FeaturePlanUpdateInput!
+}
+
+input FeaturePlanCreateInput {
+  billing_plan_id: BillingPlanRelateToOneForCreateInput
+  feature: String
+}
+
+type CropMedia {
+  id: ID!
+  crop_id: Crop
+  address: String
+}
+
+input CropMediaWhereUniqueInput {
+  id: ID
+}
+
+input CropMediaWhereInput {
+  AND: [CropMediaWhereInput!]
+  OR: [CropMediaWhereInput!]
+  NOT: [CropMediaWhereInput!]
+  id: IDFilter
+  crop_id: CropWhereInput
+  address: StringFilter
+}
+
+input CropMediaOrderByInput {
+  id: OrderDirection
+  address: OrderDirection
+}
+
+input CropMediaUpdateInput {
+  crop_id: CropRelateToOneForUpdateInput
+  address: String
+}
+
+input CropMediaUpdateArgs {
+  where: CropMediaWhereUniqueInput!
+  data: CropMediaUpdateInput!
+}
+
+input CropMediaCreateInput {
+  crop_id: CropRelateToOneForCreateInput
+  address: String
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -428,6 +575,24 @@ type Mutation {
   updateStatistics(data: [StatisticUpdateArgs!]!): [Statistic]
   deleteStatistic(where: StatisticWhereUniqueInput!): Statistic
   deleteStatistics(where: [StatisticWhereUniqueInput!]!): [Statistic]
+  createBillingPlan(data: BillingPlanCreateInput!): BillingPlan
+  createBillingPlans(data: [BillingPlanCreateInput!]!): [BillingPlan]
+  updateBillingPlan(where: BillingPlanWhereUniqueInput!, data: BillingPlanUpdateInput!): BillingPlan
+  updateBillingPlans(data: [BillingPlanUpdateArgs!]!): [BillingPlan]
+  deleteBillingPlan(where: BillingPlanWhereUniqueInput!): BillingPlan
+  deleteBillingPlans(where: [BillingPlanWhereUniqueInput!]!): [BillingPlan]
+  createFeaturePlan(data: FeaturePlanCreateInput!): FeaturePlan
+  createFeaturePlans(data: [FeaturePlanCreateInput!]!): [FeaturePlan]
+  updateFeaturePlan(where: FeaturePlanWhereUniqueInput!, data: FeaturePlanUpdateInput!): FeaturePlan
+  updateFeaturePlans(data: [FeaturePlanUpdateArgs!]!): [FeaturePlan]
+  deleteFeaturePlan(where: FeaturePlanWhereUniqueInput!): FeaturePlan
+  deleteFeaturePlans(where: [FeaturePlanWhereUniqueInput!]!): [FeaturePlan]
+  createCropMedia(data: CropMediaCreateInput!): CropMedia
+  createCropMedias(data: [CropMediaCreateInput!]!): [CropMedia]
+  updateCropMedia(where: CropMediaWhereUniqueInput!, data: CropMediaUpdateInput!): CropMedia
+  updateCropMedias(data: [CropMediaUpdateArgs!]!): [CropMedia]
+  deleteCropMedia(where: CropMediaWhereUniqueInput!): CropMedia
+  deleteCropMedias(where: [CropMediaWhereUniqueInput!]!): [CropMedia]
 }
 
 type Query {
@@ -446,6 +611,15 @@ type Query {
   statistic(where: StatisticWhereUniqueInput!): Statistic
   statistics(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
   statisticsCount(where: StatisticWhereInput! = {}): Int
+  billingPlan(where: BillingPlanWhereUniqueInput!): BillingPlan
+  billingPlans(where: BillingPlanWhereInput! = {}, orderBy: [BillingPlanOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BillingPlanWhereUniqueInput): [BillingPlan!]
+  billingPlansCount(where: BillingPlanWhereInput! = {}): Int
+  featurePlan(where: FeaturePlanWhereUniqueInput!): FeaturePlan
+  featurePlans(where: FeaturePlanWhereInput! = {}, orderBy: [FeaturePlanOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: FeaturePlanWhereUniqueInput): [FeaturePlan!]
+  featurePlansCount(where: FeaturePlanWhereInput! = {}): Int
+  cropMedia(where: CropMediaWhereUniqueInput!): CropMedia
+  cropMedias(where: CropMediaWhereInput! = {}, orderBy: [CropMediaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropMediaWhereUniqueInput): [CropMedia!]
+  cropMediasCount(where: CropMediaWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
