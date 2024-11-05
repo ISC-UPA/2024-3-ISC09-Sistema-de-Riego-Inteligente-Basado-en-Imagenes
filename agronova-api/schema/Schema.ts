@@ -7,7 +7,9 @@ import { statistic } from './Statistic';
 import { BillingPlan } from './BillingPlan';
 import { FeaturePlan } from './FeaturePlan'; 
 import { CropMedia } from './CropMedia';
-
+import { ranch } from './Ranch';
+import { role } from './Role';
+import { permission } from './Permission';
 
 export const lists = {
   AzureADIntegration: azureADIntegration,
@@ -17,6 +19,8 @@ export const lists = {
   Statistic: statistic,
   BillingPlan: BillingPlan,
   FeaturePlan: FeaturePlan,
-  CropMedia: CropMedia
-
+  CropMedia: CropMedia,
+  Ranch: ranch,
+  Role: role,
+  Permission: permission
 } satisfies Lists

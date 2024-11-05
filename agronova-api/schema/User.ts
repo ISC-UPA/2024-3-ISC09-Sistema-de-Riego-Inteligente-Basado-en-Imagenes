@@ -8,8 +8,8 @@ export const user = {
     email: text({ validation: { isRequired: true } }),
     phoneNumber: text({ validation: { isRequired: true } }),
     billing_plan: relationship({ ref: 'BillingPlan.user', many: false }),
-    
-   
+    ranch_id: relationship({ ref: 'Ranch', many: false }),
+    role_id : relationship({ ref: 'Role', many: false }),
     profilePicture: text(),
     accountStatus: select({
       options: [

@@ -26,10 +26,17 @@ model User {
   email                  String       @default("")
   phoneNumber            String       @default("")
   billing_plan           BillingPlan? @relation("BillingPlan_user")
+  ranch_id               Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
+  ranch_idId             String?      @map("ranch_id")
+  role_id                Role?        @relation("User_role_id", fields: [role_idId], references: [id])
+  role_idId              String?      @map("role_id")
   profilePicture         String       @default("")
   accountStatus          String?      @default("active")
   adAuthenticationStatus Boolean      @default(false)
   from_Crop_user_id      Crop[]       @relation("Crop_user_id")
+
+  @@index([ranch_idId])
+  @@index([role_idId])
 }
 
 model Irrigation {
@@ -94,4 +101,26 @@ model CropMedia {
   address   String  @default("")
 
   @@index([crop_idId])
+}
+
+model Ranch {
+  id                 String @id @default(cuid())
+  ranch_name         String @default("")
+  description        String @default("")
+  from_User_ranch_id User[] @relation("User_ranch_id")
+}
+
+model Role {
+  id                String       @id @default(cuid())
+  role_name         String       @unique @default("")
+  description       String       @default("")
+  permissions       Permission[] @relation("Permission_roles")
+  from_User_role_id User[]       @relation("User_role_id")
+}
+
+model Permission {
+  id              String @id @default(cuid())
+  permission_name String @unique @default("")
+  description     String @default("")
+  roles           Role[] @relation("Permission_roles")
 }
