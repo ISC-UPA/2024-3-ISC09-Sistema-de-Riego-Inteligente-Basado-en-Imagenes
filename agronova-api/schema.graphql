@@ -111,6 +111,9 @@ type User {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlan
+  ranch_id: Ranch
+  role_id: Role
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -128,6 +131,9 @@ input UserWhereInput {
   fullName: StringFilter
   email: StringFilter
   phoneNumber: StringFilter
+  billing_plan: BillingPlanWhereInput
+  ranch_id: RanchWhereInput
+  role_id: RoleWhereInput
   profilePicture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
@@ -161,9 +167,30 @@ input UserUpdateInput {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlanRelateToOneForUpdateInput
+  ranch_id: RanchRelateToOneForUpdateInput
+  role_id: RoleRelateToOneForUpdateInput
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
+}
+
+input BillingPlanRelateToOneForUpdateInput {
+  create: BillingPlanCreateInput
+  connect: BillingPlanWhereUniqueInput
+  disconnect: Boolean
+}
+
+input RanchRelateToOneForUpdateInput {
+  create: RanchCreateInput
+  connect: RanchWhereUniqueInput
+  disconnect: Boolean
+}
+
+input RoleRelateToOneForUpdateInput {
+  create: RoleCreateInput
+  connect: RoleWhereUniqueInput
+  disconnect: Boolean
 }
 
 input UserUpdateArgs {
@@ -175,9 +202,27 @@ input UserCreateInput {
   fullName: String
   email: String
   phoneNumber: String
+  billing_plan: BillingPlanRelateToOneForCreateInput
+  ranch_id: RanchRelateToOneForCreateInput
+  role_id: RoleRelateToOneForCreateInput
   profilePicture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
+}
+
+input BillingPlanRelateToOneForCreateInput {
+  create: BillingPlanCreateInput
+  connect: BillingPlanWhereUniqueInput
+}
+
+input RanchRelateToOneForCreateInput {
+  create: RanchCreateInput
+  connect: RanchWhereUniqueInput
+}
+
+input RoleRelateToOneForCreateInput {
+  create: RoleCreateInput
+  connect: RoleWhereUniqueInput
 }
 
 type Irrigation {
@@ -185,6 +230,7 @@ type Irrigation {
   crop_id: Crop
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -201,6 +247,7 @@ input IrrigationWhereInput {
   crop_id: CropWhereInput
   start_time: DateTimeFilter
   duration_minutes: IntFilter
+  scheduled: BooleanFilter
 }
 
 input DateTimeFilter {
@@ -229,12 +276,14 @@ input IrrigationOrderByInput {
   id: OrderDirection
   start_time: OrderDirection
   duration_minutes: OrderDirection
+  scheduled: OrderDirection
 }
 
 input IrrigationUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 input CropRelateToOneForUpdateInput {
@@ -252,6 +301,7 @@ input IrrigationCreateInput {
   crop_id: CropRelateToOneForCreateInput
   start_time: DateTime
   duration_minutes: Int
+  scheduled: Boolean
 }
 
 input CropRelateToOneForCreateInput {
@@ -392,6 +442,301 @@ input StatisticCreateInput {
   air_temperature: Float
 }
 
+type BillingPlan {
+  id: ID!
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: User
+}
+
+input BillingPlanWhereUniqueInput {
+  id: ID
+}
+
+input BillingPlanWhereInput {
+  AND: [BillingPlanWhereInput!]
+  OR: [BillingPlanWhereInput!]
+  NOT: [BillingPlanWhereInput!]
+  id: IDFilter
+  billing_plan_name: StringFilter
+  description: StringFilter
+  cost: FloatFilter
+  user: UserWhereInput
+}
+
+input BillingPlanOrderByInput {
+  id: OrderDirection
+  billing_plan_name: OrderDirection
+  description: OrderDirection
+  cost: OrderDirection
+}
+
+input BillingPlanUpdateInput {
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: UserRelateToOneForUpdateInput
+}
+
+input BillingPlanUpdateArgs {
+  where: BillingPlanWhereUniqueInput!
+  data: BillingPlanUpdateInput!
+}
+
+input BillingPlanCreateInput {
+  billing_plan_name: String
+  description: String
+  cost: Float
+  user: UserRelateToOneForCreateInput
+}
+
+type FeaturePlan {
+  id: ID!
+  billing_plan_id: BillingPlan
+  feature: String
+}
+
+input FeaturePlanWhereUniqueInput {
+  id: ID
+}
+
+input FeaturePlanWhereInput {
+  AND: [FeaturePlanWhereInput!]
+  OR: [FeaturePlanWhereInput!]
+  NOT: [FeaturePlanWhereInput!]
+  id: IDFilter
+  billing_plan_id: BillingPlanWhereInput
+  feature: StringFilter
+}
+
+input FeaturePlanOrderByInput {
+  id: OrderDirection
+  feature: OrderDirection
+}
+
+input FeaturePlanUpdateInput {
+  billing_plan_id: BillingPlanRelateToOneForUpdateInput
+  feature: String
+}
+
+input FeaturePlanUpdateArgs {
+  where: FeaturePlanWhereUniqueInput!
+  data: FeaturePlanUpdateInput!
+}
+
+input FeaturePlanCreateInput {
+  billing_plan_id: BillingPlanRelateToOneForCreateInput
+  feature: String
+}
+
+type CropMedia {
+  id: ID!
+  crop_id: Crop
+  address: String
+}
+
+input CropMediaWhereUniqueInput {
+  id: ID
+}
+
+input CropMediaWhereInput {
+  AND: [CropMediaWhereInput!]
+  OR: [CropMediaWhereInput!]
+  NOT: [CropMediaWhereInput!]
+  id: IDFilter
+  crop_id: CropWhereInput
+  address: StringFilter
+}
+
+input CropMediaOrderByInput {
+  id: OrderDirection
+  address: OrderDirection
+}
+
+input CropMediaUpdateInput {
+  crop_id: CropRelateToOneForUpdateInput
+  address: String
+}
+
+input CropMediaUpdateArgs {
+  where: CropMediaWhereUniqueInput!
+  data: CropMediaUpdateInput!
+}
+
+input CropMediaCreateInput {
+  crop_id: CropRelateToOneForCreateInput
+  address: String
+}
+
+type Ranch {
+  id: ID!
+  ranch_name: String
+  description: String
+}
+
+input RanchWhereUniqueInput {
+  id: ID
+}
+
+input RanchWhereInput {
+  AND: [RanchWhereInput!]
+  OR: [RanchWhereInput!]
+  NOT: [RanchWhereInput!]
+  id: IDFilter
+  ranch_name: StringFilter
+  description: StringFilter
+}
+
+input RanchOrderByInput {
+  id: OrderDirection
+  ranch_name: OrderDirection
+  description: OrderDirection
+}
+
+input RanchUpdateInput {
+  ranch_name: String
+  description: String
+}
+
+input RanchUpdateArgs {
+  where: RanchWhereUniqueInput!
+  data: RanchUpdateInput!
+}
+
+input RanchCreateInput {
+  ranch_name: String
+  description: String
+}
+
+type Role {
+  id: ID!
+  role_name: String
+  description: String
+  permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
+  permissionsCount(where: PermissionWhereInput! = {}): Int
+}
+
+input RoleWhereUniqueInput {
+  id: ID
+  role_name: String
+}
+
+input RoleWhereInput {
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  NOT: [RoleWhereInput!]
+  id: IDFilter
+  role_name: StringFilter
+  description: StringFilter
+  permissions: PermissionManyRelationFilter
+}
+
+input PermissionManyRelationFilter {
+  every: PermissionWhereInput
+  some: PermissionWhereInput
+  none: PermissionWhereInput
+}
+
+input RoleOrderByInput {
+  id: OrderDirection
+  role_name: OrderDirection
+  description: OrderDirection
+}
+
+input RoleUpdateInput {
+  role_name: String
+  description: String
+  permissions: PermissionRelateToManyForUpdateInput
+}
+
+input PermissionRelateToManyForUpdateInput {
+  disconnect: [PermissionWhereUniqueInput!]
+  set: [PermissionWhereUniqueInput!]
+  create: [PermissionCreateInput!]
+  connect: [PermissionWhereUniqueInput!]
+}
+
+input RoleUpdateArgs {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateInput!
+}
+
+input RoleCreateInput {
+  role_name: String
+  description: String
+  permissions: PermissionRelateToManyForCreateInput
+}
+
+input PermissionRelateToManyForCreateInput {
+  create: [PermissionCreateInput!]
+  connect: [PermissionWhereUniqueInput!]
+}
+
+type Permission {
+  id: ID!
+  permission_name: String
+  description: String
+  roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
+  rolesCount(where: RoleWhereInput! = {}): Int
+}
+
+input PermissionWhereUniqueInput {
+  id: ID
+  permission_name: String
+}
+
+input PermissionWhereInput {
+  AND: [PermissionWhereInput!]
+  OR: [PermissionWhereInput!]
+  NOT: [PermissionWhereInput!]
+  id: IDFilter
+  permission_name: StringFilter
+  description: StringFilter
+  roles: RoleManyRelationFilter
+}
+
+input RoleManyRelationFilter {
+  every: RoleWhereInput
+  some: RoleWhereInput
+  none: RoleWhereInput
+}
+
+input PermissionOrderByInput {
+  id: OrderDirection
+  permission_name: OrderDirection
+  description: OrderDirection
+}
+
+input PermissionUpdateInput {
+  permission_name: String
+  description: String
+  roles: RoleRelateToManyForUpdateInput
+}
+
+input RoleRelateToManyForUpdateInput {
+  disconnect: [RoleWhereUniqueInput!]
+  set: [RoleWhereUniqueInput!]
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
+input PermissionUpdateArgs {
+  where: PermissionWhereUniqueInput!
+  data: PermissionUpdateInput!
+}
+
+input PermissionCreateInput {
+  permission_name: String
+  description: String
+  roles: RoleRelateToManyForCreateInput
+}
+
+input RoleRelateToManyForCreateInput {
+  create: [RoleCreateInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -428,6 +773,42 @@ type Mutation {
   updateStatistics(data: [StatisticUpdateArgs!]!): [Statistic]
   deleteStatistic(where: StatisticWhereUniqueInput!): Statistic
   deleteStatistics(where: [StatisticWhereUniqueInput!]!): [Statistic]
+  createBillingPlan(data: BillingPlanCreateInput!): BillingPlan
+  createBillingPlans(data: [BillingPlanCreateInput!]!): [BillingPlan]
+  updateBillingPlan(where: BillingPlanWhereUniqueInput!, data: BillingPlanUpdateInput!): BillingPlan
+  updateBillingPlans(data: [BillingPlanUpdateArgs!]!): [BillingPlan]
+  deleteBillingPlan(where: BillingPlanWhereUniqueInput!): BillingPlan
+  deleteBillingPlans(where: [BillingPlanWhereUniqueInput!]!): [BillingPlan]
+  createFeaturePlan(data: FeaturePlanCreateInput!): FeaturePlan
+  createFeaturePlans(data: [FeaturePlanCreateInput!]!): [FeaturePlan]
+  updateFeaturePlan(where: FeaturePlanWhereUniqueInput!, data: FeaturePlanUpdateInput!): FeaturePlan
+  updateFeaturePlans(data: [FeaturePlanUpdateArgs!]!): [FeaturePlan]
+  deleteFeaturePlan(where: FeaturePlanWhereUniqueInput!): FeaturePlan
+  deleteFeaturePlans(where: [FeaturePlanWhereUniqueInput!]!): [FeaturePlan]
+  createCropMedia(data: CropMediaCreateInput!): CropMedia
+  createCropMedias(data: [CropMediaCreateInput!]!): [CropMedia]
+  updateCropMedia(where: CropMediaWhereUniqueInput!, data: CropMediaUpdateInput!): CropMedia
+  updateCropMedias(data: [CropMediaUpdateArgs!]!): [CropMedia]
+  deleteCropMedia(where: CropMediaWhereUniqueInput!): CropMedia
+  deleteCropMedias(where: [CropMediaWhereUniqueInput!]!): [CropMedia]
+  createRanch(data: RanchCreateInput!): Ranch
+  createRanches(data: [RanchCreateInput!]!): [Ranch]
+  updateRanch(where: RanchWhereUniqueInput!, data: RanchUpdateInput!): Ranch
+  updateRanches(data: [RanchUpdateArgs!]!): [Ranch]
+  deleteRanch(where: RanchWhereUniqueInput!): Ranch
+  deleteRanches(where: [RanchWhereUniqueInput!]!): [Ranch]
+  createRole(data: RoleCreateInput!): Role
+  createRoles(data: [RoleCreateInput!]!): [Role]
+  updateRole(where: RoleWhereUniqueInput!, data: RoleUpdateInput!): Role
+  updateRoles(data: [RoleUpdateArgs!]!): [Role]
+  deleteRole(where: RoleWhereUniqueInput!): Role
+  deleteRoles(where: [RoleWhereUniqueInput!]!): [Role]
+  createPermission(data: PermissionCreateInput!): Permission
+  createPermissions(data: [PermissionCreateInput!]!): [Permission]
+  updatePermission(where: PermissionWhereUniqueInput!, data: PermissionUpdateInput!): Permission
+  updatePermissions(data: [PermissionUpdateArgs!]!): [Permission]
+  deletePermission(where: PermissionWhereUniqueInput!): Permission
+  deletePermissions(where: [PermissionWhereUniqueInput!]!): [Permission]
 }
 
 type Query {
@@ -446,6 +827,24 @@ type Query {
   statistic(where: StatisticWhereUniqueInput!): Statistic
   statistics(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
   statisticsCount(where: StatisticWhereInput! = {}): Int
+  billingPlan(where: BillingPlanWhereUniqueInput!): BillingPlan
+  billingPlans(where: BillingPlanWhereInput! = {}, orderBy: [BillingPlanOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: BillingPlanWhereUniqueInput): [BillingPlan!]
+  billingPlansCount(where: BillingPlanWhereInput! = {}): Int
+  featurePlan(where: FeaturePlanWhereUniqueInput!): FeaturePlan
+  featurePlans(where: FeaturePlanWhereInput! = {}, orderBy: [FeaturePlanOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: FeaturePlanWhereUniqueInput): [FeaturePlan!]
+  featurePlansCount(where: FeaturePlanWhereInput! = {}): Int
+  cropMedia(where: CropMediaWhereUniqueInput!): CropMedia
+  cropMedias(where: CropMediaWhereInput! = {}, orderBy: [CropMediaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropMediaWhereUniqueInput): [CropMedia!]
+  cropMediasCount(where: CropMediaWhereInput! = {}): Int
+  ranch(where: RanchWhereUniqueInput!): Ranch
+  ranches(where: RanchWhereInput! = {}, orderBy: [RanchOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RanchWhereUniqueInput): [Ranch!]
+  ranchesCount(where: RanchWhereInput! = {}): Int
+  role(where: RoleWhereUniqueInput!): Role
+  roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
+  rolesCount(where: RoleWhereInput! = {}): Int
+  permission(where: PermissionWhereUniqueInput!): Permission
+  permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
+  permissionsCount(where: PermissionWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 
