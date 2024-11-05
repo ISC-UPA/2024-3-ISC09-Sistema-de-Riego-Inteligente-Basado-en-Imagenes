@@ -7,15 +7,7 @@ export const user = {
     fullName: text({ validation: { isRequired: true } }),
     email: text({ validation: { isRequired: true } }),
     phoneNumber: text({ validation: { isRequired: true } }),
-    userRole: select({
-      options: [
-        { label: 'Admin', value: 'admin' },
-        { label: 'Resident', value: 'resident' },
-        { label: 'Security', value: 'security' },
-        { label: 'Guest', value: 'guest' },
-      ],
-      defaultValue: 'resident',
-    }),
+   
     profilePicture: text(),
     accountStatus: select({
       options: [
