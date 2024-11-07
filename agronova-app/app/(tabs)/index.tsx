@@ -1,34 +1,49 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/atoms/ThemedText';
+import { ThemedView } from '@/components/atoms/ThemedView';
+import { ScrollView } from 'react-native';
+import { Card, IconButton, FAB } from 'react-native-paper';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.titleContainer}>
-      <ThemedText type="title">Hola mundo!</ThemedText>
+    <ThemedView style={{ flex: 1, padding: 16 }}>
+      {/* Título principal */}
+      <ThemedText style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+        Rancho "Las Camelinas"
+      </ThemedText>
+
+      {/* Floating Action Button para agregar nuevo cultivo */}
+      <FAB
+        icon="plus"
+        style={{
+          position: 'absolute',
+          right: 16,
+          bottom: 16,
+        }}
+        onPress={() => {}}
+      />
+
+      {/* Lista de Cultivos */}
+      <ScrollView style={{marginVertical: 25}}>
+        <Card style={{ marginBottom: 16 }}>
+          <Card.Content>
+            <ThemedText>Cultivo A</ThemedText>
+          </Card.Content>
+          <Card.Actions>
+            <IconButton icon="pencil" onPress={() => {}} />
+            <IconButton icon="delete" onPress={() => {}} />
+          </Card.Actions>
+        </Card>
+
+        <Card style={{ marginBottom: 16 }}>
+          <Card.Content>
+            <ThemedText>Cultivo B</ThemedText>
+          </Card.Content>
+          <Card.Actions>
+            <IconButton icon="pencil" onPress={() => {}} />
+            <IconButton icon="delete" onPress={() => {}} />
+          </Card.Actions>
+        </Card>
+      </ScrollView>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 100,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

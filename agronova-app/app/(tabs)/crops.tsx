@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import ParallaxScrollView from '@/components/atoms/ParallaxScrollView';
+import { ThemedText } from '@/components/atoms/ThemedText';
+import { ThemedView } from '@/components/atoms/ThemedView';
 
 const members = [
   { name: 'Antonio Leon', role: 'Administrador' },
