@@ -1,8 +1,8 @@
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 
-import ParallaxScrollView from '@/components/atoms/ParallaxScrollView';
-import { ThemedText } from '@/components/atoms/ThemedText';
-import { ThemedView } from '@/components/atoms/ThemedView';
+import ParallaxScrollView from '@/components/widgets/ParallaxScrollView';
+import { ThemedText } from '@/components/widgets/ThemedText';
+import { ThemedView } from '@/components/widgets/ThemedView';
 
 const members = [
   { name: 'Antonio Leon', role: 'Administrador' },
