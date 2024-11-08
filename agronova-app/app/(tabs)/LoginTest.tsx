@@ -30,7 +30,6 @@ export default function App() {
     scheme: 'myapp',
     path: '',
   });
-  console.log(redirectUri)
   //ClientId del app registration, se debe cambiar la manera de acceder a este id a una manera más segura
   const clientId = '1ef5f9af-f519-4991-bbd9-cd99ea55c4a8';
 
