@@ -7,6 +7,7 @@ export const role = {
     fields: {
         role_name: text({ isIndexed: 'unique',validation: { isRequired: true }}),
         description: text({ validation: { isRequired: true } }),
-        permissions: relationship({ref: 'Permission.roles', many: true})
+        permissions: relationship({ref: 'Permission.roles', many: true}),
+        user: relationship({ref: 'User.role_id', many: true})
     }
 }
