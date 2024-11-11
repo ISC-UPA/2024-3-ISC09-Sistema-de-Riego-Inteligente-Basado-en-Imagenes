@@ -56,7 +56,7 @@ export default function App() {
       //Si existe el token, agregarlo al estado local
       if (savedToken) {
         setToken(savedToken);
-        handleRefresh();
+        await handleRefresh();
       }
     };
     //Llamada a la función para revisar si se necesita actualizar el token
@@ -167,6 +167,7 @@ export default function App() {
       }
     } catch (error) {
       console.error('Error al manejar el refresh del token:', error);
+      await handleSignOut()
     }
   }
 
