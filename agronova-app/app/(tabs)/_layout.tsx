@@ -14,12 +14,16 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
+        tabBarActiveTintColor: '#4d7c0f', 
+        tabBarInactiveTintColor: '#65a30d',
         headerStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          backgroundColor: '#f0f9ff',
         },
-        headerTintColor: Colors[colorScheme ?? 'light'].text,
+        headerShadowVisible: true,
+        headerTintColor: '#cae9ff',
+        tabBarStyle: {
+          backgroundColor: '#7dd3fc',
+        },
         headerLeft: () => (
           <Image
             source={require('@/assets/images/logo_text.png')} 
@@ -36,11 +40,6 @@ export default function TabLayout() {
             />
           </TouchableOpacity>
         ),
-        tabBarStyle: {
-          paddingTop: 10,    
-          height: 60,       
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
-        },
       }}
     >
       <Tabs.Screen
