@@ -22,7 +22,7 @@ stages:
     - task: Docker@2
       displayName: Build and push Docker image
       inputs:
-        containerRegistry: 'agronovatestcontainer.azurecr.io'
+        containerRegistry: 'agronovatestcontainer'
         command: 'build'
         Dockerfile: '**/agronova-api/Dockerfile'
         arguments: '-t agronovabackend'
@@ -30,7 +30,7 @@ stages:
       displayName: Tag an image
       inputs:
         command: 'tag'
-        containerRegistry: 'agronovatestcontainer.azurecr.io'
+        containerRegistry: 'agronovatestcontainer'
         arguments: 'agronovabackend:latest agronovatestcontainer.azurecr.io/agronovabackend:latest'
         addPipelineData: false
         addBaseImageData: false
@@ -38,7 +38,7 @@ stages:
       displayName: Push an image
       inputs:
         command: 'push'
-        containerRegistry: 'agronovatestcontainer.azurecr.io'
+        containerRegistry: 'agronovatestcontainer'
         repository: agronovabackend'
         tags: 'latest'
 - stage: Deploy
