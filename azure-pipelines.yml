@@ -25,7 +25,7 @@ stages:
         containerRegistry: 'agronovatestcontainer'
         command: 'build'
         Dockerfile: '**/agronova-api/Dockerfile'
-        arguments: '-t agronovatestcontainer.azurecr.io/agronovabackend:latest'
+        arguments: '-t agronovatestcontainer.azurecr.io/agronova-api:latest'
     
     - task: Docker@2
       displayName: Push an image
