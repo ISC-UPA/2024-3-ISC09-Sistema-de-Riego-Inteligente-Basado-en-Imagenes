@@ -31,7 +31,7 @@ stages:
       inputs:
         command: 'tag'
         containerRegistry: 'agronovatestcontainer'
-        arguments: 'agronovabackend:latest agronovatestcontainer.azurecr.io/agronovabackend:latest'
+        arguments: 'agronovabackend:latest agronovatestcontainer/agronovabackend:latest'
         addPipelineData: false
         addBaseImageData: false
     - task: Docker@2
@@ -41,3 +41,4 @@ stages:
         containerRegistry: 'agronovatestcontainer'
         repository: agronovabackend'
         tags: 'latest'
+
