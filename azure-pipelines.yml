@@ -6,6 +6,8 @@ resources:
 
 pool:
   name: 'Default'
+  demands:
+  - agent.name -equals agentP
 
 variables:
   tag: '$(Build.BuildId)'
