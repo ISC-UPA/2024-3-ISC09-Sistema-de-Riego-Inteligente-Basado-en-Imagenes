@@ -34,4 +34,8 @@ stages:
         containerRegistry: 'agronovatestcontainer'
         repository: 'agronova-api'
         tags: 'latest'
-
+    - task: AzureWebAppContainer@1
+      inputs:
+        azureSubscription: 'Azure for Students(1)(7286d3c8-dcc9-4c06-8b82-b1ae61ed12f0)'
+        appName: 'agronova-api'
+        containers: 'agronovatestcontainer.azurecr.io/agronova-api:latest'
