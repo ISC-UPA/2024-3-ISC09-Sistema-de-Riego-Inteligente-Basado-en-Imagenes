@@ -5,7 +5,7 @@ resources:
 - repo: self
 
 pool:
-  name: 'SelfHostedPool'
+  name: 'agentP'
 
 variables:
   tag: '$(Build.BuildId)'
