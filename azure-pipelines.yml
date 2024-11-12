@@ -41,21 +41,3 @@ stages:
         containerRegistry: 'agronovatestcontainer'
         repository: agronovabackend'
         tags: 'latest'
-- stage: Deploy
-  displayName: Deploy to Azure Web App
-  dependsOn: Build
-  jobs:
-  - job: Deploy
-    displayName: Deploy to Azure Web App
-    steps:
-    - task: AzureWebAppContainer@1
-      inputs:
-        azureSubscription: 'Azure for Students(7286d3c8-dcc9-4c06-8b82-b1ae61ed12f0)'
-        appName: 'agronova-api'
-        deployToSlotOrASE: true
-        resourceGroupName: 'ISC09A'
-        slotName: 'production'
-        containers: 'agronovatestcontainer.azurecr.io/agronovabackend:latest'
-        containerCommand: 'docker run --workdir=/app -p 443:3000'
-        acrUsername: 'agronovatestcontainer'
-        acrPassword: 'tnxfvrLZ640rGppiq5M5aWl1hhRL4pemlcD2/+byR4+ACRCJw5dF'
