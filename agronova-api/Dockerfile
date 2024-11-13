@@ -13,7 +13,7 @@ RUN yarn install
 # Copia el resto de la aplicación
 COPY . .
 
-ENV DATABASE_URL="file:./db/agronova.db"
+ENV DATABASE_URL="file:./app/db/agronova.db"
 
 # Expone el puerto en el que la aplicación correrá
 EXPOSE 3000
