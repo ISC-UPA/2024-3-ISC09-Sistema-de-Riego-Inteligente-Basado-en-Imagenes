@@ -10,6 +10,8 @@ COPY package*.json ./
 # Instala las dependencias
 RUN yarn install
 
+RUN mkdir -p /app/db && touch /app/db/agronova.db
+
 # Copia el resto de la aplicación
 COPY . .
 
