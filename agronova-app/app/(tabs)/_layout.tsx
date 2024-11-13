@@ -52,7 +52,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="crops"
+        name="organization"
         options={{
           title: '',
           tabBarIcon: ({ color, focused }) => (
