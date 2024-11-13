@@ -23,4 +23,6 @@ EXPOSE 3000
 # Comando para compilar y correr la aplicación
 RUN yarn build
 
+RUN npx keystone prisma migrate dev
+
 CMD ["yarn", "start"]
