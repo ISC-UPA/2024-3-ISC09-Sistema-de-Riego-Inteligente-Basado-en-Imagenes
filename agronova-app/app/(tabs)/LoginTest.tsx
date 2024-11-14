@@ -13,6 +13,7 @@ import {
 import { Button, Text, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet } from 'react-native';
+import React from 'react';
 
 //Abre una ventana del navegador para la autentificación
 WebBrowser.maybeCompleteAuthSession();

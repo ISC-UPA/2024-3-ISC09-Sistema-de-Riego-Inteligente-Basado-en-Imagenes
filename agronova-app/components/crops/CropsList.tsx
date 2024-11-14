@@ -1,3 +1,4 @@
+import *  as React from 'react';
 import AddButton from '@/components/widgets/AddButton';
 import CropCard from '@/components/crops/CropCard'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,6 +7,11 @@ import { ThemedView } from '@/components/widgets/ThemedView';
 import { ScrollView } from 'react-native';
 
 export default function CropList() {
+  const crops = [
+    { id: 1, name: 'Cultivo 1' },
+    { id: 2, name: 'Cultivo 2' },
+  ];
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
@@ -25,7 +31,7 @@ export default function CropList() {
         
         {/* Crops list */}
         <ScrollView style={{ marginVertical: 25 }}>
-          <CropCard></CropCard>
+          {crops.map(crop => <CropCard key={crop.id} {...crop}/>)}
         </ScrollView>
       </ThemedView>
     </LinearGradient>
