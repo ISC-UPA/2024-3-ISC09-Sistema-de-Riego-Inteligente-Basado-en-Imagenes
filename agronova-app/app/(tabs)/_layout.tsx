@@ -27,7 +27,7 @@ export default function TabLayout() {
         headerLeft: () => (
           <Image
             source={require('@/assets/images/logo_text.png')} 
-            style={{ width: 200, height: 50, marginLeft: 10 }}
+            style={{ width: 180, height: 50, marginLeft: 10 }}
           />
         ),
         headerRight: () => (
