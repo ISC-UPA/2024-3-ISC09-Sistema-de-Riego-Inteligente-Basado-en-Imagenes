@@ -1,3 +1,4 @@
+import { Stack } from 'expo-router';
 import { useEffect, useState, useReducer } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import {
@@ -10,17 +11,20 @@ import {
   RefreshTokenRequestConfig,
   DiscoveryDocument
 } from 'expo-auth-session';
-import { Button, Text, SafeAreaView } from 'react-native';
+import { Text, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Button } from 'react-native-paper';
 
 //Abre una ventana del navegador para la autentificación
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   
-
+  const navigation = useNavigation();
   // Endpoint
   const discovery = useAutoDiscovery(
     'https://login.microsoftonline.com/f03c71fb-da10-4831-93b3-79b594a2ec2a/v2.0',
@@ -58,6 +62,7 @@ export default function App() {
       if (savedToken) {
         setToken(savedToken);
         await handleRefresh();
+        navigation.navigate('(tabs)')
       }
     };
     //Llamada a la función para revisar si se necesita actualizar el token
@@ -90,6 +95,7 @@ export default function App() {
             await AsyncStorage.setItem('refreshToken', res.refreshToken ?? '');
             await AsyncStorage.setItem('expiresIn', res.expiresIn?.toString() || '');
             await AsyncStorage.setItem('issuedAt', res.issuedAt.toString());
+            navigation.navigate('(tabs)')
             console.log('Access token guardado correctamente');
           } catch (error) {
             console.error('Error al guardar access token en AsyncStorage', error);
@@ -173,14 +179,33 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Button
-        disabled={!request && !discovery}
-        title={token ? "Sign Out" : "Sign In"}
-        onPress={token ? handleSignOut : handleSignIn}
-      />
-      <Text>{token ? 'Sesión iniciada' : 'Por favor, inicia sesión'}</Text>
-    </SafeAreaView>
+    <LinearGradient
+    colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+    style={{ flex: 1 }}
+    >
+      <Stack.Screen options={{ title: '', headerShown: false }} />
+            <SafeAreaView style={styles.container}>
+              {/* Agregar el logo aquí */}
+              <Image 
+                source={require('@/assets/images/logo.png')} 
+                style={{ width: 100, height: 100, marginBottom: 0 }} 
+              />
+              <Image 
+                source={require('@/assets/images/agronova.png')}
+                style={{ width: 320, height: 100, marginBottom: 0 }} 
+              />
+              <Text style={styles.descriptionText}>{token ? 'Sesión iniciada' : 'Por favor, inicia sesión'}</Text>
+              <Button 
+                disabled={!request && !discovery}
+                icon="microsoft" 
+                buttonColor={'#1e40af'} 
+                labelStyle={{ color: "#f0f9ff", }}
+                onPress={token ? handleSignOut : handleSignIn}
+                >
+                {token ? "Sign Out" : "Iniciar sesión"}
+              </Button>
+      </SafeAreaView>
+    </LinearGradient>  
   );
 }
 
@@ -189,5 +214,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
+  },
+  descriptionText: {
+    textAlign: 'justify',
+    fontSize: 16,
+    marginVertical: 10,
+    color: '#0c4a6e',
+    fontWeight: 'semibold'
   },
 })
