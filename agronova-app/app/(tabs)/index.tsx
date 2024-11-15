@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import CropsList from '@/components/crops/CropsList';
 import Crop from '@/components/crops/Crop'; // Componente que muestra detalles del cultivo
+import CropRecords from '@/components/crops/CropRecords'; // Asegúrate de importar el componente de estadísticas
+import CropStatistics from '@/components/crops/CropStatistics';
 import { CropContext } from '@/components/context/CropContext'; // Usamos CropContext
 
 export default function HomeScreen() {
@@ -10,9 +12,17 @@ export default function HomeScreen() {
     throw new Error('HomeScreen debe ser utilizado dentro de un CropProvider');
   }
 
-  const { selectedCropId } = cropContext; // Accedemos al `selectedCropId` del contexto
+  const { selectedCropId, record, statistics  } = cropContext; // Accedemos al `selectedCropId` y `record` del contexto
 
-  // Dependiendo del valor de `selectedCropId`, mostramos uno u otro componente
+  // Lógica para renderizar las diferentes vistas dependiendo del estado de `record` y `selectedCropId`
+  if (record) {
+    // Si `record` es true, renderizamos `CropStatistics`
+    return <CropRecords />;
+  }
+  else if(statistics){
+    return<CropStatistics />
+  }
+
   return (
     <>
       {selectedCropId !== null && selectedCropId !== 0 ? (

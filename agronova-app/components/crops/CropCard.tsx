@@ -32,7 +32,7 @@ export default function CropCard(props: CropCardProps) {
   return (
     <Card style={styles.card}>
       <Card.Content style={styles.content}>
-        <Text style={styles.text}>{props.name}</Text>
+        <Text style={styles.titleText}>{props.name}</Text>
       </Card.Content>
       <Card.Actions style={styles.actions}>
         <IconButton
@@ -69,6 +69,11 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'center',
     height: 60,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0c4a6e',
   },
   text: {
     textAlign: 'left',

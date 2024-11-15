@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/widgets/ThemedView';
+import React from 'react';
 
 const HEADER_HEIGHT = 150;
 
@@ -49,16 +50,18 @@ export default function ParallaxScrollView({ children }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
     overflow: 'hidden',
     // Puedes añadir color de fondo predeterminado si es necesario
-    backgroundColor: '#D0D0D0', // o cualquier color que prefieras
+    backgroundColor: 'transparent', // o cualquier color que prefieras
   },
   content: {
     flex: 1,
     padding: 32,
     gap: 16,
     overflow: 'hidden',
+    backgroundColor: 'transparent'
   },
 });

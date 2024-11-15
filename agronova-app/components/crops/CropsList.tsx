@@ -4,7 +4,7 @@ import CropCard from '@/components/crops/CropCard'
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
-import { ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
 export default function CropList() {
   const crops = [
@@ -22,7 +22,7 @@ export default function CropList() {
         darkColor="transparent"
       >
         {/* Ranch name */}
-        <ThemedText style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+        <ThemedText  style={styles.titleText}>
           Rancho "Las Camelinas"
         </ThemedText>
 
@@ -37,3 +37,11 @@ export default function CropList() {
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0c4a6e',
+  },
+});
