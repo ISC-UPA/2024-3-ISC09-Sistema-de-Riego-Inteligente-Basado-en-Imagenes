@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
 import MembersList from './membersList'; // Asegúrate de importar el componente correctamente
+import React from 'react';
 
 export default function Organization() {
   return (
