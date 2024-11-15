@@ -41,7 +41,7 @@ export default function TabLayout() {
               <Ionicons
                 name="menu" 
                 size={24}
-                color={Colors[colorScheme ?? 'light'].text}
+                color={'#4d7c0f'}
                 style={{ marginRight: 10 }}
               />
             </TouchableOpacity>
