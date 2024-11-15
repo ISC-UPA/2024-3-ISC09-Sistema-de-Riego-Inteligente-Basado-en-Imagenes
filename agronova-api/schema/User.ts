@@ -4,13 +4,14 @@ import { text, select, checkbox, relationship } from '@keystone-6/core/fields';
 export const user = {
   access: allowAll,
   fields: {
-    fullName: text({ validation: { isRequired: true } }),
+    full_name: text({ validation: { isRequired: true } }),
     email: text({ validation: { isRequired: true } }),
-    phoneNumber: text({ validation: { isRequired: true } }),
-    billing_plan: relationship({ ref: 'BillingPlan.user', many: false }),
-    ranch_id: relationship({ ref: 'Ranch', many: false }),
-    role_id : relationship({ ref: 'Role', many: false }),
-    profilePicture: text(),
+    phone_number: text({ validation: { isRequired: true } }),
+    billing_plan_id: relationship({ ref: 'BillingPlan.user', many: false }),
+    ranch_id: relationship({ ref: 'Ranch.user', many: false }),
+    role_id : relationship({ ref: 'Role.user', many: false }),
+    crop: relationship({ref: 'Crop.user_id', many: true}),
+    profile_picture: text(),
     accountStatus: select({
       options: [
         { label: 'Active', value: 'active' },
