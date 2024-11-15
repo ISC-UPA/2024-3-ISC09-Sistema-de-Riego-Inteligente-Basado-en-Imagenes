@@ -8,7 +8,7 @@ yarn.lock
 
 #KeystoneJS
 agronova-api/.keystone/
-#agronova-api/db/
+agronova-api/db/
 *.log
 
 # Logs
