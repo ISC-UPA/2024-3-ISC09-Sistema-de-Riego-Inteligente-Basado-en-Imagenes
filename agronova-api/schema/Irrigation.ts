@@ -1,20 +1,20 @@
 import { allowAll } from '@keystone-6/core/access';
-import { integer, relationship, timestamp, checkbox} from '@keystone-6/core/fields';
+import { integer, relationship, timestamp, checkbox } from '@keystone-6/core/fields';
 
 export const irrigation = {
   access: allowAll,
   fields: {
-    crop_id: relationship({ 
-        ref:"Crop", many:false
+    crop_id: relationship({
+      ref: "Crop.irrigation", many: false
     }),
-    start_time: timestamp({ 
-        validation: { isRequired: true  },
-        defaultValue: {kind: 'now'},
+    start_time: timestamp({
+      validation: { isRequired: true },
+      defaultValue: { kind: 'now' },
     }),
-    duration_minutes: integer({
-        validation:{isRequired: true, min: 0 },
-        defaultValue: 0,
+    end_time: timestamp({
+      validation: { isRequired: true },
+      defaultValue: { kind: 'now' },
     }),
-    scheduled: checkbox({ defaultValue: false, label: 'Scheduled' }),  
+    scheduled: checkbox({ defaultValue: false, label: 'Scheduled' }),
   },
 };
