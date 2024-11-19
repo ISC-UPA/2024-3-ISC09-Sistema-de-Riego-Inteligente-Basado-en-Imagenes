@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface HelpCardProps {
@@ -17,16 +17,16 @@ const HelpScreen = () => {
     >
       <View style={styles.container}>
         <HelpCard
-          title="Línea BBVA"
-          description="55 5226 2663\nLu - Do, de 06:00 a 23:00 h."
-          buttonText="Llamar a Línea BBVA"
-          onPress={() => alert('Llamando a Línea BBVA')}
+          title="Línea agronova"
+          description="4491271278 Lu - Do, de 06:00 a 23:00 h."
+          buttonText="Llamar a Línea agronova"
+          onPress={() => alert('Llamando a Línea agronova')}
         />
         <HelpCard
-          title="Tarjeta rechazada"
-          description="¿Tu pago no pasó y no sabes por qué? Contáctanos."
-          buttonText="Llamar asesor"
-          onPress={() => alert('Llamando a asesor')}
+          title="Sede agronova"
+          description="Ven a visitarnos."
+          buttonText="Ir"
+          onPress={() => Linking.openURL('https://maps.app.goo.gl/1QDnKM8esjeVrrAT6')}
         />
         <HelpCard
           title="Videollamada en Lengua de Señas Mexicana"
@@ -57,11 +57,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#e0f2fe',
+    borderRadius: 10,
+    padding: 10,
     marginVertical: 8,
-    elevation: 2,
+    elevation: 5, // Sombra para Android
+    shadowColor: '#000', // Color de la sombra para iOS
+    shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra para iOS
+    shadowOpacity: 0.25, // Opacidad de la sombra para iOS
+    shadowRadius: 3.84, // Radio de la sombra para iOS
   },
   title: {
     fontSize: 18,
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   button: {
-    backgroundColor: '#0c4a6e',
+    backgroundColor: '#0ea5e9',
     borderRadius: 4,
     padding: 10,
     alignItems: 'center',
