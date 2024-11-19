@@ -3,6 +3,9 @@ import { Modal, View, StyleSheet, TouchableWithoutFeedback, Animated, Text, Touc
 import { Drawer } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import handleSignOut from '@/components/login/Login'; // Asegúrate de ajustar la ruta al archivo Login.tsx
+
 
 interface SideMenuProps {
   visible: boolean;
@@ -32,6 +35,23 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
   const handleItemPress = (item: string) => {
     setSelectedOption(item); // Actualiza el estado con la opción seleccionada
     onClose(); // Cierra el menú cuando se selecciona una opción
+  };
+
+  const handleLogoutPress = async () => {
+
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('expiresIn');
+      await AsyncStorage.removeItem('issuedAt');
+      navigation.navigate('')
+      console.log('Sesión cerrada y token eliminado');
+    } catch (error) {
+      console.error('Error al eliminar el access token de AsyncStorage', error);
+    }
+
+    await handleSignOut();
+    onClose(); // Cierra el menú después de cerrar sesión
   };
 
   return (
@@ -80,8 +100,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
 
                 <View style={styles.spacer} />
 
-                <TouchableOpacity style={styles.logoutButton} onPress={onClose}>
-                  <Text style={styles.logoutButtonText}>Log out</Text>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogoutPress}>
+                  <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
                 </TouchableOpacity>
               </LinearGradient>
             </Animated.View>
@@ -100,7 +120,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   drawerContainer: {
-    width: '70%',
+    width: '60%',
     height: '100%',
     borderTopLeftRadius: 30,  // Mayor radio de las esquinas
     borderBottomLeftRadius: 30,  // Mayor radio de las esquinas
@@ -108,12 +128,12 @@ const styles = StyleSheet.create({
   },
   gradientBackground: {
     flex: 1,
-    padding: 20,
+    padding: 10,
   },
   itemText: {
     fontSize: 16,
     color: '#0c4a6e',
-    paddingVertical: 10,
+    paddingVertical: 2,
     paddingLeft: 10,
     fontWeight: 'bold',
   },
@@ -128,9 +148,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', // Alineamos verticalmente el texto con la imagen
     justifyContent: 'flex-start', // Aseguramos que el contenido esté alineado a la izquierda
-    paddingVertical: 15,  // Añadimos más espacio arriba y abajo
+    paddingVertical: 5,  // Añadimos más espacio arriba y abajo
     borderRadius: 10,  // Añadimos borde redondeado a los ítems
-    paddingHorizontal:10
+    paddingHorizontal:10 //Separa los iconos del borde del contenedor sombreado
   },
   selectedItem: {
     backgroundColor: '#dbeafe', // Color de fondo cuando está seleccionado
@@ -153,4 +173,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SideMenu;
+export default SideMenu;
