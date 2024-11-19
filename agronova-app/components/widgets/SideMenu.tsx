@@ -49,8 +49,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
     } catch (error) {
       console.error('Error al eliminar el access token de AsyncStorage', error);
     }
-
-    await handleSignOut();
     onClose(); // Cierra el menú después de cerrar sesión
   };
 
