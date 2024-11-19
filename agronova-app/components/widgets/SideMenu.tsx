@@ -3,7 +3,11 @@ import { Modal, View, StyleSheet, TouchableWithoutFeedback, Animated, Text, Touc
 import { Drawer } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+<<<<<<< Updated upstream
 import AsyncStorage from '@react-native-async-storage/async-storage';
+=======
+import handleSignOut from '@/components/login/Login'; // Asegúrate de ajustar la ruta al archivo Login.tsx
+>>>>>>> Stashed changes
 
 interface SideMenuProps {
   visible: boolean;
@@ -36,6 +40,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
   };
 
   const handleLogoutPress = async () => {
+<<<<<<< Updated upstream
     try {
       await AsyncStorage.removeItem('accessToken');
       await AsyncStorage.removeItem('refreshToken');
@@ -46,6 +51,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
     } catch (error) {
       console.error('Error al eliminar el access token de AsyncStorage', error);
     }
+=======
+    await handleSignOut();
+>>>>>>> Stashed changes
     onClose(); // Cierra el menú después de cerrar sesión
   };
 
