@@ -108,19 +108,22 @@ input AzureADIntegrationCreateInput {
 
 type User {
   id: ID!
-  fullName: String
+  full_name: String
   email: String
-  phoneNumber: String
-  billing_plan: BillingPlan
+  phone_number: String
+  billing_plan_id: BillingPlan
   ranch_id: Ranch
   role_id: Role
-  profilePicture: String
+  crop(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
+  cropCount(where: CropWhereInput! = {}): Int
+  profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
 }
 
 input UserWhereUniqueInput {
   id: ID
+  email: String
 }
 
 input UserWhereInput {
@@ -128,15 +131,22 @@ input UserWhereInput {
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
   id: IDFilter
-  fullName: StringFilter
+  full_name: StringFilter
   email: StringFilter
-  phoneNumber: StringFilter
-  billing_plan: BillingPlanWhereInput
+  phone_number: StringFilter
+  billing_plan_id: BillingPlanWhereInput
   ranch_id: RanchWhereInput
   role_id: RoleWhereInput
-  profilePicture: StringFilter
+  crop: CropManyRelationFilter
+  profile_picture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
+}
+
+input CropManyRelationFilter {
+  every: CropWhereInput
+  some: CropWhereInput
+  none: CropWhereInput
 }
 
 input StringNullableFilter {
@@ -155,22 +165,23 @@ input StringNullableFilter {
 
 input UserOrderByInput {
   id: OrderDirection
-  fullName: OrderDirection
+  full_name: OrderDirection
   email: OrderDirection
-  phoneNumber: OrderDirection
-  profilePicture: OrderDirection
+  phone_number: OrderDirection
+  profile_picture: OrderDirection
   accountStatus: OrderDirection
   adAuthenticationStatus: OrderDirection
 }
 
 input UserUpdateInput {
-  fullName: String
+  full_name: String
   email: String
-  phoneNumber: String
-  billing_plan: BillingPlanRelateToOneForUpdateInput
+  phone_number: String
+  billing_plan_id: BillingPlanRelateToOneForUpdateInput
   ranch_id: RanchRelateToOneForUpdateInput
   role_id: RoleRelateToOneForUpdateInput
-  profilePicture: String
+  crop: CropRelateToManyForUpdateInput
+  profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
 }
@@ -193,19 +204,27 @@ input RoleRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
+input CropRelateToManyForUpdateInput {
+  disconnect: [CropWhereUniqueInput!]
+  set: [CropWhereUniqueInput!]
+  create: [CropCreateInput!]
+  connect: [CropWhereUniqueInput!]
+}
+
 input UserUpdateArgs {
   where: UserWhereUniqueInput!
   data: UserUpdateInput!
 }
 
 input UserCreateInput {
-  fullName: String
+  full_name: String
   email: String
-  phoneNumber: String
-  billing_plan: BillingPlanRelateToOneForCreateInput
+  phone_number: String
+  billing_plan_id: BillingPlanRelateToOneForCreateInput
   ranch_id: RanchRelateToOneForCreateInput
   role_id: RoleRelateToOneForCreateInput
-  profilePicture: String
+  crop: CropRelateToManyForCreateInput
+  profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
 }
@@ -225,11 +244,16 @@ input RoleRelateToOneForCreateInput {
   connect: RoleWhereUniqueInput
 }
 
+input CropRelateToManyForCreateInput {
+  create: [CropCreateInput!]
+  connect: [CropWhereUniqueInput!]
+}
+
 type Irrigation {
   id: ID!
   crop_id: Crop
   start_time: DateTime
-  duration_minutes: Int
+  end_time: DateTime
   scheduled: Boolean
 }
 
@@ -246,7 +270,7 @@ input IrrigationWhereInput {
   id: IDFilter
   crop_id: CropWhereInput
   start_time: DateTimeFilter
-  duration_minutes: IntFilter
+  end_time: DateTimeFilter
   scheduled: BooleanFilter
 }
 
@@ -261,28 +285,17 @@ input DateTimeFilter {
   not: DateTimeFilter
 }
 
-input IntFilter {
-  equals: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-  not: IntFilter
-}
-
 input IrrigationOrderByInput {
   id: OrderDirection
   start_time: OrderDirection
-  duration_minutes: OrderDirection
+  end_time: OrderDirection
   scheduled: OrderDirection
 }
 
 input IrrigationUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   start_time: DateTime
-  duration_minutes: Int
+  end_time: DateTime
   scheduled: Boolean
 }
 
@@ -300,7 +313,7 @@ input IrrigationUpdateArgs {
 input IrrigationCreateInput {
   crop_id: CropRelateToOneForCreateInput
   start_time: DateTime
-  duration_minutes: Int
+  end_time: DateTime
   scheduled: Boolean
 }
 
@@ -311,9 +324,16 @@ input CropRelateToOneForCreateInput {
 
 type Crop {
   id: ID!
-  user_id: User
   crop_name: String
   location: String
+  user_id: User
+  statistic(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
+  statisticCount(where: StatisticWhereInput! = {}): Int
+  irrigation(where: IrrigationWhereInput! = {}, orderBy: [IrrigationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: IrrigationWhereUniqueInput): [Irrigation!]
+  irrigationCount(where: IrrigationWhereInput! = {}): Int
+  crop_media(where: CropMediaWhereInput! = {}, orderBy: [CropMediaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropMediaWhereUniqueInput): [CropMedia!]
+  crop_mediaCount(where: CropMediaWhereInput! = {}): Int
+  isDeleted: Boolean
 }
 
 input CropWhereUniqueInput {
@@ -325,21 +345,48 @@ input CropWhereInput {
   OR: [CropWhereInput!]
   NOT: [CropWhereInput!]
   id: IDFilter
-  user_id: UserWhereInput
   crop_name: StringFilter
   location: StringFilter
+  user_id: UserWhereInput
+  statistic: StatisticManyRelationFilter
+  irrigation: IrrigationManyRelationFilter
+  crop_media: CropMediaManyRelationFilter
+  isDeleted: BooleanFilter
+}
+
+input StatisticManyRelationFilter {
+  every: StatisticWhereInput
+  some: StatisticWhereInput
+  none: StatisticWhereInput
+}
+
+input IrrigationManyRelationFilter {
+  every: IrrigationWhereInput
+  some: IrrigationWhereInput
+  none: IrrigationWhereInput
+}
+
+input CropMediaManyRelationFilter {
+  every: CropMediaWhereInput
+  some: CropMediaWhereInput
+  none: CropMediaWhereInput
 }
 
 input CropOrderByInput {
   id: OrderDirection
   crop_name: OrderDirection
   location: OrderDirection
+  isDeleted: OrderDirection
 }
 
 input CropUpdateInput {
-  user_id: UserRelateToOneForUpdateInput
   crop_name: String
   location: String
+  user_id: UserRelateToOneForUpdateInput
+  statistic: StatisticRelateToManyForUpdateInput
+  irrigation: IrrigationRelateToManyForUpdateInput
+  crop_media: CropMediaRelateToManyForUpdateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToOneForUpdateInput {
@@ -348,15 +395,40 @@ input UserRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
+input StatisticRelateToManyForUpdateInput {
+  disconnect: [StatisticWhereUniqueInput!]
+  set: [StatisticWhereUniqueInput!]
+  create: [StatisticCreateInput!]
+  connect: [StatisticWhereUniqueInput!]
+}
+
+input IrrigationRelateToManyForUpdateInput {
+  disconnect: [IrrigationWhereUniqueInput!]
+  set: [IrrigationWhereUniqueInput!]
+  create: [IrrigationCreateInput!]
+  connect: [IrrigationWhereUniqueInput!]
+}
+
+input CropMediaRelateToManyForUpdateInput {
+  disconnect: [CropMediaWhereUniqueInput!]
+  set: [CropMediaWhereUniqueInput!]
+  create: [CropMediaCreateInput!]
+  connect: [CropMediaWhereUniqueInput!]
+}
+
 input CropUpdateArgs {
   where: CropWhereUniqueInput!
   data: CropUpdateInput!
 }
 
 input CropCreateInput {
-  user_id: UserRelateToOneForCreateInput
   crop_name: String
   location: String
+  user_id: UserRelateToOneForCreateInput
+  statistic: StatisticRelateToManyForCreateInput
+  irrigation: IrrigationRelateToManyForCreateInput
+  crop_media: CropMediaRelateToManyForCreateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToOneForCreateInput {
@@ -364,16 +436,29 @@ input UserRelateToOneForCreateInput {
   connect: UserWhereUniqueInput
 }
 
+input StatisticRelateToManyForCreateInput {
+  create: [StatisticCreateInput!]
+  connect: [StatisticWhereUniqueInput!]
+}
+
+input IrrigationRelateToManyForCreateInput {
+  create: [IrrigationCreateInput!]
+  connect: [IrrigationWhereUniqueInput!]
+}
+
+input CropMediaRelateToManyForCreateInput {
+  create: [CropMediaCreateInput!]
+  connect: [CropMediaWhereUniqueInput!]
+}
+
 type Statistic {
   id: ID!
   crop_id: Crop
-  timestamp: CalendarDay
+  timestamp: DateTime
   soil_moisture: Float
   air_humidity: Float
   air_temperature: Float
 }
-
-scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
 
 input StatisticWhereUniqueInput {
   id: ID
@@ -385,21 +470,21 @@ input StatisticWhereInput {
   NOT: [StatisticWhereInput!]
   id: IDFilter
   crop_id: CropWhereInput
-  timestamp: CalendarDayFilter
-  soil_moisture: FloatFilter
+  timestamp: DateTimeFilter
+  soil_moisture: FloatNullableFilter
   air_humidity: FloatFilter
   air_temperature: FloatFilter
 }
 
-input CalendarDayFilter {
-  equals: CalendarDay
-  in: [CalendarDay!]
-  notIn: [CalendarDay!]
-  lt: CalendarDay
-  lte: CalendarDay
-  gt: CalendarDay
-  gte: CalendarDay
-  not: CalendarDayFilter
+input FloatNullableFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatNullableFilter
 }
 
 input FloatFilter {
@@ -423,7 +508,7 @@ input StatisticOrderByInput {
 
 input StatisticUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
-  timestamp: CalendarDay
+  timestamp: DateTime
   soil_moisture: Float
   air_humidity: Float
   air_temperature: Float
@@ -436,7 +521,7 @@ input StatisticUpdateArgs {
 
 input StatisticCreateInput {
   crop_id: CropRelateToOneForCreateInput
-  timestamp: CalendarDay
+  timestamp: DateTime
   soil_moisture: Float
   air_humidity: Float
   air_temperature: Float
@@ -448,6 +533,8 @@ type BillingPlan {
   description: String
   cost: Float
   user: User
+  feature_plan(where: FeaturePlanWhereInput! = {}, orderBy: [FeaturePlanOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: FeaturePlanWhereUniqueInput): [FeaturePlan!]
+  feature_planCount(where: FeaturePlanWhereInput! = {}): Int
 }
 
 input BillingPlanWhereUniqueInput {
@@ -463,6 +550,13 @@ input BillingPlanWhereInput {
   description: StringFilter
   cost: FloatFilter
   user: UserWhereInput
+  feature_plan: FeaturePlanManyRelationFilter
+}
+
+input FeaturePlanManyRelationFilter {
+  every: FeaturePlanWhereInput
+  some: FeaturePlanWhereInput
+  none: FeaturePlanWhereInput
 }
 
 input BillingPlanOrderByInput {
@@ -477,6 +571,14 @@ input BillingPlanUpdateInput {
   description: String
   cost: Float
   user: UserRelateToOneForUpdateInput
+  feature_plan: FeaturePlanRelateToManyForUpdateInput
+}
+
+input FeaturePlanRelateToManyForUpdateInput {
+  disconnect: [FeaturePlanWhereUniqueInput!]
+  set: [FeaturePlanWhereUniqueInput!]
+  create: [FeaturePlanCreateInput!]
+  connect: [FeaturePlanWhereUniqueInput!]
 }
 
 input BillingPlanUpdateArgs {
@@ -489,6 +591,12 @@ input BillingPlanCreateInput {
   description: String
   cost: Float
   user: UserRelateToOneForCreateInput
+  feature_plan: FeaturePlanRelateToManyForCreateInput
+}
+
+input FeaturePlanRelateToManyForCreateInput {
+  create: [FeaturePlanCreateInput!]
+  connect: [FeaturePlanWhereUniqueInput!]
 }
 
 type FeaturePlan {
@@ -573,6 +681,9 @@ type Ranch {
   id: ID!
   ranch_name: String
   description: String
+  user(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  userCount(where: UserWhereInput! = {}): Int
+  isDeleted: Boolean
 }
 
 input RanchWhereUniqueInput {
@@ -586,17 +697,35 @@ input RanchWhereInput {
   id: IDFilter
   ranch_name: StringFilter
   description: StringFilter
+  user: UserManyRelationFilter
+  isDeleted: BooleanFilter
+}
+
+input UserManyRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
 }
 
 input RanchOrderByInput {
   id: OrderDirection
   ranch_name: OrderDirection
   description: OrderDirection
+  isDeleted: OrderDirection
 }
 
 input RanchUpdateInput {
   ranch_name: String
   description: String
+  user: UserRelateToManyForUpdateInput
+  isDeleted: Boolean
+}
+
+input UserRelateToManyForUpdateInput {
+  disconnect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input RanchUpdateArgs {
@@ -607,6 +736,13 @@ input RanchUpdateArgs {
 input RanchCreateInput {
   ranch_name: String
   description: String
+  user: UserRelateToManyForCreateInput
+  isDeleted: Boolean
+}
+
+input UserRelateToManyForCreateInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 type Role {
@@ -615,6 +751,8 @@ type Role {
   description: String
   permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
   permissionsCount(where: PermissionWhereInput! = {}): Int
+  user(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  userCount(where: UserWhereInput! = {}): Int
 }
 
 input RoleWhereUniqueInput {
@@ -630,6 +768,7 @@ input RoleWhereInput {
   role_name: StringFilter
   description: StringFilter
   permissions: PermissionManyRelationFilter
+  user: UserManyRelationFilter
 }
 
 input PermissionManyRelationFilter {
@@ -648,6 +787,7 @@ input RoleUpdateInput {
   role_name: String
   description: String
   permissions: PermissionRelateToManyForUpdateInput
+  user: UserRelateToManyForUpdateInput
 }
 
 input PermissionRelateToManyForUpdateInput {
@@ -666,6 +806,7 @@ input RoleCreateInput {
   role_name: String
   description: String
   permissions: PermissionRelateToManyForCreateInput
+  user: UserRelateToManyForCreateInput
 }
 
 input PermissionRelateToManyForCreateInput {
