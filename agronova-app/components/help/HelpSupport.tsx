@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { IconButton } from 'react-native-paper';
+import { OrganizationContext } from '@/components/context/OrganizationContext';
 
 interface HelpCardProps {
   title: string;
@@ -9,13 +11,32 @@ interface HelpCardProps {
   onPress: () => void;
 }
 
-const HelpScreen = () => {
+export default function HelpScreen(){
+
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext ) {
+    throw new Error('HomeScreen debe ser utilizado dentro de un Provider');
+  }
+  
+  const { setHelp } = organizationContext; // Obtenemos setRecord del contexto
+
+  // Función para solo modificar `record`
+  const handleBackPress = () => {
+    setHelp(false); // Cambiamos `record` a false sin afectar el selectedCropId
+  };
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
       <View style={styles.container}>
+          <IconButton
+            icon="chevron-left"
+            size={24}
+            onPress={handleBackPress}
+          />
         <HelpCard
           title="Línea agronova"
           description="4491271278 Lu - Do, de 06:00 a 23:00 h."
@@ -89,4 +110,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HelpScreen;
