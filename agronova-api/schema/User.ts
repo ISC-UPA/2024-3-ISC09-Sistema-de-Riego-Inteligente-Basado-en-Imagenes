@@ -5,7 +5,15 @@ export const user = {
   access: allowAll,
   fields: {
     full_name: text({ validation: { isRequired: true } }),
-    email: text({ validation: { isRequired: true } }),
+    email: text(
+      { 
+        validation: { 
+          isRequired: true,
+          match: { regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, explanation: 'Must be a valid email address' } 
+        },
+        isIndexed: 'unique'
+      }
+    ),
     phone_number: text({ validation: { isRequired: true } }),
     billing_plan_id: relationship({ ref: 'BillingPlan.user', many: false }),
     ranch_id: relationship({ ref: 'Ranch.user', many: false }),

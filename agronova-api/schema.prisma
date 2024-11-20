@@ -23,7 +23,7 @@ model AzureADIntegration {
 model User {
   id                     String       @id @default(cuid())
   full_name              String       @default("")
-  email                  String       @default("")
+  email                  String       @unique @default("")
   phone_number           String       @default("")
   billing_plan_id        BillingPlan? @relation("BillingPlan_user")
   ranch_id               Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
@@ -59,6 +59,7 @@ model Crop {
   statistic  Statistic[]  @relation("Statistic_crop_id")
   irrigation Irrigation[] @relation("Irrigation_crop_id")
   crop_media CropMedia[]  @relation("CropMedia_crop_id")
+  isDeleted  Boolean      @default(false)
 
   @@index([user_idId])
 }
@@ -104,10 +105,11 @@ model CropMedia {
 }
 
 model Ranch {
-  id          String @id @default(cuid())
-  ranch_name  String @default("")
-  description String @default("")
-  user        User[] @relation("User_ranch_id")
+  id          String  @id @default(cuid())
+  ranch_name  String  @default("")
+  description String  @default("")
+  user        User[]  @relation("User_ranch_id")
+  isDeleted   Boolean @default(false)
 }
 
 model Role {

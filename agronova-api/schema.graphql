@@ -123,6 +123,7 @@ type User {
 
 input UserWhereUniqueInput {
   id: ID
+  email: String
 }
 
 input UserWhereInput {
@@ -332,6 +333,7 @@ type Crop {
   irrigationCount(where: IrrigationWhereInput! = {}): Int
   crop_media(where: CropMediaWhereInput! = {}, orderBy: [CropMediaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropMediaWhereUniqueInput): [CropMedia!]
   crop_mediaCount(where: CropMediaWhereInput! = {}): Int
+  isDeleted: Boolean
 }
 
 input CropWhereUniqueInput {
@@ -349,6 +351,7 @@ input CropWhereInput {
   statistic: StatisticManyRelationFilter
   irrigation: IrrigationManyRelationFilter
   crop_media: CropMediaManyRelationFilter
+  isDeleted: BooleanFilter
 }
 
 input StatisticManyRelationFilter {
@@ -373,6 +376,7 @@ input CropOrderByInput {
   id: OrderDirection
   crop_name: OrderDirection
   location: OrderDirection
+  isDeleted: OrderDirection
 }
 
 input CropUpdateInput {
@@ -382,6 +386,7 @@ input CropUpdateInput {
   statistic: StatisticRelateToManyForUpdateInput
   irrigation: IrrigationRelateToManyForUpdateInput
   crop_media: CropMediaRelateToManyForUpdateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToOneForUpdateInput {
@@ -423,6 +428,7 @@ input CropCreateInput {
   statistic: StatisticRelateToManyForCreateInput
   irrigation: IrrigationRelateToManyForCreateInput
   crop_media: CropMediaRelateToManyForCreateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToOneForCreateInput {
@@ -677,6 +683,7 @@ type Ranch {
   description: String
   user(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   userCount(where: UserWhereInput! = {}): Int
+  isDeleted: Boolean
 }
 
 input RanchWhereUniqueInput {
@@ -691,6 +698,7 @@ input RanchWhereInput {
   ranch_name: StringFilter
   description: StringFilter
   user: UserManyRelationFilter
+  isDeleted: BooleanFilter
 }
 
 input UserManyRelationFilter {
@@ -703,12 +711,14 @@ input RanchOrderByInput {
   id: OrderDirection
   ranch_name: OrderDirection
   description: OrderDirection
+  isDeleted: OrderDirection
 }
 
 input RanchUpdateInput {
   ranch_name: String
   description: String
   user: UserRelateToManyForUpdateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToManyForUpdateInput {
@@ -727,6 +737,7 @@ input RanchCreateInput {
   ranch_name: String
   description: String
   user: UserRelateToManyForCreateInput
+  isDeleted: Boolean
 }
 
 input UserRelateToManyForCreateInput {

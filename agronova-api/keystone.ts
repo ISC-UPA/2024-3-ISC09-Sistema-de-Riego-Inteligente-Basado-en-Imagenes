@@ -1,7 +1,8 @@
-import { config } from '@keystone-6/core'
-import { lists } from './schema/Schema'
+import { config } from '@keystone-6/core';
+import { lists } from './schema/Schema';
 import { envconfig } from './lib/envconfig';
-import cors from 'cors'
+import cors from 'cors';
+import validateAzureToken from './middlewares/authMiddleware';
 
 export default config({
   db: {
@@ -19,6 +20,7 @@ export default config({
         origin: true,
         credentials: true,
       }));
+      // app.use(validateAzureToken); // Aplica el middleware de autenticación
     },
   },
   lists,
