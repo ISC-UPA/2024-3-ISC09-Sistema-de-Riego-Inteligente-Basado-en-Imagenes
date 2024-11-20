@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -19,9 +19,6 @@ export default function CropStatisticsScreen() {
   const handleBackPress = () => {
     setStatistics(false); // Cambiamos `record` a false sin afectar el selectedCropId
   };
-
-  const [isAutomatic, setIsAutomatic] = useState(false);
-  const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
   return (
     <LinearGradient
