@@ -18,6 +18,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from 'react-native-paper';
+import { jwtDecode } from 'jwt-decode';
 
 //Abre una ventana del navegador para la autentificación
 WebBrowser.maybeCompleteAuthSession();
@@ -88,7 +89,11 @@ export default function App() {
           discovery,
         ).then(async (res) => {
           setToken(res.accessToken);
-
+          if (res.idToken) {
+            const decodedToken = jwtDecode(res.idToken);
+            const email = decodedToken.email;
+            console.log('Correo electrónico:', email);
+          }
           // Guardar el accessToken en AsyncStorage
           try {
             await AsyncStorage.setItem('accessToken', res.accessToken);
