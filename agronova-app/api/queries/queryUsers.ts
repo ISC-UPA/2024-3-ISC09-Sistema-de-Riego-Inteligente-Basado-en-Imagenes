@@ -7,32 +7,11 @@ export interface User {
   profile_picture: string | null; 
 }
 
-interface Ranch {
-  id: string;
-  ranch_name: string;
-  description: string;
-}
-
-interface UserData {
-  user: {
-    ranch_id: Ranch[];
-  };
-}
-
-interface Crop {
-  id: string;
-  crop_name: string;
-  location: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface UserCropsData {
-  user: {
-    crop: Crop[];
-  };
-}
-
+//Trae la info del usuario con el email
+// Variables
+// "where": {
+//   "email": "{email usuario}"
+// }
 export const GET_USER = gql`query Query($where: UserWhereUniqueInput!) {
   user(where: $where) {
     id
@@ -42,7 +21,12 @@ export const GET_USER = gql`query Query($where: UserWhereUniqueInput!) {
   }
 }`
 
-export const GET_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
+//Trae el rancho al que pertenece el usuario
+// Variables
+// "where": {
+//   "id": "{id usuario}"
+// }
+export const GET_USER_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
   user(where: $where) {
     ranch_id {
       id
@@ -53,18 +37,14 @@ export const GET_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
 }
 `
 
-export const GET_CROP = gql`query Query($where: CropWhereUniqueInput!) {
-  crop(where: $where) {
-    id
-    crop_name
-    location
-    latitude
-    longitude
-  }
-}
-`
-export const GET_USER_CROPS = gql`query Query($where: UserWhereUniqueInput!) {
-  user(where: $where) {
+//Trae todos los cultivos de un rancho con su id
+// Variables 
+// "where": {
+//   "id": "{Id del rancho}"
+// }
+
+export const GET_RANCH_CROPS = gql`query Query($where: RanchWhereUniqueInput!) {
+  ranch(where: $where) {
     crop {
       id
       crop_name
@@ -75,3 +55,20 @@ export const GET_USER_CROPS = gql`query Query($where: UserWhereUniqueInput!) {
   }
 }
 `
+
+
+//Trae la info de un cultivo
+// Variables
+// "where": {
+//   "id": "{id del cultivo}"
+// }
+export const GET_CROP_INFO = gql`query Query($where: CropWhereUniqueInput!) {
+  crop(where: $where) {
+    id
+    crop_name
+    location
+    latitude
+    longitude
+  }
+}`
+
