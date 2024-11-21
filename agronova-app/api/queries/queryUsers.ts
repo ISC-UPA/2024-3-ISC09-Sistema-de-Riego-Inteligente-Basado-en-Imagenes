@@ -69,11 +69,15 @@ export const GET_USER_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
 // Variables 
 // "where": {
 //   "id": "{Id del rancho}"
+// },
+// "cropWhere2": {
+//   "isDeleted": {
+//     "equals": false
+//   }
 // }
-
-export const GET_RANCH_CROPS = gql`query Query($where: RanchWhereUniqueInput!) {
+export const GET_RANCH_CROPS = gql`query Query($where: RanchWhereUniqueInput!, $cropWhere2: CropWhereInput!) {
   ranch(where: $where) {
-    crop {
+    crop(where: $cropWhere2) {
       id
       crop_name
       location
@@ -83,6 +87,34 @@ export const GET_RANCH_CROPS = gql`query Query($where: RanchWhereUniqueInput!) {
   }
 }
 `
+
+//Obtiene el rancho junto con todos los miembros de los ranchos
+// Variables
+// "where": {
+//   "id": "{id del rancho}"
+// }
+
+export const GET_RANCH_MEMBERS = gql`
+query Query($where: RanchWhereUniqueInput!) {
+  ranch(where: $where) {
+    id
+    ranch_name
+    user {
+      id
+      full_name
+      email
+      phone_number
+      profile_picture
+      role_id {
+        role_name
+        permissions {
+          permission_name
+          description
+        }
+      }
+    }
+  }
+}`
 
 
 //Trae la info de un cultivo
@@ -100,3 +132,62 @@ export const GET_CROP_INFO = gql`query Query($where: CropWhereUniqueInput!) {
   }
 }`
 
+//Crea un cultivo
+// Variables
+// "data": {
+//   "crop_name": "",
+//   "location": "",
+//   "latitude": ,
+//   "longitude": ,
+//   "users": {
+//     "connect": [
+//       {
+//         "id": "{id del usuario}"
+//       }
+//     ]
+//   },
+//   "ranch_id": {
+//     "connect": {
+//       "id": "{id del rancho}"
+//     }
+//   }
+// }
+export const CREATE_CROP = gql`mutation Mutation($data: CropCreateInput!) {
+  createCrop(data: $data) {
+    id
+  }
+}`
+
+
+//Elimina un cultivo con una id
+// Variables
+// "where": {
+//   "id": "{id del cultivo}"
+// },
+// "data": {
+//   "isDeleted": true
+// }
+export const DELETE_CROP = gql`mutation Mutation($where: CropWhereUniqueInput!, $data: CropUpdateInput!) {
+  updateCrop(where: $where, data: $data) {
+    id
+    crop_name
+  }
+}
+`
+
+//Actulizar la información del cultivo
+// Variables
+//   "where": {
+//     "id": "{id del cultivo}"
+//   },
+//   "data": {
+//     "crop_name": "",
+//     "location": "",
+//     "latitude": ,
+//     "longitude": 
+//   }
+export const UPDATE_CROP_INFO = gql`mutation Mutation($where: CropWhereUniqueInput!, $data: CropUpdateInput!) {
+  updateCrop(where: $where, data: $data) {
+    id
+  }
+}`
