@@ -1,5 +1,7 @@
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
+import React from 'react';
+import { IconButton } from 'react-native-paper';
 
 const members = [
   { name: 'Antonio Leon', role: 'Administrador' },
@@ -13,7 +15,18 @@ const members = [
 export default function MembersList() {
   return (
     <View style={styles.membersContainer}>
-      <ThemedText style={styles.membersTitle}>Miembros</ThemedText>
+      <View style={styles.header}>
+        <ThemedText style={styles.membersTitle}>Miembros</ThemedText>
+        <View style={styles.addButtonContainer}>
+          <IconButton
+            icon="plus"
+            onPress={() => console.log('Agregar miembro')}
+            iconColor={'#ffffff'}
+            size={20}
+            style={styles.addButton}
+          />
+        </View>
+      </View>
       <ScrollView style={styles.membersList} contentContainerStyle={styles.scrollContent}>
         {members.map((member, index) => (
           <View
@@ -29,6 +42,29 @@ export default function MembersList() {
             <View style={styles.memberInfo}>
               <ThemedText style={styles.memberName}>{member.name}</ThemedText>
               <ThemedText style={styles.memberRole}>{member.role}</ThemedText>
+            </View>
+            <View style={styles.iconContainer}>
+              <IconButton
+                icon="eye"
+                onPress={() => console.log('ver miembro')} 
+                iconColor={'#4b5563'}
+                style={styles.iconButton}
+                size={18}
+              />
+              <IconButton
+                icon="pencil"
+                onPress={() => console.log('Editar miembro')}
+                iconColor={'#4b5563'}
+                style={styles.iconButton}
+                size={18}
+              />
+              <IconButton
+                icon="trash-can"
+                onPress={() => console.log('Borrar miembro')}
+                iconColor={'#4b5563'}
+                style={styles.iconButton}
+                size={18}
+              />
             </View>
           </View>
         ))}
@@ -48,16 +84,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
   membersTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    paddingVertical: 10,
     color: '#0c4a6e',
+  },
+  addButtonContainer: {
+    backgroundColor: '#7dd3fc',
+    borderRadius: 20,
+  },
+  addButton: {
+    margin: 0,
   },
   membersList: {
     maxHeight: 200,
     borderRadius: 8,
-    marginBottom: 20
+    marginBottom: 20,
   },
   scrollContent: {
     paddingBottom: 5,
@@ -88,5 +136,13 @@ const styles = StyleSheet.create({
   memberRole: {
     fontSize: 14,
     color: '#075985',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    backgroundColor: 'white',
+    marginLeft: 10,
   },
 });
