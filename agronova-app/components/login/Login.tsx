@@ -19,6 +19,8 @@ import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from 'react-native-paper';
 import { jwtDecode } from 'jwt-decode';
+import { useLazyQuery } from '@apollo/client';
+import { GET_USER, User } from '@/api/queries/queryUsers';
 
 //Abre una ventana del navegador para la autentificación
 WebBrowser.maybeCompleteAuthSession();
@@ -41,7 +43,8 @@ export default function App() {
 
   // Almacenar el token de acceso 
   const [token, setToken] = useState<string | null>(null);
-
+  const [email, setEmail] = useState<string | null>(null);
+  const [fetchUser, { data, loading, error }] = useLazyQuery(GET_USER);
 
   // Request 
   const [request, , promptAsync] = useAuthRequest(
@@ -53,6 +56,17 @@ export default function App() {
     discovery,
   );
 
+  useEffect(() => {
+    if (email) {
+      fetchUser({ variables: { where: { email } } });
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (data) {
+      console.log('Datos del usuario:', data.user);
+    }
+  }, [data]);
 
   // Verificar si ya existe un token en AsyncStorage al iniciar la aplicación
   useEffect(() => {
@@ -73,41 +87,40 @@ export default function App() {
   }, []);
 
   // Manejar el inicio de sesión
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     //Función que abre la ventana de autentificación
-    promptAsync().then((codeResponse) => {
-      if (request && codeResponse?.type === 'success' && discovery) {
-        exchangeCodeAsync(
-          {
-            clientId,
-            code: codeResponse.params.code,
-            extraParams: request.codeVerifier
-              ? { code_verifier: request.codeVerifier }
-              : undefined,
-            redirectUri,
-          },
-          discovery,
-        ).then(async (res) => {
-          setToken(res.accessToken);
-          if (res.idToken) {
-            const decodedToken = jwtDecode(res.idToken);
-            const email = decodedToken.email;
-            console.log('Correo electrónico:', email);
+    const result = await promptAsync()
+    if(request && result?.type == 'success' && discovery){
+      const code = await exchangeCodeAsync(
+        {
+          clientId,
+          code: result.params.code,
+          extraParams: request.codeVerifier
+            ? { code_verifier: request.codeVerifier }
+            : undefined,
+          redirectUri,
+        },
+        discovery,
+      )
+      setToken(code.accessToken);
+          if (code.idToken) {
+            const decodedToken: any = jwtDecode(code.idToken);
+            const emailAzure : any = decodedToken.email;
+            console.log(emailAzure);
+            setEmail(emailAzure);
           }
           // Guardar el accessToken en AsyncStorage
           try {
-            await AsyncStorage.setItem('accessToken', res.accessToken);
-            await AsyncStorage.setItem('refreshToken', res.refreshToken ?? '');
-            await AsyncStorage.setItem('expiresIn', res.expiresIn?.toString() || '');
-            await AsyncStorage.setItem('issuedAt', res.issuedAt.toString());
+            await AsyncStorage.setItem('accessToken', code.accessToken);
+            await AsyncStorage.setItem('refreshToken', code.refreshToken ?? '');
+            await AsyncStorage.setItem('expiresIn', code.expiresIn?.toString() || '');
+            await AsyncStorage.setItem('issuedAt', code.issuedAt.toString());
             navigation.navigate('(tabs)')
             console.log('Access token guardado correctamente');
           } catch (error) {
             console.error('Error al guardar access token en AsyncStorage', error);
           }
-        });
-      }
-    });
+    }
   };
 
   // Manejar el cierre de sesión
@@ -180,8 +193,10 @@ export default function App() {
     } catch (error) {
       console.error('Error al manejar el refresh del token:', error);
       await handleSignOut()
+      navigation.navigate('')
     }
   }
+
 
   return (
     <LinearGradient
