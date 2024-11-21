@@ -6,7 +6,6 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OrganizationContext } from '@/components/context/OrganizationContext';
 
-
 interface SideMenuProps {
   visible: boolean;
   onClose: () => void;
@@ -38,13 +37,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
   };
 
   const handleLogoutPress = async () => {
-
     try {
       await AsyncStorage.removeItem('accessToken');
       await AsyncStorage.removeItem('refreshToken');
       await AsyncStorage.removeItem('expiresIn');
       await AsyncStorage.removeItem('issuedAt');
-      navigation.navigate('')
+      navigation.navigate('');
       console.log('Sesión cerrada y token eliminado');
     } catch (error) {
       console.error('Error al eliminar el access token de AsyncStorage', error);
@@ -93,7 +91,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => setHelp(true)} // Pasa la opción "ayuda"
+                    onPress={() => {
+                      setHelp(true);
+                      onClose();
+                    }} // Cierra el drawer después de abrir la ayuda
                     style={[
                       styles.drawerItem,
                       selectedOption === 'ayuda' && styles.selectedItem, // Cambia el estilo si es la opción seleccionada
