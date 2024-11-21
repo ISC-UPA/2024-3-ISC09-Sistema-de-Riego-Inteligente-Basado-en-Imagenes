@@ -13,10 +13,11 @@ export default function RootLayout() {
       <PaperProvider>
           <OrganizationProvider>
             <CropProvider>
-            <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            </Stack>
+              <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+              <Stack.Screen name="+help-and-support" />
+              </Stack>
           </CropProvider>
         </OrganizationProvider>
       </PaperProvider>
