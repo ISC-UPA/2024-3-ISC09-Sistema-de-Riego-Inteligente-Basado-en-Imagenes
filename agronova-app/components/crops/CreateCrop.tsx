@@ -14,11 +14,12 @@ const CrearCultivoScreen: React.FC = () => {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { setAddCrop } = cropContext; // Obtenemos setRecord del contexto
+  const { setAddCrop, setUpdateCrop, updateCrop } = cropContext; // Obtenemos setRecord del contexto
 
   // Función para solo modificar `record`
   const handleBackPress = () => {
     setAddCrop(false); // Cambiamos `record` a false sin afectar el selectedCropId
+    setUpdateCrop(false);
   };
 
   return (
@@ -75,7 +76,7 @@ const CrearCultivoScreen: React.FC = () => {
                 buttonColor={'#0284c7'}
                 style={styles.button}
             >
-                Crear
+              {updateCrop? 'Actualizar': 'Crear'}
             </Button>
             </View>
         </View>
