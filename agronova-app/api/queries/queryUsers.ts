@@ -7,6 +7,34 @@ export interface User {
   profile_picture: string | null; 
 }
 
+export interface Ranch {
+  id: string;
+  ranch_name: string;
+  description: string;
+}
+
+export interface Crop {
+  id: string;
+  crop_name: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+}
+
+// Resultado de GET_USER_RANCH
+export interface GetUserRanchResponse {
+  user: {
+    ranch_id: Ranch | null; // Puede ser null si el usuario no tiene rancho asignado
+  };
+}
+
+// Resultado de GET_RANCH_CROPS
+export interface GetRanchCropsResponse {
+  ranch: {
+    crop: Crop[]; // Lista de cultivos del rancho
+  };
+}
+
 //Trae la info del usuario con el email
 // Variables
 // "where": {
