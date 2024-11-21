@@ -7,6 +7,7 @@ export const ranch = {
     ranch_name: text({ validation: { isRequired: true } }),
     description: text({ validation: { isRequired: true } }),
     user: relationship({ ref: 'User.ranch_id', many: true }),
+    crop: relationship({ ref: 'Crop.ranch_id', many: true }),
     isDeleted: checkbox({
       defaultValue: false, 
       label: 'Está eliminado (soft delete)',

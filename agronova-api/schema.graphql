@@ -114,8 +114,8 @@ type User {
   billing_plan_id: BillingPlan
   ranch_id: Ranch
   role_id: Role
-  crop(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
-  cropCount(where: CropWhereInput! = {}): Int
+  crops(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
+  cropsCount(where: CropWhereInput! = {}): Int
   profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -137,7 +137,7 @@ input UserWhereInput {
   billing_plan_id: BillingPlanWhereInput
   ranch_id: RanchWhereInput
   role_id: RoleWhereInput
-  crop: CropManyRelationFilter
+  crops: CropManyRelationFilter
   profile_picture: StringFilter
   accountStatus: StringNullableFilter
   adAuthenticationStatus: BooleanFilter
@@ -180,7 +180,7 @@ input UserUpdateInput {
   billing_plan_id: BillingPlanRelateToOneForUpdateInput
   ranch_id: RanchRelateToOneForUpdateInput
   role_id: RoleRelateToOneForUpdateInput
-  crop: CropRelateToManyForUpdateInput
+  crops: CropRelateToManyForUpdateInput
   profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -223,7 +223,7 @@ input UserCreateInput {
   billing_plan_id: BillingPlanRelateToOneForCreateInput
   ranch_id: RanchRelateToOneForCreateInput
   role_id: RoleRelateToOneForCreateInput
-  crop: CropRelateToManyForCreateInput
+  crops: CropRelateToManyForCreateInput
   profile_picture: String
   accountStatus: String
   adAuthenticationStatus: Boolean
@@ -326,13 +326,18 @@ type Crop {
   id: ID!
   crop_name: String
   location: String
-  user_id: User
+  latitude: Float
+  longitude: Float
+  users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
+  usersCount(where: UserWhereInput! = {}): Int
+  ranch_id: Ranch
   statistic(where: StatisticWhereInput! = {}, orderBy: [StatisticOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: StatisticWhereUniqueInput): [Statistic!]
   statisticCount(where: StatisticWhereInput! = {}): Int
   irrigation(where: IrrigationWhereInput! = {}, orderBy: [IrrigationOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: IrrigationWhereUniqueInput): [Irrigation!]
   irrigationCount(where: IrrigationWhereInput! = {}): Int
   crop_media(where: CropMediaWhereInput! = {}, orderBy: [CropMediaOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropMediaWhereUniqueInput): [CropMedia!]
   crop_mediaCount(where: CropMediaWhereInput! = {}): Int
+  device: Device
   isDeleted: Boolean
 }
 
@@ -347,11 +352,32 @@ input CropWhereInput {
   id: IDFilter
   crop_name: StringFilter
   location: StringFilter
-  user_id: UserWhereInput
+  latitude: FloatFilter
+  longitude: FloatFilter
+  users: UserManyRelationFilter
+  ranch_id: RanchWhereInput
   statistic: StatisticManyRelationFilter
   irrigation: IrrigationManyRelationFilter
   crop_media: CropMediaManyRelationFilter
+  device: DeviceWhereInput
   isDeleted: BooleanFilter
+}
+
+input FloatFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatFilter
+}
+
+input UserManyRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
 }
 
 input StatisticManyRelationFilter {
@@ -376,23 +402,30 @@ input CropOrderByInput {
   id: OrderDirection
   crop_name: OrderDirection
   location: OrderDirection
+  latitude: OrderDirection
+  longitude: OrderDirection
   isDeleted: OrderDirection
 }
 
 input CropUpdateInput {
   crop_name: String
   location: String
-  user_id: UserRelateToOneForUpdateInput
+  latitude: Float
+  longitude: Float
+  users: UserRelateToManyForUpdateInput
+  ranch_id: RanchRelateToOneForUpdateInput
   statistic: StatisticRelateToManyForUpdateInput
   irrigation: IrrigationRelateToManyForUpdateInput
   crop_media: CropMediaRelateToManyForUpdateInput
+  device: DeviceRelateToOneForUpdateInput
   isDeleted: Boolean
 }
 
-input UserRelateToOneForUpdateInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
-  disconnect: Boolean
+input UserRelateToManyForUpdateInput {
+  disconnect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input StatisticRelateToManyForUpdateInput {
@@ -416,6 +449,12 @@ input CropMediaRelateToManyForUpdateInput {
   connect: [CropMediaWhereUniqueInput!]
 }
 
+input DeviceRelateToOneForUpdateInput {
+  create: DeviceCreateInput
+  connect: DeviceWhereUniqueInput
+  disconnect: Boolean
+}
+
 input CropUpdateArgs {
   where: CropWhereUniqueInput!
   data: CropUpdateInput!
@@ -424,16 +463,20 @@ input CropUpdateArgs {
 input CropCreateInput {
   crop_name: String
   location: String
-  user_id: UserRelateToOneForCreateInput
+  latitude: Float
+  longitude: Float
+  users: UserRelateToManyForCreateInput
+  ranch_id: RanchRelateToOneForCreateInput
   statistic: StatisticRelateToManyForCreateInput
   irrigation: IrrigationRelateToManyForCreateInput
   crop_media: CropMediaRelateToManyForCreateInput
+  device: DeviceRelateToOneForCreateInput
   isDeleted: Boolean
 }
 
-input UserRelateToOneForCreateInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
+input UserRelateToManyForCreateInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input StatisticRelateToManyForCreateInput {
@@ -449,6 +492,11 @@ input IrrigationRelateToManyForCreateInput {
 input CropMediaRelateToManyForCreateInput {
   create: [CropMediaCreateInput!]
   connect: [CropMediaWhereUniqueInput!]
+}
+
+input DeviceRelateToOneForCreateInput {
+  create: DeviceCreateInput
+  connect: DeviceWhereUniqueInput
 }
 
 type Statistic {
@@ -485,17 +533,6 @@ input FloatNullableFilter {
   gt: Float
   gte: Float
   not: FloatNullableFilter
-}
-
-input FloatFilter {
-  equals: Float
-  in: [Float!]
-  notIn: [Float!]
-  lt: Float
-  lte: Float
-  gt: Float
-  gte: Float
-  not: FloatFilter
 }
 
 input StatisticOrderByInput {
@@ -574,6 +611,12 @@ input BillingPlanUpdateInput {
   feature_plan: FeaturePlanRelateToManyForUpdateInput
 }
 
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
 input FeaturePlanRelateToManyForUpdateInput {
   disconnect: [FeaturePlanWhereUniqueInput!]
   set: [FeaturePlanWhereUniqueInput!]
@@ -592,6 +635,11 @@ input BillingPlanCreateInput {
   cost: Float
   user: UserRelateToOneForCreateInput
   feature_plan: FeaturePlanRelateToManyForCreateInput
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 input FeaturePlanRelateToManyForCreateInput {
@@ -642,6 +690,7 @@ type CropMedia {
   id: ID!
   crop_id: Crop
   address: String
+  media_type: String
 }
 
 input CropMediaWhereUniqueInput {
@@ -655,16 +704,19 @@ input CropMediaWhereInput {
   id: IDFilter
   crop_id: CropWhereInput
   address: StringFilter
+  media_type: StringFilter
 }
 
 input CropMediaOrderByInput {
   id: OrderDirection
   address: OrderDirection
+  media_type: OrderDirection
 }
 
 input CropMediaUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   address: String
+  media_type: String
 }
 
 input CropMediaUpdateArgs {
@@ -675,6 +727,7 @@ input CropMediaUpdateArgs {
 input CropMediaCreateInput {
   crop_id: CropRelateToOneForCreateInput
   address: String
+  media_type: String
 }
 
 type Ranch {
@@ -683,6 +736,8 @@ type Ranch {
   description: String
   user(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   userCount(where: UserWhereInput! = {}): Int
+  crop(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
+  cropCount(where: CropWhereInput! = {}): Int
   isDeleted: Boolean
 }
 
@@ -698,13 +753,8 @@ input RanchWhereInput {
   ranch_name: StringFilter
   description: StringFilter
   user: UserManyRelationFilter
+  crop: CropManyRelationFilter
   isDeleted: BooleanFilter
-}
-
-input UserManyRelationFilter {
-  every: UserWhereInput
-  some: UserWhereInput
-  none: UserWhereInput
 }
 
 input RanchOrderByInput {
@@ -718,14 +768,8 @@ input RanchUpdateInput {
   ranch_name: String
   description: String
   user: UserRelateToManyForUpdateInput
+  crop: CropRelateToManyForUpdateInput
   isDeleted: Boolean
-}
-
-input UserRelateToManyForUpdateInput {
-  disconnect: [UserWhereUniqueInput!]
-  set: [UserWhereUniqueInput!]
-  create: [UserCreateInput!]
-  connect: [UserWhereUniqueInput!]
 }
 
 input RanchUpdateArgs {
@@ -737,12 +781,8 @@ input RanchCreateInput {
   ranch_name: String
   description: String
   user: UserRelateToManyForCreateInput
+  crop: CropRelateToManyForCreateInput
   isDeleted: Boolean
-}
-
-input UserRelateToManyForCreateInput {
-  create: [UserCreateInput!]
-  connect: [UserWhereUniqueInput!]
 }
 
 type Role {
@@ -878,6 +918,87 @@ input RoleRelateToManyForCreateInput {
   connect: [RoleWhereUniqueInput!]
 }
 
+type Device {
+  id: ID!
+  device_name: String
+  serial_number: String
+  status: String
+  iot_hub_connection_string: String
+  crop_id: Crop
+  firmware_version: String
+  last_communication: DateTime
+  is_deleted: Boolean
+}
+
+input DeviceWhereUniqueInput {
+  id: ID
+  serial_number: String
+}
+
+input DeviceWhereInput {
+  AND: [DeviceWhereInput!]
+  OR: [DeviceWhereInput!]
+  NOT: [DeviceWhereInput!]
+  id: IDFilter
+  device_name: StringFilter
+  serial_number: StringFilter
+  status: StringNullableFilter
+  iot_hub_connection_string: StringFilter
+  crop_id: CropWhereInput
+  firmware_version: StringFilter
+  last_communication: DateTimeNullableFilter
+  is_deleted: BooleanFilter
+}
+
+input DateTimeNullableFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeNullableFilter
+}
+
+input DeviceOrderByInput {
+  id: OrderDirection
+  device_name: OrderDirection
+  serial_number: OrderDirection
+  status: OrderDirection
+  iot_hub_connection_string: OrderDirection
+  firmware_version: OrderDirection
+  last_communication: OrderDirection
+  is_deleted: OrderDirection
+}
+
+input DeviceUpdateInput {
+  device_name: String
+  serial_number: String
+  status: String
+  iot_hub_connection_string: String
+  crop_id: CropRelateToOneForUpdateInput
+  firmware_version: String
+  last_communication: DateTime
+  is_deleted: Boolean
+}
+
+input DeviceUpdateArgs {
+  where: DeviceWhereUniqueInput!
+  data: DeviceUpdateInput!
+}
+
+input DeviceCreateInput {
+  device_name: String
+  serial_number: String
+  status: String
+  iot_hub_connection_string: String
+  crop_id: CropRelateToOneForCreateInput
+  firmware_version: String
+  last_communication: DateTime
+  is_deleted: Boolean
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -950,6 +1071,12 @@ type Mutation {
   updatePermissions(data: [PermissionUpdateArgs!]!): [Permission]
   deletePermission(where: PermissionWhereUniqueInput!): Permission
   deletePermissions(where: [PermissionWhereUniqueInput!]!): [Permission]
+  createDevice(data: DeviceCreateInput!): Device
+  createDevices(data: [DeviceCreateInput!]!): [Device]
+  updateDevice(where: DeviceWhereUniqueInput!, data: DeviceUpdateInput!): Device
+  updateDevices(data: [DeviceUpdateArgs!]!): [Device]
+  deleteDevice(where: DeviceWhereUniqueInput!): Device
+  deleteDevices(where: [DeviceWhereUniqueInput!]!): [Device]
 }
 
 type Query {
@@ -986,6 +1113,9 @@ type Query {
   permission(where: PermissionWhereUniqueInput!): Permission
   permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
   permissionsCount(where: PermissionWhereInput! = {}): Int
+  device(where: DeviceWhereUniqueInput!): Device
+  devices(where: DeviceWhereInput! = {}, orderBy: [DeviceOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: DeviceWhereUniqueInput): [Device!]
+  devicesCount(where: DeviceWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 

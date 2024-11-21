@@ -5,7 +5,7 @@ export const crop = {
   access: allowAll,
   fields: {
     crop_name: text({ validation: { isRequired: true } }),
-    location: text({ validation: { isRequired: true } }), 
+    location: text({ validation: { isRequired: true } }),
     latitude: float({
       validation: { isRequired: true },
       label: 'Latitud',
@@ -14,10 +14,12 @@ export const crop = {
       validation: { isRequired: true },
       label: 'Longitud',
     }),
-    user_id: relationship({ ref: 'User.crop', many: false }),
+    users: relationship({ ref: 'User.crops', many: true }),
+    ranch_id: relationship({ ref: 'Ranch.crop', many: false }),
     statistic: relationship({ ref: 'Statistic.crop_id', many: true }),
     irrigation: relationship({ ref: 'Irrigation.crop_id', many: true }),
     crop_media: relationship({ ref: 'CropMedia.crop_id', many: true }),
+    device: relationship({ ref: 'Device.crop_id', many: false }),
     isDeleted: checkbox({
       defaultValue: false,
       label: 'Está eliminado (soft delete)',
