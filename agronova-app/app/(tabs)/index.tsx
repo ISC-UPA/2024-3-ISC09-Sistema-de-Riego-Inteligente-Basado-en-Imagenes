@@ -17,7 +17,7 @@ export default function HomeScreen() {
     throw new Error('HomeScreen debe ser utilizado dentro de un Provider');
   }
 
-  const { selectedCropId, record, statistics, addCrop, updateCrop, help  } = cropContext; // Accedemos al `selectedCropId` y `record` del contexto
+  const { selectedCropId, record, statistics, addCrop, updateCrop  } = cropContext; // Accedemos al `selectedCropId` y `record` del contexto
 
   // Lógica para renderizar las diferentes vistas dependiendo del estado de `record` y `selectedCropId`
   if (record) {
@@ -28,8 +28,6 @@ export default function HomeScreen() {
   }
   else if(addCrop || updateCrop){
     return <CreateCrop/>
-  else if(help){
-    return <HelpSupport/>
   }
 
   return (

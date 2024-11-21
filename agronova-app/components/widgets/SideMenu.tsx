@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OrganizationContext } from '@/components/context/OrganizationContext';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 interface SideMenuProps {
   visible: boolean;
@@ -51,15 +51,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
     onClose(); // Cierra el menú después de cerrar sesión
   };
 
-  const organizationContext = useContext(OrganizationContext);  // Obtenemos el contexto completo
-
-  if (!organizationContext) {
-    return null;  // Si el contexto es undefined, no renderizamos el componente
-  }
-
-  const { setHelp } = organizationContext;
-
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <Modal
@@ -95,7 +87,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
 
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate('help-and-support');
+                      router.push('/help-and-support');
                       onClose();
                     }} // Cierra el drawer después de abrir la ayuda
                     style={[
