@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
+import { CropChart} from '@/components/crops/CropChart';
 
 export default function CropStatisticsScreen() {
   const cropContext = useContext(CropContext);
@@ -23,6 +24,11 @@ export default function CropStatisticsScreen() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
+
+  const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'];
+  const dataValues = [500, 700, 800, 450, 600];
+  const label = 'Producción';
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
@@ -41,9 +47,9 @@ export default function CropStatisticsScreen() {
         lightColor="transparent"
         darkColor="transparent"
       >
-        <View>
-          <Text>Aaaaa</Text>
-        </View>
+
+        <CropChart label={label} labels={labels} dataValues={dataValues}/>
+        
       </ThemedView>
     </LinearGradient>
   );
