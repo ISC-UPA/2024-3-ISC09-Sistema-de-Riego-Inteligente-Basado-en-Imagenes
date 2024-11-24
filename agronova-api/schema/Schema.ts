@@ -10,6 +10,7 @@ import { CropMedia } from './CropMedia';
 import { ranch } from './Ranch';
 import { role } from './Role';
 import { permission } from './Permission';
+import { Device } from './Device';
 
 export const lists = {
   AzureADIntegration: azureADIntegration,
@@ -22,5 +23,6 @@ export const lists = {
   CropMedia: CropMedia,
   Ranch: ranch,
   Role: role,
-  Permission: permission
+  Permission: permission,
+  Device: Device
 } satisfies Lists

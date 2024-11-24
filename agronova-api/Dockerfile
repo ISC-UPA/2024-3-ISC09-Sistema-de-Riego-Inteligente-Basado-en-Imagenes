@@ -19,4 +19,7 @@ EXPOSE 3000
 # Comando para compilar y correr la aplicación
 RUN yarn build
 
+#Sincronizar los cambios de los esquemas con la base de datos
+RUN npx keystone prisma db push
+
 CMD ["yarn", "start"]

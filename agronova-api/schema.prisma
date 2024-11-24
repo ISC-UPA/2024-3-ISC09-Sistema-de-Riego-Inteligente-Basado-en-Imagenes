@@ -23,14 +23,14 @@ model AzureADIntegration {
 model User {
   id                     String       @id @default(cuid())
   full_name              String       @default("")
-  email                  String       @default("")
+  email                  String       @unique @default("")
   phone_number           String       @default("")
   billing_plan_id        BillingPlan? @relation("BillingPlan_user")
   ranch_id               Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
   ranch_idId             String?      @map("ranch_id")
   role_id                Role?        @relation("User_role_id", fields: [role_idId], references: [id])
   role_idId              String?      @map("role_id")
-  crop                   Crop[]       @relation("Crop_user_id")
+  crops                  Crop[]       @relation("Crop_users")
   profile_picture        String       @default("")
   accountStatus          String?      @default("active")
   adAuthenticationStatus Boolean      @default(false)
@@ -54,13 +54,19 @@ model Crop {
   id         String       @id @default(cuid())
   crop_name  String       @default("")
   location   String       @default("")
-  user_id    User?        @relation("Crop_user_id", fields: [user_idId], references: [id])
-  user_idId  String?      @map("user_id")
+  latitude   Float
+  longitude  Float
+  users      User[]       @relation("Crop_users")
+  ranch_id   Ranch?       @relation("Crop_ranch_id", fields: [ranch_idId], references: [id])
+  ranch_idId String?      @map("ranch_id")
   statistic  Statistic[]  @relation("Statistic_crop_id")
   irrigation Irrigation[] @relation("Irrigation_crop_id")
   crop_media CropMedia[]  @relation("CropMedia_crop_id")
+  device     Device?      @relation("Crop_device", fields: [deviceId], references: [id])
+  deviceId   String?      @unique @map("device")
+  isDeleted  Boolean      @default(false)
 
-  @@index([user_idId])
+  @@index([ranch_idId])
 }
 
 model Statistic {
@@ -95,19 +101,22 @@ model FeaturePlan {
 }
 
 model CropMedia {
-  id        String  @id @default(cuid())
-  crop_id   Crop?   @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
-  crop_idId String? @map("crop_id")
-  address   String  @default("")
+  id         String  @id @default(cuid())
+  crop_id    Crop?   @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
+  crop_idId  String? @map("crop_id")
+  address    String  @default("")
+  media_type String  @default("photo")
 
   @@index([crop_idId])
 }
 
 model Ranch {
-  id          String @id @default(cuid())
-  ranch_name  String @default("")
-  description String @default("")
-  user        User[] @relation("User_ranch_id")
+  id          String  @id @default(cuid())
+  ranch_name  String  @default("")
+  description String  @default("")
+  user        User[]  @relation("User_ranch_id")
+  crop        Crop[]  @relation("Crop_ranch_id")
+  isDeleted   Boolean @default(false)
 }
 
 model Role {
@@ -123,4 +132,16 @@ model Permission {
   permission_name String @unique @default("")
   description     String @default("")
   roles           Role[] @relation("Permission_roles")
+}
+
+model Device {
+  id                        String    @id @default(cuid())
+  device_name               String    @default("")
+  serial_number             String    @unique @default("")
+  status                    String?   @default("active")
+  iot_hub_connection_string String    @default("")
+  crop_id                   Crop?     @relation("Crop_device")
+  firmware_version          String    @default("")
+  last_communication        DateTime?
+  is_deleted                Boolean   @default(false)
 }

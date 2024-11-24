@@ -1,8 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Modal, View, StyleSheet, TouchableWithoutFeedback, Animated, Text, TouchableOpacity, Image } from 'react-native';
 import { Drawer } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OrganizationContext } from '@/components/context/OrganizationContext';
+import { useRouter } from 'expo-router';
 
 interface SideMenuProps {
   visible: boolean;
@@ -34,6 +37,22 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
     onClose(); // Cierra el menú cuando se selecciona una opción
   };
 
+  const handleLogoutPress = async () => {
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('expiresIn');
+      await AsyncStorage.removeItem('issuedAt');
+      navigation.navigate('');
+      console.log('Sesión cerrada y token eliminado');
+    } catch (error) {
+      console.error('Error al eliminar el access token de AsyncStorage', error);
+    }
+    onClose(); // Cierra el menú después de cerrar sesión
+  };
+
+  const router = useRouter();
+
   return (
     <Modal
       visible={visible}
@@ -51,7 +70,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
               >
                 <Drawer.Section>
                   <TouchableOpacity
-                    onPress={() => handleItemPress('usuario')} // Pasa la opción "usuario"
+                    onPress={() => {
+                      router.push('/user');
+                      onClose();
+                    }} // Pasa la opción "usuario"
                     style={[
                       styles.drawerItem,
                       selectedOption === 'usuario' && styles.selectedItem, // Cambia el estilo si es la opción seleccionada
@@ -67,7 +89,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => handleItemPress('ayuda')} // Pasa la opción "ayuda"
+                    onPress={() => {
+                      router.push('/help-and-support');
+                      onClose();
+                    }} // Cierra el drawer después de abrir la ayuda
                     style={[
                       styles.drawerItem,
                       selectedOption === 'ayuda' && styles.selectedItem, // Cambia el estilo si es la opción seleccionada
@@ -80,8 +105,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
 
                 <View style={styles.spacer} />
 
-                <TouchableOpacity style={styles.logoutButton} onPress={onClose}>
-                  <Text style={styles.logoutButtonText}>Log out</Text>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogoutPress}>
+                  <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
                 </TouchableOpacity>
               </LinearGradient>
             </Animated.View>
@@ -100,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   drawerContainer: {
-    width: '70%',
+    width: '60%',
     height: '100%',
     borderTopLeftRadius: 30,  // Mayor radio de las esquinas
     borderBottomLeftRadius: 30,  // Mayor radio de las esquinas
@@ -108,12 +133,12 @@ const styles = StyleSheet.create({
   },
   gradientBackground: {
     flex: 1,
-    padding: 20,
+    padding: 10,
   },
   itemText: {
     fontSize: 16,
     color: '#0c4a6e',
-    paddingVertical: 10,
+    paddingVertical: 2,
     paddingLeft: 10,
     fontWeight: 'bold',
   },
@@ -128,9 +153,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', // Alineamos verticalmente el texto con la imagen
     justifyContent: 'flex-start', // Aseguramos que el contenido esté alineado a la izquierda
-    paddingVertical: 15,  // Añadimos más espacio arriba y abajo
+    paddingVertical: 5,  // Añadimos más espacio arriba y abajo
     borderRadius: 10,  // Añadimos borde redondeado a los ítems
-    paddingHorizontal:10
+    paddingHorizontal:10 //Separa los iconos del borde del contenedor sombreado
   },
   selectedItem: {
     backgroundColor: '#dbeafe', // Color de fondo cuando está seleccionado
@@ -153,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SideMenu;
+export default SideMenu;
