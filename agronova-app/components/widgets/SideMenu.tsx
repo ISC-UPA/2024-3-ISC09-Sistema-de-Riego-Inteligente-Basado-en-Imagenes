@@ -70,7 +70,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
               >
                 <Drawer.Section>
                   <TouchableOpacity
-                    onPress={() => handleItemPress('usuario')} // Pasa la opción "usuario"
+                    onPress={() => {
+                      router.push('/user');
+                      onClose();
+                    }} // Pasa la opción "usuario"
                     style={[
                       styles.drawerItem,
                       selectedOption === 'usuario' && styles.selectedItem, // Cambia el estilo si es la opción seleccionada

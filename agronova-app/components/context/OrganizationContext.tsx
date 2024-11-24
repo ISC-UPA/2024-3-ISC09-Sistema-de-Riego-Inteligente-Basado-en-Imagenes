@@ -2,9 +2,17 @@ import React, { createContext, useState, ReactNode } from 'react';
 
 // Definir los tipos del contexto
 interface OrganizationContextType {
-  selectedUserId: number | null;
-  setSelectedUserId: (id: number | null) => void;
+  userId: string | null;
+  setUserId: (id: string | null) => void;
   clearUserId: () => void;
+
+  userFullName: string | null;
+  setUserFullName: (name: string | null) => void;
+  clearUserFullName: () => void;
+
+  userEmail: string | null;
+  setUserEmail: (email: string | null) => void;
+  clearUserEmail: () => void;
 
   help: boolean;  
   setHelp: (value: boolean) => void;  
@@ -21,17 +29,30 @@ interface OrganizationProviderProps {
 
 // Crear el proveedor del contexto
 export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ children }) => {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userFullName, setUserFullName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [help, setHelp] = useState<boolean>(false);  
 
   // Función para borrar el crop id
   const clearUserId = () => {
-    setSelectedUserId(null);
+    setUserId(null);
   };
+
+  const clearUserFullName = () => {
+    setUserFullName(null);
+  };
+
+  const clearUserEmail = () => {
+    setUserEmail(null);
+  };
+
 
   return (
     <OrganizationContext.Provider value={{ 
-      selectedUserId, setSelectedUserId, clearUserId, 
+      userId, setUserId, clearUserId, 
+      userFullName, setUserFullName, clearUserFullName,
+      userEmail, setUserEmail, clearUserEmail,
       help, setHelp, 
       }}>
       {children}
