@@ -46,7 +46,7 @@ export default function MembersList() {
             <View style={styles.iconContainer}>
               <IconButton
                 icon="eye"
-                onPress={() => console.log('ver miembro')} 
+                onPress={() => console.log('Ver miembro')}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
@@ -140,9 +140,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 5,
+    marginLeft: 'auto', // Esto empuja el contenedor de íconos al final (derecha)
   },
   iconButton: {
-    backgroundColor: 'white',
-    marginLeft: 10,
+    marginHorizontal: -5, // Reducir margen horizontal para compactar los íconos
+    paddingHorizontal: 0, // Eliminar el relleno horizontal para hacer los íconos más compactos
+    paddingVertical: 0, // Eliminar el relleno vertical para hacer los íconos más compactos
   },
 });
