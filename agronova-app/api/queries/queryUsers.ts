@@ -45,7 +45,35 @@ export const GET_USER = gql`query Query($where: UserWhereUniqueInput!) {
     id
     full_name
     email
+    phone_number
     profile_picture
+    ranch_id {
+      id
+    }
+    accountStatus
+    role
+  }
+}`
+
+//Crea un usuario de un rancho
+// Variables
+// {
+//   "data": {
+//     "full_name": "",
+//     "email": "",
+//     "phone_number": "",
+//     "ranch_id": {
+//       "connect": {
+//         "id": "id del ranchp"
+//       }
+//     },
+//     "role": "crop_worker o administrator o agronomist o irrigation_manager",
+//     "accountStatus": "active"
+//   }
+// }
+export const CREATE_USER = gql`mutation Mutation($data: UserCreateInput!) {
+  createUser(data: $data) {
+    id
   }
 }`
 
@@ -65,6 +93,34 @@ export const GET_USER_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
 }
 `
 
+//Traer todos los cultivos a los que pertenece un usuario
+// Variables
+// {
+//   "where": {
+//     "id": "{id usuario}"
+//   },
+//   "cropsWhere2": {
+//     "isDeleted": {
+//       "equals": false
+//     }
+//   }
+// }
+export const GET_USER_CROPS = gql`query User($where: UserWhereUniqueInput!, $cropsWhere2: CropWhereInput!) {
+  user(where: $where) {
+    crops(where: $cropsWhere2) {
+      id
+      crop_name
+      location
+      latitude
+      longitude
+      device {
+        id
+        serial_number
+      }
+    }
+  }
+}`
+
 //Trae todos los cultivos de un rancho con su id
 // Variables 
 // "where": {
@@ -83,10 +139,34 @@ export const GET_RANCH_CROPS = gql`query Query($where: RanchWhereUniqueInput!, $
       location
       latitude
       longitude
+      device {
+        id
+        serial_number
+      }
     }
   }
 }
 `
+
+//Crear un rancho 
+// {
+//   "data": {
+//     "ranch_name": null,
+//     "description": null,
+//     "user": {
+//       "connect": [
+//         {
+//           "id": "{id del administrador}"
+//         }
+//       ]
+//     }
+//   }
+// }
+export const CREATE_RANCH = gql`mutation Mutation($data: RanchCreateInput!) {
+  createRanch(data: $data) {
+    id
+  }
+}`
 
 //Obtiene el rancho junto con todos los miembros de los ranchos
 // Variables
@@ -105,13 +185,8 @@ query Query($where: RanchWhereUniqueInput!) {
       email
       phone_number
       profile_picture
-      role_id {
-        role_name
-        permissions {
-          permission_name
-          description
-        }
-      }
+      role
+      accountStatus
     }
   }
 }`
@@ -129,6 +204,10 @@ export const GET_CROP_INFO = gql`query Query($where: CropWhereUniqueInput!) {
     location
     latitude
     longitude
+    device {
+      id
+      serial_number
+    }
   }
 }`
 
