@@ -63,7 +63,7 @@ export default function App() {
       console.log('Datos del usuario:', data.user);
       // Guardar datos en el contexto
       setUserId(data.user.id);
-      setUserFullName(data.user.fullName);
+      setUserFullName(data.user.full_name);
       setUserEmail(data.user.email);
     }
   }, [data]);
