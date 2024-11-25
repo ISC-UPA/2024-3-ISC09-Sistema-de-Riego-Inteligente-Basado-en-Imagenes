@@ -20,14 +20,25 @@ export const user = {
     role_id : relationship({ ref: 'Role.user', many: false }),
     crops: relationship({ref: 'Crop.users', many: true}),
     profile_picture: text(),
+    role: select({
+      options: [
+        { label: 'Administrator', value: 'administrator' },
+        { label: 'Agronomist', value: 'agronomist' },
+        { label: 'Irrigation Manager', value: 'irrigation_manager' },
+        { label: 'Crop Worker', value: 'crop_worker' },
+      ],
+      defaultValue: 'crop_worker',
+      ui: {
+        displayMode: 'segmented-control',
+      },
+    }),
     accountStatus: select({
       options: [
         { label: 'Active', value: 'active' },
         { label: 'Inactive', value: 'inactive' },
         { label: 'Suspended', value: 'suspended' },
       ],
-      defaultValue: 'active',
+      defaultValue: 'false',
     }),
-    adAuthenticationStatus: checkbox(),
   },
 };
