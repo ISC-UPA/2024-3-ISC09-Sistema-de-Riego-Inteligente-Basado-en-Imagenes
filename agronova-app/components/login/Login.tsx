@@ -46,7 +46,7 @@ export default function App() {
   const [request, , promptAsync] = useAuthRequest(
     {
       clientId,
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      scopes: ['openid', 'profile', 'email', 'offline_access','https://graph.microsoft.com/User.Invite.All'],
       redirectUri,
     },
     discovery,

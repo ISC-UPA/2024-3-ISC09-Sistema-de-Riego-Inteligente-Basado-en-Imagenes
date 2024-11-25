@@ -1,9 +1,10 @@
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
-import React from 'react';
+import React, { useContext } from 'react';
 import { IconButton } from 'react-native-paper';
-
+import { OrganizationContext } from '../context/OrganizationContext';
 const members = [
+
   { name: 'Antonio Leon', role: 'Administrador' },
   { name: 'Francisco Baños', role: 'Peón' },
   { name: 'Pablo Balboa', role: 'Ingeniero Agrónomo' },
@@ -13,6 +14,21 @@ const members = [
 ];
 
 export default function MembersList() {
+
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
+  }
+
+  const {setAddMember, addMember} = organizationContext;
+
+
+  const handleAddUser = () => {
+    setAddMember(true)
+    console.log(addMember)
+  }
+
   return (
     <View style={styles.membersContainer}>
       <View style={styles.header}>
@@ -20,7 +36,7 @@ export default function MembersList() {
         <View style={styles.addButtonContainer}>
           <IconButton
             icon="plus"
-            onPress={() => console.log('Agregar miembro')}
+            onPress={handleAddUser}
             iconColor={'#ffffff'}
             size={20}
             style={styles.addButton}

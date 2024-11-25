@@ -17,6 +17,18 @@ interface OrganizationContextType {
   help: boolean;  
   setHelp: (value: boolean) => void;  
 
+  addMember: boolean;
+  setAddMember: (value : boolean ) => void;
+
+  updateMember: boolean;
+  setUpdateMember: (value : boolean ) => void;
+
+  deleteMember: boolean;
+  setDeleteMember: (value : boolean ) => void;
+
+  deleteRanch: boolean;
+  setDeleteRanch: (value : boolean ) => void;
+
 }
 
 // Inicializamos el contexto con valores por defecto
@@ -33,6 +45,10 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [userFullName, setUserFullName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [help, setHelp] = useState<boolean>(false);  
+  const [addMember, setAddMember] = useState<boolean>(false);  
+  const [updateMember, setUpdateMember] = useState<boolean>(false);  
+  const [deleteMember, setDeleteMember] = useState<boolean>(false);  
+  const [deleteRanch, setDeleteRanch] = useState<boolean>(false);  
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -46,6 +62,7 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const clearUserEmail = () => {
     setUserEmail(null);
   };
+  
 
 
   return (
@@ -53,7 +70,9 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       userId, setUserId, clearUserId, 
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
-      help, setHelp, 
+      help, setHelp,addMember, setAddMember, updateMember,
+      setUpdateMember, deleteMember, setDeleteMember,
+      deleteRanch, setDeleteRanch 
       }}>
       {children}
     </OrganizationContext.Provider>
