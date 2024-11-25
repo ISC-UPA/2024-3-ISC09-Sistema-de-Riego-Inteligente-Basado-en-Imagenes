@@ -117,8 +117,8 @@ type User {
   crops(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
   cropsCount(where: CropWhereInput! = {}): Int
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input UserWhereUniqueInput {
@@ -139,8 +139,8 @@ input UserWhereInput {
   role_id: RoleWhereInput
   crops: CropManyRelationFilter
   profile_picture: StringFilter
+  role: StringNullableFilter
   accountStatus: StringNullableFilter
-  adAuthenticationStatus: BooleanFilter
 }
 
 input CropManyRelationFilter {
@@ -169,8 +169,8 @@ input UserOrderByInput {
   email: OrderDirection
   phone_number: OrderDirection
   profile_picture: OrderDirection
+  role: OrderDirection
   accountStatus: OrderDirection
-  adAuthenticationStatus: OrderDirection
 }
 
 input UserUpdateInput {
@@ -182,8 +182,8 @@ input UserUpdateInput {
   role_id: RoleRelateToOneForUpdateInput
   crops: CropRelateToManyForUpdateInput
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input BillingPlanRelateToOneForUpdateInput {
@@ -225,8 +225,8 @@ input UserCreateInput {
   role_id: RoleRelateToOneForCreateInput
   crops: CropRelateToManyForCreateInput
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input BillingPlanRelateToOneForCreateInput {
