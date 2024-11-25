@@ -10,10 +10,14 @@ export default function OrganizationScreen() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {addMember} = organizationContext;
+  const {addMember, updateMember, deleteMember, deleteRanch} = organizationContext;
 
-  if(addMember){
+  if(addMember || updateMember){
     return <AddMemberScreen/>
+  }else if(deleteMember){
+    /* Poner el componente para eliminar un usuario*/
+  }else if(deleteRanch){
+    /*Poner el componente para eliminar un rancho*/
   } else {return (
     <Organization></Organization>
   );

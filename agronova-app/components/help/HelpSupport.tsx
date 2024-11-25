@@ -70,9 +70,7 @@ export default function HelpScreen() {
           <Button 
             mode="contained" 
             labelStyle={{ color: "#0284c7" }}
-            onPress={() => {
-              router.push('/');
-            }}
+            onPress={() => router.push('(tabs)')}
             buttonColor={'#bae6fd'}
           >
             Regresar al inicio      

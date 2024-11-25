@@ -37,8 +37,7 @@ const AddMemberScreen: React.FC = () => {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { addMember,setAddMember} = organizationContext;
-  const { setAddCrop, setUpdateCrop, updateCrop } = cropContext;
+  const { addMember,setAddMember, updateMember} = organizationContext;
 
   const handleBackPress = () => {
     setAddMember(false)
@@ -85,7 +84,7 @@ const AddMemberScreen: React.FC = () => {
         },
         body: JSON.stringify({
           invitedUserEmailAddress: email,
-          inviteRedirectUrl: 'https://your-app-url.com', // URL a la que el usuario será redirigido
+          inviteRedirectUrl: 'http://localhost:8081/', // URL a la que el usuario será redirigido
           sendInvitationMessage: true,
           invitedUserMessageInfo: {
             customizedMessageBody: '¡Te invitamos a unirte a nuestra plataforma!',
@@ -180,7 +179,7 @@ const AddMemberScreen: React.FC = () => {
               buttonColor="#0284c7"
               style={styles.button}
             >
-              {updateCrop ? 'Actualizar' : 'Crear'}
+              {updateMember ? 'Actualizar' : 'Crear'}
             </Button>
           </View>
         </View>
