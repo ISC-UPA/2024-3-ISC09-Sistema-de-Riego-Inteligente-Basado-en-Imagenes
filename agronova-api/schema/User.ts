@@ -17,7 +17,6 @@ export const user = {
     phone_number: text({ validation: { isRequired: true } }),
     billing_plan_id: relationship({ ref: 'BillingPlan.user', many: false }),
     ranch_id: relationship({ ref: 'Ranch.user', many: false }),
-    role_id : relationship({ ref: 'Role.user', many: false }),
     crops: relationship({ref: 'Crop.users', many: true}),
     profile_picture: text(),
     role: select({
