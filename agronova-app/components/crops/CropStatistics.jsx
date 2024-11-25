@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -24,10 +24,25 @@ export default function CropStatisticsScreen() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
-
-  const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'];
-  const dataValues = [500, 700, 800, 450, 600];
-  const label = 'Producción';
+  const [chartData, setChartData] = useState({
+    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
+    datasets: [
+      {
+        label: 'Producción (kg)',
+        data: [500, 700, 800, 450, 600],
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Ventas ($)',
+        data: [1000, 1500, 1200, 900, 1100],
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+      },
+    ],
+  });
 
   return (
     <LinearGradient
@@ -48,8 +63,12 @@ export default function CropStatisticsScreen() {
         darkColor="transparent"
       >
 
-        <CropChart label={label} labels={labels} dataValues={dataValues}/>
+        <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
         
+        <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
+
+        <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
+
       </ThemedView>
     </LinearGradient>
   );
