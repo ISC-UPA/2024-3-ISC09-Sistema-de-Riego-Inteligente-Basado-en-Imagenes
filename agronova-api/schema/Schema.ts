@@ -22,7 +22,5 @@ export const lists = {
   FeaturePlan: FeaturePlan,
   CropMedia: CropMedia,
   Ranch: ranch,
-  Role: role,
-  Permission: permission,
   Device: Device
 } satisfies Lists
