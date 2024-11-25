@@ -28,15 +28,12 @@ model User {
   billing_plan_id BillingPlan? @relation("BillingPlan_user")
   ranch_id        Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
   ranch_idId      String?      @map("ranch_id")
-  role_id         Role?        @relation("User_role_id", fields: [role_idId], references: [id])
-  role_idId       String?      @map("role_id")
   crops           Crop[]       @relation("Crop_users")
   profile_picture String       @default("")
   role            String?      @default("crop_worker")
   accountStatus   String?      @default("false")
 
   @@index([ranch_idId])
-  @@index([role_idId])
 }
 
 model Irrigation {
@@ -117,21 +114,6 @@ model Ranch {
   user        User[]  @relation("User_ranch_id")
   crop        Crop[]  @relation("Crop_ranch_id")
   isDeleted   Boolean @default(false)
-}
-
-model Role {
-  id          String       @id @default(cuid())
-  role_name   String       @unique @default("")
-  description String       @default("")
-  permissions Permission[] @relation("Permission_roles")
-  user        User[]       @relation("User_role_id")
-}
-
-model Permission {
-  id              String @id @default(cuid())
-  permission_name String @unique @default("")
-  description     String @default("")
-  roles           Role[] @relation("Permission_roles")
 }
 
 model Device {
