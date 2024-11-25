@@ -9,6 +9,12 @@ interface OrganizationContextType {
   help: boolean;  
   setHelp: (value: boolean) => void;  
 
+  addMember: boolean;
+  setAddMember: (value : boolean ) => void;
+
+  updateMember: boolean;
+  setUpdateMember: (value : boolean ) => void;
+
 }
 
 // Inicializamos el contexto con valores por defecto
@@ -23,6 +29,8 @@ interface OrganizationProviderProps {
 export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ children }) => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [help, setHelp] = useState<boolean>(false);  
+  const [addMember, setAddMember] = useState<boolean>(false);  
+  const [updateMember, setUpdateMember] = useState<boolean>(false);  
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -32,7 +40,7 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   return (
     <OrganizationContext.Provider value={{ 
       selectedUserId, setSelectedUserId, clearUserId, 
-      help, setHelp, 
+      help, setHelp, addMember, setAddMember, updateMember, setUpdateMember
       }}>
       {children}
     </OrganizationContext.Provider>
