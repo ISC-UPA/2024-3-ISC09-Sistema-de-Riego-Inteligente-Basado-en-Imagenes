@@ -32,15 +32,13 @@ const AddMemberScreen: React.FC = () => {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  // Verifica que cropContext no sea undefined
-  if (!cropContext) {
-    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
-  }
 
-  const { addMember,setAddMember, updateMember} = organizationContext;
+  const { addMember,setAddMember, updateMember, setUpdateMember, setDeleteMember} = organizationContext;
 
   const handleBackPress = () => {
     setAddMember(false)
+    setUpdateMember(false)
+    setDeleteMember(false)
   };
 
   const validateInputs = () => {
@@ -69,7 +67,7 @@ const AddMemberScreen: React.FC = () => {
   };
 
 
-  const inviteUser = async (email: string) => {
+  const inviteUserAzure = async (email: string) => {
     try {
       if (!token) {
         console.error('Token de acceso no disponible');
@@ -106,12 +104,13 @@ const AddMemberScreen: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateInputs()) {
-      Alert.alert('Éxito', `${addMember ? 'Creación' : 'Actualización'} exitosa`);
+      // Alert.alert('Éxito', `${addMember ? 'Creación' : 'Actualización'} exitosa`);
+      await inviteUserAzure(email)
       handleBackPress();
     } else {
-      Alert.alert('Error', 'Por favor corrige los errores antes de continuar');
+      // Alert.alert('Error', 'Por favor corrige los errores antes de continuar');
     }
   };
 

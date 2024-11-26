@@ -21,12 +21,20 @@ export default function MembersList() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {setAddMember, addMember} = organizationContext;
+  const {setAddMember, addMember, setDeleteMember, deleteMember, setUpdateMember, updateMember} = organizationContext;
 
 
   const handleAddUser = () => {
     setAddMember(true)
     console.log(addMember)
+  }
+  const handleUpdateUser = () => {
+    setDeleteMember(true)
+    console.log(updateMember)
+  }
+  const handleDeleteUser = () => {
+    setDeleteMember(true)
+    console.log(deleteMember)
   }
 
   return (
@@ -69,14 +77,14 @@ export default function MembersList() {
               />
               <IconButton
                 icon="pencil"
-                onPress={() => console.log('Editar miembro')}
+                onPress={handleUpdateUser}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
               />
               <IconButton
                 icon="trash-can"
-                onPress={() => console.log('Borrar miembro')}
+                onPress={handleDeleteUser}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
