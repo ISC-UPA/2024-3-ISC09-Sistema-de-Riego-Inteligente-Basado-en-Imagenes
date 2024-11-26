@@ -31,7 +31,7 @@ model User {
   crops           Crop[]       @relation("Crop_users")
   profile_picture String       @default("")
   role            String?      @default("crop_worker")
-  accountStatus   String?      @default("false")
+  accountStatus   String?      @default("Inactive")
 
   @@index([ranch_idId])
 }
