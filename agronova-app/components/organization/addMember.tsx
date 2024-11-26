@@ -2,18 +2,22 @@ import React, { useState, useContext, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { CropContext } from '@/components/context/CropContext';
 import { OrganizationContext } from '../context/OrganizationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CREATE_USER } from '@/api/queries/queryUsers';
+import { useMutation } from '@apollo/client';
+import { Picker } from '@react-native-picker/picker';
 
 const AddMemberScreen: React.FC = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
+  const [rol, setRol] = useState('Trabajador agrícola');
+  const [accountStatus, setAccountStatus] = useState('active');
   const [telefono, setTelefono] = useState('');
   const [errors, setErrors] = useState({ nombre: '', email: '', telefono: '' });
   const [token, setToken] = useState<string | null>(null);
+  const [createUser] =useMutation(CREATE_USER);
 
-  const cropContext = useContext(CropContext);
   const organizationContext = useContext(OrganizationContext)
 
   useEffect(() => {
@@ -22,7 +26,6 @@ const AddMemberScreen: React.FC = () => {
       //Si existe el token, agregarlo al estado local
       if (savedToken) {
         setToken(savedToken);
-        console.log(token)
       }
     }
     loadToken()
@@ -33,7 +36,7 @@ const AddMemberScreen: React.FC = () => {
   }
 
 
-  const { addMember,setAddMember, updateMember, setUpdateMember, setDeleteMember} = organizationContext;
+  const { addMember,setAddMember, updateMember, setUpdateMember, setDeleteMember, ranchId} = organizationContext;
 
   const handleBackPress = () => {
     setAddMember(false)
@@ -94,20 +97,44 @@ const AddMemberScreen: React.FC = () => {
         const result = await response.json();
         console.log('Usuario invitado exitosamente:', result);
         alert('Invitación enviada con éxito');
+        return true
       } else {
         const error = await response.json();
         console.error('Error al invitar al usuario:', error);
         alert('Error al enviar la invitación');
+        return true
       }
     } catch (error) {
       console.error('Error al invitar al usuario:', error);
+      return false
     }
   };
 
   const handleSubmit = async () => {
     if (validateInputs()) {
-      // Alert.alert('Éxito', `${addMember ? 'Creación' : 'Actualización'} exitosa`);
-      await inviteUserAzure(email)
+      const invited = await inviteUserAzure(email)
+      if (invited){
+        try {
+          await createUser({
+            variables: {
+              data: {
+                full_name: nombre,
+                email: email,
+                phone_number: telefono,
+                ranch_id: { connect: { id: ranchId } },
+                role: rol,
+                accountStatus: accountStatus,
+              },
+            },
+          });
+          alert('Usuario creado con éxito');
+          handleBackPress();
+        } catch (error) {
+          console.error('Error al crear usuario:', error);
+          alert('Error al crear el usuario');
+        }
+      }
+      
       handleBackPress();
     } else {
       // Alert.alert('Error', 'Por favor corrige los errores antes de continuar');
@@ -160,6 +187,19 @@ const AddMemberScreen: React.FC = () => {
             error={!!errors.telefono}
           />
           {errors.telefono ? <Text style={styles.errorText}>{errors.telefono}</Text> : null}
+
+          <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={rol}
+            onValueChange={(itemValue) => {setRol(itemValue); console.log(itemValue)}}
+            style={styles.picker}
+          >
+            <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
+            <Picker.Item label="Administrador" value="Administrador" />
+            <Picker.Item label="Agronomo" value="Agronomo" />
+            <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
+          </Picker>
+        </View>
 
           {/* Botones */}
           <View style={styles.buttonContainer}>
@@ -216,6 +256,20 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 8,
+  },
+  picker: {
+    marginVertical: 8,
+    height: 50,
+    width: '100%',
+    borderWidth: 0
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#0284c7',
+    borderRadius: 5,
+    marginBottom: 16,
+    padding: 1,
+    backgroundColor: '#fff',
   },
 });
 

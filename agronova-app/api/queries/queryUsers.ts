@@ -67,7 +67,7 @@ export const GET_USER = gql`query Query($where: UserWhereUniqueInput!) {
 //         "id": "id del ranchp"
 //       }
 //     },
-//     "role": "crop_worker o administrator o agronomist o irrigation_manager",
+//     "role": "Trabajador Agricola o Administrador o Agronomo o Supervisor de riego",
 //     "accountStatus": "active"
 //   }
 // }
