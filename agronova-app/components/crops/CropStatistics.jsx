@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
 import { CropChart} from '@/components/crops/CropChart';
+import { useQuery } from '@apollo/client';
+import { GET_STATISTICS } from '@/api/queries/queryStatistics';
 
 export default function CropStatisticsScreen() {
   const cropContext = useContext(CropContext);
@@ -24,25 +26,53 @@ export default function CropStatisticsScreen() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
-  const [chartData, setChartData] = useState({
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
-    datasets: [
-      {
-        label: 'Producción (kg)',
-        data: [500, 700, 800, 450, 600],
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+  const cropId = 'cm3t93jz20003132a1t9jyywo';
+  
+  const { data } = useQuery(GET_STATISTICS, {
+    variables: {
+      where: {
+        crop_id: {
+          id: {
+            equals: cropId,
+          },
+        },
       },
-      {
-        label: 'Ventas ($)',
-        data: [1000, 1500, 1200, 900, 1100],
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-      },
-    ],
+    },
   });
+
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+
+  // Procesar datos cuando la consulta se complete
+  useEffect(() => {
+    if (data) {
+      const labels = data.statistics.map((stat) => new Date(stat.timestamp).toLocaleDateString());
+      const datasets = [
+        {
+          label: 'Humedad del Aire (%)',
+          data: data.statistics.map((stat) => stat.air_humidity),
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Temperatura del Aire (°C)',
+          data: data.statistics.map((stat) => stat.air_temperature),
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Humedad del Suelo (%)',
+          data: data.statistics.map((stat) => stat.soil_moisture),
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+      ];
+
+      setChartData({ labels, datasets });
+    }
+  }, [data]);     
 
   return (
     <LinearGradient
@@ -62,10 +92,6 @@ export default function CropStatisticsScreen() {
         lightColor="transparent"
         darkColor="transparent"
       >
-
-        <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
-        
-        <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
 
         <CropChart labels={chartData.labels} datasets={chartData.datasets}/>
 
