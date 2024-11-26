@@ -21,10 +21,10 @@ export const user = {
     profile_picture: text(),
     role: select({
       options: [
-        { label: 'Administrator', value: 'administrator' },
-        { label: 'Agronomist', value: 'agronomist' },
-        { label: 'Irrigation Manager', value: 'irrigation_manager' },
-        { label: 'Crop Worker', value: 'crop_worker' },
+        { label: 'Administrator', value: 'Administrador' },
+        { label: 'Agronomist', value: 'Agronomo' },
+        { label: 'Irrigation Manager', value: 'Supervisor de riego' },
+        { label: 'Crop Worker', value: 'Trabajador agrícola' },
       ],
       defaultValue: 'crop_worker',
       ui: {
@@ -37,7 +37,7 @@ export const user = {
         { label: 'Inactive', value: 'inactive' },
         { label: 'Suspended', value: 'suspended' },
       ],
-      defaultValue: 'false',
+      defaultValue: 'Inactive',
     }),
   },
 };
