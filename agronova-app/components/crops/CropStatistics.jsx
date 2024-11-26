@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';

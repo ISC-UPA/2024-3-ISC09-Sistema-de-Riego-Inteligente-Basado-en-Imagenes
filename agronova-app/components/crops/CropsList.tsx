@@ -1,16 +1,48 @@
-import *  as React from 'react';
+import * as React from 'react';
 import AddButton from '@/components/widgets/AddButton';
-import CropCard from '@/components/crops/CropCard'
+import CropCard from '@/components/crops/CropCard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, Text } from 'react-native';
+import { useQuery } from '@apollo/client';
+import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
+import { OrganizationContext } from '../context/OrganizationContext';
 
 export default function CropList() {
-  const crops = [
-    { id: 1, name: 'Cultivo 1' },
-    { id: 2, name: 'Cultivo 2' },
-  ];
+  const organizationContext = React.useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('OrganizationContext debe estar dentro de un proveedor OrganizationProvider');
+  }
+
+  const { userId } = organizationContext;
+
+  // Query para obtener el rancho del usuario
+  const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
+    variables: { where: { id: userId } },
+  });
+
+  // Extraer el ID del rancho
+  const ranchId = userRanchData?.user?.ranch_id?.id;
+
+  // Query para obtener los cultivos del rancho
+  const { data: ranchCropsData, loading: ranchCropsLoading, error: ranchCropsError } = useQuery(GET_RANCH_CROPS, {
+    variables: { where: { id: ranchId }, cropWhere2: { isDeleted: { equals: false } } },
+    skip: !ranchId, // Solo ejecutar este query si ya tenemos el ranchId
+  });
+
+  // Manejo de estados de carga y error
+  if (userRanchLoading || ranchCropsLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (userRanchError || ranchCropsError) {
+    return <Text>Error al cargar los datos</Text>;
+  }
+
+  const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
+  const crops = ranchCropsData?.ranch?.crop || [];
 
   return (
     <LinearGradient
@@ -22,16 +54,20 @@ export default function CropList() {
         darkColor="transparent"
       >
         {/* Ranch name */}
-        <ThemedText  style={styles.titleText}>
-          Rancho "Las Camelinas"
+        <ThemedText style={styles.titleText}>
+          {`Rancho "${ranchName}"`}
         </ThemedText>
 
         {/* Button to add new crop */}
-        <AddButton></AddButton>
-        
+        <AddButton />
+
         {/* Crops list */}
         <ScrollView style={{ marginVertical: 25 }}>
-          {crops.map(crop => <CropCard key={crop.id} {...crop}/>)}
+          {crops.length > 0 ? (
+            crops.map((crop: any) => <CropCard key={crop.id} {...crop} />)
+          ) : (
+            <ThemedText>No hay cultivos disponibles</ThemedText>
+          )}
         </ScrollView>
       </ThemedView>
     </LinearGradient>
