@@ -26,15 +26,12 @@ export default function MembersList() {
 
   const handleAddUser = () => {
     setAddMember(true)
-    console.log(addMember)
   }
   const handleUpdateUser = () => {
-    setDeleteMember(true)
-    console.log(updateMember)
+    setUpdateMember(true)
   }
   const handleDeleteUser = () => {
     setDeleteMember(true)
-    console.log(deleteMember)
   }
 
   return (
