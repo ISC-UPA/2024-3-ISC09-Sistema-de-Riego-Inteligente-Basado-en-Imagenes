@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Alert, Text, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,17 @@ import MembersList from './membersList'; // Asegúrate de importar el componente
 import React from 'react';
 
 export default function Organization() {
+
+  const handleDeletePress = () => {
+    Alert.alert(
+      'Eliminar rancho',
+      '¿Estás seguro de que deseas eliminar el rancho?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', style: 'destructive', onPress: () => console.log('Rancho eliminado') }
+      ]
+    );
+  };
 
   const [userId, setUserId] = React.useState<string | null>(null);
   const [ranchId, setRanchId] = React.useState<string | null>(null);
@@ -57,6 +68,12 @@ export default function Organization() {
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
         </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
+            <Text style={styles.buttonText}>Eliminar rancho</Text>
+          </TouchableOpacity>
+        </View>
+
       </ThemedView>
     </LinearGradient>
   );
@@ -73,5 +90,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 10,
     color: '#0c4a6e',
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 20, // Añadir padding para separar el botón del borde inferior
+  },
+  deleteButton: {
+    backgroundColor: '#ff0000',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 25, // Ajustar este valor para hacer el botón más ovalado
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
