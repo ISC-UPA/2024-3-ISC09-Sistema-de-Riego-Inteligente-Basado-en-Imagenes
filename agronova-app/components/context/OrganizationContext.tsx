@@ -3,8 +3,15 @@ import React, { createContext, useState, ReactNode } from 'react';
 // Definir los tipos del contexto
 interface OrganizationContextType {
   userId: string | null;
+  
   setUserId: (id: string | null) => void;
   clearUserId: () => void;
+
+  selectedUserId: string | null;
+  setSelectedUserId: (name: string | null) => void;
+
+  selectedUserName: string | null;
+  setSelectedUserName: (name: string | null) => void;
 
   ranchId: string | null;
   setRanchId: (id: string | null) => void;
@@ -26,9 +33,6 @@ interface OrganizationContextType {
 
   updateMember: boolean;
   setUpdateMember: (value : boolean ) => void;
-
-  deleteMember: boolean;
-  setDeleteMember: (value : boolean ) => void;
 
   deleteRanch: boolean;
   setDeleteRanch: (value : boolean ) => void;
@@ -52,8 +56,9 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [help, setHelp] = useState<boolean>(false);  
   const [addMember, setAddMember] = useState<boolean>(false);  
   const [updateMember, setUpdateMember] = useState<boolean>(false);  
-  const [deleteMember, setDeleteMember] = useState<boolean>(false);  
-  const [deleteRanch, setDeleteRanch] = useState<boolean>(false);  
+  const [deleteRanch, setDeleteRanch] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null); 
+  const [selectedUserName, setSelectedUserName] = useState<string | null>(null); 
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -80,8 +85,8 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
       help, setHelp,addMember, setAddMember, updateMember,
-      setUpdateMember, deleteMember, setDeleteMember,
-      deleteRanch, setDeleteRanch, setRanchId, ranchId, clearRanchId
+      setUpdateMember,deleteRanch, setDeleteRanch, setRanchId, ranchId, clearRanchId,
+      selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName
       }}>
       {children}
     </OrganizationContext.Provider>

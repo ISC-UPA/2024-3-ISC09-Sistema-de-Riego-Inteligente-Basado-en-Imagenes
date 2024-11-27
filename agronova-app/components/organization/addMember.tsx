@@ -36,12 +36,11 @@ const AddMemberScreen: React.FC = () => {
   }
 
 
-  const { addMember,setAddMember, updateMember, setUpdateMember, setDeleteMember, ranchId} = organizationContext;
+  const { addMember,setAddMember, updateMember, setUpdateMember, ranchId} = organizationContext;
 
   const handleBackPress = () => {
     setAddMember(false)
     setUpdateMember(false)
-    setDeleteMember(false)
   };
 
   const validateInputs = () => {
