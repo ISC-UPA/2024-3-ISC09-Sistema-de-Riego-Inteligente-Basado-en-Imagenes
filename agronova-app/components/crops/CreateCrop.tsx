@@ -1,87 +1,127 @@
 import React, { useState, useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
+import { useMutation } from '@apollo/client';
+import { CREATE_CROP } from '@/api/queries/queryUsers';
 import { CropContext } from '@/components/context/CropContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CrearCultivoScreen: React.FC = () => {
-
-  const [nombre, setNombre] = useState('');
+const CreateCropScreen: React.FC = () => {
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [deviceId, setDeviceId] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const cropContext = useContext(CropContext);
 
-  // Verifica que cropContext no sea undefined
   if (!cropContext) {
-    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
+    throw new Error('CropContext must be used within a CropProvider');
   }
 
-  const { setAddCrop, setUpdateCrop, updateCrop } = cropContext; // Obtenemos setRecord del contexto
+  const { setAddCrop, setUpdateCrop, updateCrop } = cropContext;
 
-  // Función para solo modificar record
+  const [createCrop] = useMutation(CREATE_CROP, {
+    onCompleted: (data) => {
+      Alert.alert('Success', 'The crop has been successfully created');
+      setAddCrop(false);
+    },
+    onError: (error) => {
+      Alert.alert('Error', `There was an issue creating the crop: ${error.message}`);
+    },
+  });
+
+  const handleCreateCrop = async () => {
+    if (!name.trim() || !location.trim() || !deviceId) {
+      setErrorMessage('Todos los campos son obligatorios');
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
+    }
+    setErrorMessage('');
+
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const ranchId = await AsyncStorage.getItem('ranchId');
+
+      if (!userId || !ranchId) {
+        Alert.alert('Error', 'Failed to retrieve user or ranch information');
+        return;
+      }
+
+      createCrop({
+        variables: {
+          data: {
+            crop_name: name,
+            location: location,
+            users: {
+              connect: [{ id: userId }],
+            },
+            ranch_id: {
+              connect: { id: ranchId },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      Alert.alert('Error', 'There was an issue retrieving data from AsyncStorage');
+    }
+  };
+
   const handleBackPress = () => {
-    setAddCrop(false); // Cambiamos record a false sin afectar el selectedCropId
+    setAddCrop(false);
     setUpdateCrop(false);
   };
 
   return (
-    <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
-      style={{ flex: 1 }}
-    >
-        <View style={styles.container}>
-        {/* Formulario */}
+    <LinearGradient colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} style={{ flex: 1 }}>
+      <View style={styles.container}>
         <View style={styles.formContainer}>
-            <Text style={styles.titleText}>Crear nuevo cultivo</Text>
-            <TextInput
+          <Text style={styles.titleText}>Create New Crop</Text>
+          <TextInput
             label="Nombre"
-            value={nombre}
-            onChangeText={setNombre}
+            value={name}
+            onChangeText={setName}
             style={styles.input}
-            mode = 'outlined'
+            mode='outlined'
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
-            />
-
-            <TextInput
+          />
+          <TextInput
             label="Ubicación"
-            value={nombre}
-            onChangeText={setNombre}
+            value={location}
+            onChangeText={setLocation}
             style={styles.input}
-            mode = 'outlined'
+            mode='outlined'
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
-            />
-
-            <TextInput
+          />
+          <TextInput
             label="Número de serie"
-            value={nombre}
-            onChangeText={setNombre}
+            value={deviceId}
+            onChangeText={setDeviceId}
             style={styles.input}
-            mode = 'outlined'
+            mode='outlined'
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
-            />
-
-            {/* Botones */}
-            <View style={styles.buttonContainer}>
+          />
+          <View style={styles.buttonContainer}>
             <Button 
-                mode="contained" 
-                labelStyle={{ color: "#0284c7", }}
-                //onPress={() => router.back()} // Regresar a la pantalla anterior
-                onPress={handleBackPress}
-                buttonColor={'#bae6fd'}
-                style={styles.button}
+              mode="contained" 
+              labelStyle={{ color: "#0284c7" }}
+              onPress={handleBackPress}
+              buttonColor={'#bae6fd'}
+              style={styles.button}
             >
-                Cancelar
+              Cancel
             </Button>
             <Button 
-                mode="contained" 
-                onPress={handleBackPress}
-                buttonColor={'#0284c7'}
-                style={styles.button}
+              mode="contained" 
+              onPress={handleCreateCrop}
+              buttonColor={'#0284c7'}
+              style={styles.button}
             >
-              {updateCrop? 'Actualizar': 'Crear'}
+              {updateCrop ? 'Update' : 'Create'}
             </Button>
-            </View>
+          </View>
         </View>
-        </View>  
-    </LinearGradient>    
+      </View>  
+    </LinearGradient>
   );
 };
 
@@ -112,4 +152,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CrearCultivoScreen;
+export default CreateCropScreen;
