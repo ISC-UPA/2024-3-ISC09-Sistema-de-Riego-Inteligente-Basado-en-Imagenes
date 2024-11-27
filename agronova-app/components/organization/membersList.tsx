@@ -1,8 +1,9 @@
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { IconButton } from 'react-native-paper';
 import { OrganizationContext } from '../context/OrganizationContext';
+import DeleteConfirmationModal from '../widgets/ConfirmModal';
 const members = [
 
   { name: 'Antonio Leon', role: 'Administrador' },
@@ -21,17 +22,27 @@ export default function MembersList() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {setAddMember, addMember, setDeleteMember, deleteMember, setUpdateMember, updateMember} = organizationContext;
+  const {setAddMember, setUpdateMember, selectedUserId, setSelectedUserId, selectedUserName, setSelectedUserName} = organizationContext;
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const handleConfirmDelete = (name: string | null) => {
+    console.log('Cultivo eliminado:', name);
+    setModalVisible(false); // Cerrar el modal después de confirmar la eliminación
+  };
 
 
   const handleAddUser = () => {
     setAddMember(true)
   }
-  const handleUpdateUser = () => {
+  const handleUpdateUser = (userId : any, name : any) => {
     setUpdateMember(true)
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
   }
-  const handleDeleteUser = () => {
-    setDeleteMember(true)
+  const handleDeleteUser = (userId : any, name : any) => {
+    setModalVisible(true);
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
   }
 
   return (
@@ -74,22 +85,29 @@ export default function MembersList() {
               />
               <IconButton
                 icon="pencil"
-                onPress={handleUpdateUser}
+                onPress={() => handleUpdateUser(selectedUserId,member.name)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
               />
               <IconButton
                 icon="trash-can"
-                onPress={handleDeleteUser}
+                onPress={() => handleDeleteUser(selectedUserId,member.name)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
               />
+              
             </View>
           </View>
         ))}
       </ScrollView>
+      <DeleteConfirmationModal
+                visible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onConfirmDelete={() => handleConfirmDelete(selectedUserName)}  
+                itemName={selectedUserName}            
+      />
     </View>
   );
 }
