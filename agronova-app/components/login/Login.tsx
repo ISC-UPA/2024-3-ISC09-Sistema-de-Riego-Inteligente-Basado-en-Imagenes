@@ -29,7 +29,7 @@ export default function App() {
   const navigation = useNavigation();
   
   // Acceder al contexto
-  const { setUserId, setUserFullName, setUserEmail, setRanchId } = useContext(OrganizationContext);
+  const { setUserId, setUserFullName, setUserEmail} = useContext(OrganizationContext);
 
   const discovery = useAutoDiscovery(
     'https://login.microsoftonline.com/f03c71fb-da10-4831-93b3-79b594a2ec2a/v2.0',
@@ -74,7 +74,6 @@ export default function App() {
         navigation.navigate('create-ranch');
       } else {
         navigation.navigate('(tabs)');
-        setRanchId(data.user.ranch_id.id)
       }
     }
   }, [data]);
@@ -111,7 +110,6 @@ export default function App() {
         navigation.navigate('create-ranch');
       } else {
         navigation.navigate('(tabs)');
-        setRanchId(data.user.ranch_id.id);
       }
     }
   }, [data]);
@@ -257,7 +255,9 @@ export default function App() {
         <Text style={styles.descriptionText}>
           {token ? 'Sesión iniciada' : 'Por favor, inicia sesión'}
         </Text>
-        <Button
+
+        {
+          !token ? <Button
           disabled={!request && !discovery}
           icon="microsoft"
           buttonColor={'#1e40af'}
@@ -266,6 +266,8 @@ export default function App() {
         >
           {token ? 'Sign Out' : 'Iniciar sesión'}
         </Button>
+          : <></>
+        }
       </SafeAreaView>
     </LinearGradient>
   );

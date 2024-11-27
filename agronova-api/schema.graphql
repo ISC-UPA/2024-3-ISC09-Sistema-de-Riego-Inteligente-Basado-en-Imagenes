@@ -337,8 +337,8 @@ input CropWhereInput {
   id: IDFilter
   crop_name: StringFilter
   location: StringFilter
-  latitude: FloatFilter
-  longitude: FloatFilter
+  latitude: FloatNullableFilter
+  longitude: FloatNullableFilter
   users: UserManyRelationFilter
   ranch_id: RanchWhereInput
   statistic: StatisticManyRelationFilter
@@ -348,7 +348,7 @@ input CropWhereInput {
   isDeleted: BooleanFilter
 }
 
-input FloatFilter {
+input FloatNullableFilter {
   equals: Float
   in: [Float!]
   notIn: [Float!]
@@ -356,7 +356,7 @@ input FloatFilter {
   lte: Float
   gt: Float
   gte: Float
-  not: FloatFilter
+  not: FloatNullableFilter
 }
 
 input UserManyRelationFilter {
@@ -509,7 +509,7 @@ input StatisticWhereInput {
   air_temperature: FloatFilter
 }
 
-input FloatNullableFilter {
+input FloatFilter {
   equals: Float
   in: [Float!]
   notIn: [Float!]
@@ -517,7 +517,7 @@ input FloatNullableFilter {
   lte: Float
   gt: Float
   gte: Float
-  not: FloatNullableFilter
+  not: FloatFilter
 }
 
 input StatisticOrderByInput {
@@ -675,6 +675,7 @@ type CropMedia {
   id: ID!
   crop_id: Crop
   address: String
+  date: DateTime
   media_type: String
 }
 
@@ -689,18 +690,21 @@ input CropMediaWhereInput {
   id: IDFilter
   crop_id: CropWhereInput
   address: StringFilter
+  date: DateTimeFilter
   media_type: StringFilter
 }
 
 input CropMediaOrderByInput {
   id: OrderDirection
   address: OrderDirection
+  date: OrderDirection
   media_type: OrderDirection
 }
 
 input CropMediaUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   address: String
+  date: DateTime
   media_type: String
 }
 
@@ -712,6 +716,7 @@ input CropMediaUpdateArgs {
 input CropMediaCreateInput {
   crop_id: CropRelateToOneForCreateInput
   address: String
+  date: DateTime
   media_type: String
 }
 
