@@ -1,20 +1,65 @@
-import *  as React from 'react';
+import * as React from 'react';
 import AddButton from '@/components/widgets/AddButton';
-import CropCard from '@/components/crops/CropCard'
+import CropCard from '@/components/crops/CropCard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, Text } from 'react-native';
+import { useQuery } from '@apollo/client';
+import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CropList() {
-  const crops = [
-    { id: 1, name: 'Cultivo 1' },
-    { id: 2, name: 'Cultivo 2' },
-  ];
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [ranchId, setRanchId] = React.useState<string | null>(null);
+
+  // Cargar datos desde AsyncStorage cuando el componente se monta
+  React.useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+        if (storedRanchId) {
+          setRanchId(storedRanchId);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos desde AsyncStorage', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  // Query para obtener el rancho del usuario
+  const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
+    variables: { where: { id: userId } },
+    skip: !userId, // Solo ejecutar este query si ya tenemos el userId
+  });
+
+  // Query para obtener los cultivos del rancho
+  const { data: ranchCropsData, loading: ranchCropsLoading, error: ranchCropsError } = useQuery(GET_RANCH_CROPS, {
+    variables: { where: { id: ranchId }, cropWhere2: { isDeleted: { equals: false } } },
+    skip: !ranchId, // Solo ejecutar este query si ya tenemos el ranchId
+  });
+
+  // Manejo de estados de carga y error
+  if (userRanchLoading || ranchCropsLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (userRanchError || ranchCropsError) {
+    return <Text>Error al cargar los datos</Text>;
+  }
+
+  const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
+  const crops = ranchCropsData?.ranch?.crop || [];
 
   return (
     <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+      colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
       <ThemedView style={{ flex: 1, padding: 16 }}
@@ -22,16 +67,20 @@ export default function CropList() {
         darkColor="transparent"
       >
         {/* Ranch name */}
-        <ThemedText  style={styles.titleText}>
-          Rancho "Las Camelinas"
+        <ThemedText style={styles.titleText}>
+          {`Rancho "${ranchName}"`}
         </ThemedText>
 
         {/* Button to add new crop */}
-        <AddButton></AddButton>
-        
+        <AddButton />
+
         {/* Crops list */}
         <ScrollView style={{ marginVertical: 25 }}>
-          {crops.map(crop => <CropCard key={crop.id} {...crop}/>)}
+          {crops.length > 0 ? (
+            crops.map((crop: any) => <CropCard key={crop.id} {...crop} />)
+          ) : (
+            <ThemedText>No hay cultivos disponibles</ThemedText>
+          )}
         </ScrollView>
       </ThemedView>
     </LinearGradient>

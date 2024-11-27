@@ -311,3 +311,18 @@ export const UPDATE_CROP_INFO = gql`mutation Mutation($where: CropWhereUniqueInp
     id
   }
 }`
+
+
+//Actulizar el status del usuario
+// Variables
+//   "where": {
+//     "id": "{id del usuario}"
+//   },
+//   "data": {
+//     "accountStatus": "Active"
+//   }
+export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueInput!, $data: UserUpdateInput!) {
+  updateUser(where: $where, data: $data) {
+    id
+  }
+}`

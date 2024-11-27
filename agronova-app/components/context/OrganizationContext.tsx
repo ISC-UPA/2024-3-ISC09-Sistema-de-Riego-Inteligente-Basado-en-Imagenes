@@ -31,6 +31,10 @@ interface OrganizationContextType {
   setUserEmail: (email: string | null) => void;
   clearUserEmail: () => void;
 
+  ranchId: number | null;
+  setRanchId: (id: number | null) => void;
+  clearRanchId: () => void;
+
   help: boolean;  
   setHelp: (value: boolean) => void;  
 
@@ -59,6 +63,7 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [ranchId, setRanchId] = useState<string | null>(null);
   const [userFullName, setUserFullName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [ranchId, setRanchId] = useState<number | null>(null);
   const [help, setHelp] = useState<boolean>(false);  
   const [addMember, setAddMember] = useState<boolean>(false);  
   const [updateMember, setUpdateMember] = useState<boolean>(false);  
@@ -86,12 +91,17 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   };
   
 
+  const clearRanchId = () => {
+    setRanchId(null);
+  };
+
 
   return (
     <OrganizationContext.Provider value={{ 
       userId, setUserId, clearUserId, 
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
+      ranchId, setRanchId, clearRanchId,
       help, setHelp,addMember, setAddMember, updateMember,
       setUpdateMember,deleteRanch, setDeleteRanch, setRanchId, ranchId, clearRanchId,
       selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName,
