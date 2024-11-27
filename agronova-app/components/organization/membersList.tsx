@@ -5,7 +5,8 @@ import { IconButton } from 'react-native-paper';
 import { OrganizationContext } from '../context/OrganizationContext';
 import DeleteConfirmationModal from '../widgets/ConfirmModal';
 import { GET_RANCH_MEMBERS } from '@/api/queries/queryUsers';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
+import { DELETE_USER } from '@/api/queries/queryUsers';
 // const members = [
 
 //   { name: 'Antonio Leon', role: 'Administrador' },
@@ -25,10 +26,11 @@ export default function MembersList() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {setAddMember, setUpdateMember, setSelectedUserId, selectedUserName, setSelectedUserName, setSelectedUserPhone, setSelectedUserRole} = organizationContext;
+  const {setAddMember, setUpdateMember, setSelectedUserId, selectedUserName, setSelectedUserName, setSelectedUserPhone, setSelectedUserRole, selectedUserId} = organizationContext;
   const [isModalVisible, setModalVisible] = useState(false);
+  const [deleteUser] = useMutation(DELETE_USER);
 
-  const { data, loading, error } = useQuery(GET_RANCH_MEMBERS, {
+  const { data, loading, error, refetch } = useQuery(GET_RANCH_MEMBERS, {
     variables: { 
       where: { 
         id: "cm3qkpn4c0000yad7ded8nz44"
@@ -44,7 +46,24 @@ export default function MembersList() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const handleConfirmDelete = (name: string | null) => {
+  const handleConfirmDelete =  async (name: string | null) => {
+    try {
+      await deleteUser({
+        variables: {
+          where: {
+            id: selectedUserId
+          },
+          data: {
+            accountStatus: "suspended"
+          },
+        },
+      });
+      alert('Usuario eliminado con éxito');
+      refetch()
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      alert('Error al eliminar el usuario');
+    }
     console.log('Cultivo eliminado:', name);
     setModalVisible(false); // Cerrar el modal después de confirmar la eliminación
   };
@@ -115,7 +134,7 @@ export default function MembersList() {
               />
               <IconButton
                 icon="trash-can"
-                onPress={() => handleDeleteUser(member.id,member.name)}
+                onPress={() => handleDeleteUser(member.id,member.full_name)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
