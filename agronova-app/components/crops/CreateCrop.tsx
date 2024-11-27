@@ -67,7 +67,7 @@ const CreateCropScreen: React.FC = () => {
   };
 
   const handleBackPress = () => {
-    setAddCrop(false);
+    setAddCrop(false); // Cambiamos `record` a false sin afectar el selectedCropId
     setUpdateCrop(false);
   };
 
@@ -153,3 +153,4 @@ const styles = StyleSheet.create({
 });
 
 export default CreateCropScreen;
+

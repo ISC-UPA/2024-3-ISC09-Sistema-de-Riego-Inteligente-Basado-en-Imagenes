@@ -1,10 +1,11 @@
+
 import React, { useContext, useEffect, useState } from 'react'; 
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Avatar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { Stack } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
+import { OrganizationContext } from '@/components/context/OrganizationContext'; // Importa el contexto
 
 export default function ProfileScreen() {
   const router = useRouter();

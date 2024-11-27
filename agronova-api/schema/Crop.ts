@@ -7,11 +7,9 @@ export const crop = {
     crop_name: text({ validation: { isRequired: true } }),
     location: text({ validation: { isRequired: true } }),
     latitude: float({
-      validation: { isRequired: true },
       label: 'Latitud',
     }),
     longitude: float({
-      validation: { isRequired: true },
       label: 'Longitud',
     }),
     users: relationship({ ref: 'User.crops', many: true }),
