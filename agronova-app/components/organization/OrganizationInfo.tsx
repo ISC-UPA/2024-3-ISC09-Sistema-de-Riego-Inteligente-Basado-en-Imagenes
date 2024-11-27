@@ -2,10 +2,45 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GET_USER_RANCH } from '@/api/queries/queryUsers';
+import { useQuery } from '@apollo/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import MembersList from './membersList'; // Asegúrate de importar el componente correctamente
 import React from 'react';
 
 export default function Organization() {
+
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [ranchId, setRanchId] = React.useState<string | null>(null);
+
+  // Cargar datos desde AsyncStorage cuando el componente se monta
+  React.useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+        if (storedRanchId) {
+          setRanchId(storedRanchId);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos desde AsyncStorage', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+  // Query para obtener el rancho del usuario
+  const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
+    variables: { where: { id: userId } },
+    skip: !userId, // Solo ejecutar este query si ya tenemos el userId
+  });
+
+  const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
+  const ranchDescription = userRanchData?.user?.ranch_id?.description || 'Sin descripción';
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
@@ -13,9 +48,11 @@ export default function Organization() {
     >
       <ThemedView style={{ flex: 1, padding: 16 }} lightColor="transparent" darkColor="transparent">
         <View>
-          <ThemedText style={styles.titleText}>Rancho "Las Camelinas"</ThemedText>
+          <ThemedText style={styles.titleText}>
+            {`Rancho "${ranchName}"`}
+          </ThemedText>
           <ThemedText style={styles.descriptionText}>
-            Empresa líder en producción de maíz a nivel nacional, con más de 30 años de experiencia en el sector.
+            {ranchDescription}
           </ThemedText>
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
