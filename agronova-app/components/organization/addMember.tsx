@@ -5,6 +5,7 @@ import { TextInput, Button } from 'react-native-paper';
 import { OrganizationContext } from '../context/OrganizationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CREATE_USER } from '@/api/queries/queryUsers';
+import { UPDATE_USER } from '@/api/queries/queryUsers';
 import { useMutation } from '@apollo/client';
 import { Picker } from '@react-native-picker/picker';
 
@@ -12,13 +13,20 @@ const AddMemberScreen: React.FC = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [rol, setRol] = useState('Trabajador agrícola');
-  const [accountStatus, setAccountStatus] = useState('active');
+  const [accountStatus, setAccountStatus] = useState('inactive');
   const [telefono, setTelefono] = useState('');
   const [errors, setErrors] = useState({ nombre: '', email: '', telefono: '' });
   const [token, setToken] = useState<string | null>(null);
-  const [createUser] =useMutation(CREATE_USER);
+  const [createUser] = useMutation(CREATE_USER);
+  const [updateUser] = useMutation(UPDATE_USER);
 
   const organizationContext = useContext(OrganizationContext)
+  if (!organizationContext) {
+    throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
+  }
+
+
+  const { addMember, setAddMember, updateMember, setUpdateMember, ranchId, selectedUserId, selectedUserPhone, selectedUserRole, selectedUserName } = organizationContext;
 
   useEffect(() => {
     const loadToken = async () => {
@@ -29,14 +37,17 @@ const AddMemberScreen: React.FC = () => {
       }
     }
     loadToken()
-  },[])
+  }, [])
 
-  if (!organizationContext) {
-    throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
-  }
+  useEffect(() => {
+    if (updateMember) {
+      setNombre(selectedUserName || '');
+      setTelefono(selectedUserPhone || '');
+      setRol(selectedUserRole || 'Trabajador agrícola');
+    }
+  }, [updateMember, selectedUserName, selectedUserPhone, selectedUserRole]);
 
-
-  const { addMember,setAddMember, updateMember, setUpdateMember, ranchId} = organizationContext;
+ 
 
   const handleBackPress = () => {
     setAddMember(false)
@@ -52,10 +63,12 @@ const AddMemberScreen: React.FC = () => {
       valid = false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      newErrors.email = 'Correo inválido';
-      valid = false;
+    if (!updateMember) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        newErrors.email = 'Correo inválido';
+        valid = false;
+      }
     }
 
     const phoneRegex = /^\d{10}$/;
@@ -75,7 +88,7 @@ const AddMemberScreen: React.FC = () => {
         console.error('Token de acceso no disponible');
         return;
       }
-  
+
       const response = await fetch('https://graph.microsoft.com/v1.0/invitations', {
         method: 'POST',
         headers: {
@@ -91,7 +104,7 @@ const AddMemberScreen: React.FC = () => {
           },
         }),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log('Usuario invitado exitosamente:', result);
@@ -109,10 +122,10 @@ const AddMemberScreen: React.FC = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitCreate = async () => {
     if (validateInputs()) {
       const invited = await inviteUserAzure(email)
-      if (invited){
+      if (invited) {
         try {
           await createUser({
             variables: {
@@ -133,7 +146,38 @@ const AddMemberScreen: React.FC = () => {
           alert('Error al crear el usuario');
         }
       }
-      
+
+      handleBackPress();
+    } else {
+      // Alert.alert('Error', 'Por favor corrige los errores antes de continuar');
+    }
+  };
+
+  const handleSubmitUpdate = async () => {
+    
+    if (validateInputs()) {
+      console.log("update")
+      try {
+        await updateUser({
+          variables: {
+            where: {
+              id: selectedUserId // Reemplaza "{id usuario}" con la variable o valor correspondiente
+            },
+            data: {
+              full_name: nombre,
+              phone_number: telefono,
+              role: rol,
+            },
+          },
+        });
+        alert('Usuario actualizado con éxito');
+        handleBackPress();
+      } catch (error) {
+        console.error('Error al actualizar el usuario:', error);
+        alert('Error al actualizar el usuario');
+      }
+
+
       handleBackPress();
     } else {
       // Alert.alert('Error', 'Por favor corrige los errores antes de continuar');
@@ -161,18 +205,19 @@ const AddMemberScreen: React.FC = () => {
           />
           {errors.nombre ? <Text style={styles.errorText}>{errors.nombre}</Text> : null}
 
-          {/* Input de Correo */}
-          <TextInput
-            label="Correo Electrónico"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            style={styles.input}
-            mode="outlined"
-            theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
-            keyboardType="email-address"
-            error={!!errors.email}
-          />
-          {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+          {!updateMember && (
+            <TextInput
+              label="Correo Electrónico"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              style={styles.input}
+              mode="outlined"
+              theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
+              keyboardType="email-address"
+              error={!!errors.email}
+            />
+          )}
+          {!updateMember && errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
 
           {/* Input de Teléfono */}
           <TextInput
@@ -188,17 +233,17 @@ const AddMemberScreen: React.FC = () => {
           {errors.telefono ? <Text style={styles.errorText}>{errors.telefono}</Text> : null}
 
           <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={rol}
-            onValueChange={(itemValue) => {setRol(itemValue); console.log(itemValue)}}
-            style={styles.picker}
-          >
-            <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
-            <Picker.Item label="Administrador" value="Administrador" />
-            <Picker.Item label="Agronomo" value="Agronomo" />
-            <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
-          </Picker>
-        </View>
+            <Picker
+              selectedValue={rol}
+              onValueChange={(itemValue) => { setRol(itemValue); console.log(itemValue) }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
+              <Picker.Item label="Administrador" value="Administrador" />
+              <Picker.Item label="Agronomo" value="Agronomo" />
+              <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
+            </Picker>
+          </View>
 
           {/* Botones */}
           <View style={styles.buttonContainer}>
@@ -213,7 +258,7 @@ const AddMemberScreen: React.FC = () => {
             </Button>
             <Button
               mode="contained"
-              onPress={handleSubmit}
+              onPress={updateMember ? handleSubmitUpdate : handleSubmitCreate}
               buttonColor="#0284c7"
               style={styles.button}
             >

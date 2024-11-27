@@ -13,6 +13,12 @@ interface OrganizationContextType {
   selectedUserName: string | null;
   setSelectedUserName: (name: string | null) => void;
 
+  selectedUserPhone: string | null;
+  setSelectedUserPhone: (name: string | null) => void;
+
+  selectedUserRole: string | null;
+  setSelectedUserRole: (name: string | null) => void;
+
   ranchId: string | null;
   setRanchId: (id: string | null) => void;
   clearRanchId: () => void;
@@ -59,6 +65,8 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [deleteRanch, setDeleteRanch] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null); 
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null); 
+  const [selectedUserPhone, setSelectedUserPhone] = useState<string | null>(null); 
+  const [selectedUserRole, setSelectedUserRole] = useState<string | null>(null); 
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -86,7 +94,8 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       userEmail, setUserEmail, clearUserEmail,
       help, setHelp,addMember, setAddMember, updateMember,
       setUpdateMember,deleteRanch, setDeleteRanch, setRanchId, ranchId, clearRanchId,
-      selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName
+      selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName,
+      selectedUserPhone, setSelectedUserPhone, selectedUserRole, setSelectedUserRole
       }}>
       {children}
     </OrganizationContext.Provider>
