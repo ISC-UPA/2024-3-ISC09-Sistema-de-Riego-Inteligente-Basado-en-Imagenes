@@ -22,7 +22,7 @@ export const user = {
     role: select({
       options: [
         { label: 'Administrator', value: 'Administrador' },
-        { label: 'Agronomist', value: 'Agronomo' },
+        { label: 'Agronomist', value: 'Agrónomo' },
         { label: 'Irrigation Manager', value: 'Supervisor de riego' },
         { label: 'Crop Worker', value: 'Trabajador agrícola' },
       ],
