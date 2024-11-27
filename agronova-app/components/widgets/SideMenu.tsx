@@ -15,6 +15,22 @@ interface SideMenuProps {
 const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
   const slideAnim = useRef(new Animated.Value(300)).current;
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [userFullName, setUserFullName] = useState<string>('Usuario');
+
+  useEffect(() => {
+    const fetchUserFullName = async () => {
+      try {
+        const fullName = await AsyncStorage.getItem('userFullName');
+        if (fullName) {
+          setUserFullName(fullName); // Asignar el nombre del usuario si existe
+        }
+      } catch (error) {
+        console.error('Error al obtener el nombre del usuario de AsyncStorage', error);
+      }
+    };
+
+    fetchUserFullName();
+  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -43,7 +59,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
       await AsyncStorage.removeItem('refreshToken');
       await AsyncStorage.removeItem('expiresIn');
       await AsyncStorage.removeItem('issuedAt');
-      navigation.navigate('index');
+      navigation.navigate('/');
       console.log('Sesión cerrada y token eliminado');
     } catch (error) {
       console.error('Error al eliminar el access token de AsyncStorage', error);
@@ -85,7 +101,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
                       }}
                       style={styles.icon}
                     />
-                    <Text style={styles.itemText}>Usuario</Text>
+                    <Text style={styles.itemText}>{userFullName}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
