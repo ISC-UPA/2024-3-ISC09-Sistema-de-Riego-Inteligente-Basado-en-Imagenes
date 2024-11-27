@@ -26,7 +26,7 @@ const AddMemberScreen: React.FC = () => {
   }
 
 
-  const { addMember, setAddMember, updateMember, setUpdateMember, ranchId, selectedUserId, selectedUserPhone, selectedUserRole, selectedUserName } = organizationContext;
+  const { addMember, setAddMember, updateMember, setUpdateMember, selectedUserId, selectedUserPhone, selectedUserRole, selectedUserName } = organizationContext;
 
   useEffect(() => {
     const loadToken = async () => {
@@ -133,7 +133,7 @@ const AddMemberScreen: React.FC = () => {
                 full_name: nombre,
                 email: email,
                 phone_number: telefono,
-                ranch_id: { connect: { id: ranchId } },
+                ranch_id: { connect: { id: "4564646546dsadasd" } },
                 role: rol,
                 accountStatus: accountStatus,
               },
