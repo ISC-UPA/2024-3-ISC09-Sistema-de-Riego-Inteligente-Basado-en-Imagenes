@@ -19,10 +19,6 @@ interface OrganizationContextType {
   selectedUserRole: string | null;
   setSelectedUserRole: (name: string | null) => void;
 
-  ranchId: string | null;
-  setRanchId: (id: string | null) => void;
-  clearRanchId: () => void;
-
   userFullName: string | null;
   setUserFullName: (name: string | null) => void;
   clearUserFullName: () => void;
@@ -56,7 +52,6 @@ interface OrganizationProviderProps {
 // Crear el proveedor del contexto
 export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ children }) => {
   const [userId, setUserId] = useState<string | null>(null);
-  const [ranchId, setRanchId] = useState<string | null>(null);
   const [userFullName, setUserFullName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [help, setHelp] = useState<boolean>(false);  
@@ -71,10 +66,6 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   // Función para borrar el crop id
   const clearUserId = () => {
     setUserId(null);
-  };
-
-  const clearRanchId = () => {
-    setRanchId(null);
   };
 
   const clearUserFullName = () => {
@@ -93,7 +84,6 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       userId, setUserId, clearUserId, 
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
-      ranchId, setRanchId, clearRanchId,
       help, setHelp,addMember, setAddMember, updateMember,
       setUpdateMember,deleteRanch, setDeleteRanch,
       selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName,
