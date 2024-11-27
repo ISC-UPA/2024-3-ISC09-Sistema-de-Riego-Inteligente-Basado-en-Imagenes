@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react'; 
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Avatar } from 'react-native-paper';
@@ -9,15 +9,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa
 export default function ProfileScreen() {
   const router = useRouter();
 
-  // Estado para almacenar el nombre completo y el correo electrónico
+  // Estado para almacenar el nombre completo, correo electrónico y rol de usuario
   const [userFullName, setUserFullName] = useState<string>('Nombre no disponible');
   const [userEmail, setUserEmail] = useState<string>('Email no disponible');
+  const [userRole, setUserRole] = useState<string>('Rol no disponible');
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const fullName = await AsyncStorage.getItem('userFullName');
         const email = await AsyncStorage.getItem('userEmail');
+        const role = await AsyncStorage.getItem('userRole'); // Obtener el rol del usuario
 
         if (fullName) {
           setUserFullName(fullName); // Asigna el nombre del usuario si existe
@@ -25,6 +27,10 @@ export default function ProfileScreen() {
 
         if (email) {
           setUserEmail(email); // Asigna el email del usuario si existe
+        }
+
+        if (role) {
+          setUserRole(role); // Asigna el rol del usuario si existe
         }
       } catch (error) {
         console.error('Error al obtener la información del usuario de AsyncStorage', error);
@@ -51,7 +57,7 @@ export default function ProfileScreen() {
         {/* Información del usuario */}
         <Text style={styles.name}>{userFullName}</Text>
         <Text style={styles.email}>{userEmail}</Text>
-        <Text style={styles.role}>Usuario</Text> {/* Puedes cambiar esto dinámicamente si tienes roles */}
+        <Text style={styles.role}>{userRole}</Text> {/* Mostrando dinámicamente el rol del usuario */}
 
         {/* Botones de acción */}
         <View style={styles.buttonContainer}>

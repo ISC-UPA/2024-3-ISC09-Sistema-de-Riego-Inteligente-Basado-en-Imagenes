@@ -94,6 +94,7 @@ export default function App() {
           await AsyncStorage.setItem('userId', data.user.id);
           await AsyncStorage.setItem('userFullName', data.user.full_name);
           await AsyncStorage.setItem('userEmail', data.user.email);
+          await AsyncStorage.setItem('userRole', data.user.role);
           if (data.user.ranch_id) {
             await AsyncStorage.setItem('ranchId', data.user.ranch_id.id);
           }
