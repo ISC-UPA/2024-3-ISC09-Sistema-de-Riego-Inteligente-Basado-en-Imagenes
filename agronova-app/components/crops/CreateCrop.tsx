@@ -16,9 +16,9 @@ const CrearCultivoScreen: React.FC = () => {
 
   const { setAddCrop, setUpdateCrop, updateCrop } = cropContext; // Obtenemos setRecord del contexto
 
-  // Función para solo modificar record
+  // Función para solo modificar `record`
   const handleBackPress = () => {
-    setAddCrop(false); // Cambiamos record a false sin afectar el selectedCropId
+    setAddCrop(false); // Cambiamos `record` a false sin afectar el selectedCropId
     setUpdateCrop(false);
   };
 

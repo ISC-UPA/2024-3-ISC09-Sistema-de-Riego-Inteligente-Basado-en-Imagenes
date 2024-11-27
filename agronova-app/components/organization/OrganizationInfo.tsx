@@ -2,9 +2,6 @@ import { StyleSheet, View, Alert, Text, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
-import { GET_USER_RANCH } from '@/api/queries/queryUsers';
-import { useQuery } from '@apollo/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MembersList from './membersList'; // Asegúrate de importar el componente correctamente
 import React from 'react';
 
@@ -59,11 +56,9 @@ export default function Organization() {
     >
       <ThemedView style={{ flex: 1, padding: 16 }} lightColor="transparent" darkColor="transparent">
         <View>
-          <ThemedText style={styles.titleText}>
-            {`Rancho "${ranchName}"`}
-          </ThemedText>
+          <ThemedText style={styles.titleText}>Rancho "Las Camelinas"</ThemedText>
           <ThemedText style={styles.descriptionText}>
-            {ranchDescription}
+            Empresa líder en producción de maíz a nivel nacional, con más de 30 años de experiencia en el sector.
           </ThemedText>
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
