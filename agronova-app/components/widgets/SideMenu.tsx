@@ -43,7 +43,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
       await AsyncStorage.removeItem('refreshToken');
       await AsyncStorage.removeItem('expiresIn');
       await AsyncStorage.removeItem('issuedAt');
-      navigation.navigate('');
+      navigation.navigate('index');
       console.log('Sesión cerrada y token eliminado');
     } catch (error) {
       console.error('Error al eliminar el access token de AsyncStorage', error);

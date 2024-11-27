@@ -67,7 +67,7 @@ export const GET_USER = gql`query Query($where: UserWhereUniqueInput!) {
 //         "id": "id del ranchp"
 //       }
 //     },
-//     "role": "crop_worker o administrator o agronomist o irrigation_manager",
+//     "role": "Trabajador Agricola o Administrador o Agronomo o Supervisor de riego",
 //     "accountStatus": "active"
 //   }
 // }
@@ -92,6 +92,38 @@ export const GET_USER_RANCH = gql`query Query($where: UserWhereUniqueInput!) {
   }
 }
 `
+
+//Actualizar usuario
+// {
+//   "where": {
+//     "id": "{id usuario}"
+//   },
+//   "data": {
+//     "full_name": "Edgar Sandoval Rodríguez",
+//     "phone_number": "4631016209",
+//     "role": "Administrador"
+//   }
+// }
+export const UPDATE_USER = gql`mutation Mutation($where: UserWhereUniqueInput!, $data: UserUpdateInput!) {
+  updateUser(where: $where, data: $data) {
+    id
+  }
+}`
+
+//Eliminar usuario
+// {
+//   "where": {
+//     "id": "{id usuario}"
+//   },
+//   "data": {
+//     "accountStatus": "suspended"
+//   }
+// }
+export const DELETE_USER = gql`mutation Mutation($where: UserWhereUniqueInput!, $data: UserUpdateInput!) {
+  updateUser(where: $where, data: $data) {
+    id
+  }
+}`
 
 //Traer todos los cultivos a los que pertenece un usuario
 // Variables
@@ -170,16 +202,24 @@ export const CREATE_RANCH = gql`mutation Mutation($data: RanchCreateInput!) {
 
 //Obtiene el rancho junto con todos los miembros de los ranchos
 // Variables
-// "where": {
-//   "id": "{id del rancho}"
+// {
+//   "where": {
+//     "id": "cm3qkpn4c0000yad7ded8nz44"
+//   },
+//   "userWhere2": {
+//     "accountStatus": {
+//       "not": {
+//         "equals": "suspended"
+//       }
+//     }
+//   }
 // }
-
 export const GET_RANCH_MEMBERS = gql`
-query Query($where: RanchWhereUniqueInput!) {
+query Query($where: RanchWhereUniqueInput!, $userWhere2: UserWhereInput!) {
   ranch(where: $where) {
     id
     ranch_name
-    user {
+    user(where: $userWhere2) {
       id
       full_name
       email
@@ -189,7 +229,8 @@ query Query($where: RanchWhereUniqueInput!) {
       accountStatus
     }
   }
-}`
+}
+`
 
 
 //Trae la info de un cultivo

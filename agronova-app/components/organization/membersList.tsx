@@ -1,18 +1,73 @@
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { IconButton } from 'react-native-paper';
+import { OrganizationContext } from '../context/OrganizationContext';
+import DeleteConfirmationModal from '../widgets/ConfirmModal';
+import { GET_RANCH_MEMBERS } from '@/api/queries/queryUsers';
+import { useQuery } from '@apollo/client';
+// const members = [
 
-const members = [
-  { name: 'Antonio Leon', role: 'Administrador' },
-  { name: 'Francisco Baños', role: 'Peón' },
-  { name: 'Pablo Balboa', role: 'Ingeniero Agrónomo' },
-  { name: 'Carlos Ramirez', role: 'Contador' },
-  { name: 'Maria Perez', role: 'Especialista en Ventas' },
-  { name: 'Juan Castillo', role: 'Supervisor de Campo' },
-];
+//   { name: 'Antonio Leon', role: 'Administrador' },
+//   { name: 'Francisco Baños', role: 'Peón' },
+//   { name: 'Pablo Balboa', role: 'Ingeniero Agrónomo' },
+//   { name: 'Carlos Ramirez', role: 'Contador' },
+//   { name: 'Maria Perez', role: 'Especialista en Ventas' },
+//   { name: 'Juan Castillo', role: 'Supervisor de Campo' },
+// ];
 
 export default function MembersList() {
+
+
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
+  }
+
+  const {setAddMember, setUpdateMember, setSelectedUserId, selectedUserName, setSelectedUserName, setSelectedUserPhone, setSelectedUserRole} = organizationContext;
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const { data, loading, error } = useQuery(GET_RANCH_MEMBERS, {
+    variables: { 
+      where: { 
+        id: "cm3qkpn4c0000yad7ded8nz44"
+      },
+      userWhere2: {
+        accountStatus: {
+          not: {
+            equals: "suspended"
+          }
+        }
+      }
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const handleConfirmDelete = (name: string | null) => {
+    console.log('Cultivo eliminado:', name);
+    setModalVisible(false); // Cerrar el modal después de confirmar la eliminación
+  };
+
+
+  const handleAddUser = () => {
+    setAddMember(true)
+  }
+  const handleUpdateUser = (userId : any, name : any, phone : any, role : any) => {
+    setUpdateMember(true)
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
+    setSelectedUserPhone(phone);
+    setSelectedUserRole(role)
+  }
+  const handleDeleteUser = (userId : any, name : any) => {
+    setModalVisible(true);
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
+  }
+
+  const members = data?.ranch?.user || [];
+
   return (
     <View style={styles.membersContainer}>
       <View style={styles.header}>
@@ -20,7 +75,7 @@ export default function MembersList() {
         <View style={styles.addButtonContainer}>
           <IconButton
             icon="plus"
-            onPress={() => console.log('Agregar miembro')}
+            onPress={handleAddUser}
             iconColor={'#ffffff'}
             size={20}
             style={styles.addButton}
@@ -28,9 +83,9 @@ export default function MembersList() {
         </View>
       </View>
       <ScrollView style={styles.membersList} contentContainerStyle={styles.scrollContent}>
-        {members.map((member, index) => (
+        {members.map((member : any, index: any) => (
           <View
-            key={index}
+            key={member.id}
             style={[styles.memberItem, { backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#ececec' }]}
           >
             <Image
@@ -40,7 +95,7 @@ export default function MembersList() {
               style={styles.memberImage}
             />
             <View style={styles.memberInfo}>
-              <ThemedText style={styles.memberName}>{member.name}</ThemedText>
+              <ThemedText style={styles.memberName}>{member.full_name}</ThemedText>
               <ThemedText style={styles.memberRole}>{member.role}</ThemedText>
             </View>
             <View style={styles.iconContainer}>
@@ -53,22 +108,29 @@ export default function MembersList() {
               />
               <IconButton
                 icon="pencil"
-                onPress={() => console.log('Editar miembro')}
+                onPress={() => handleUpdateUser(member.id,member.full_name, member.phone_number, member.role)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
               />
               <IconButton
                 icon="trash-can"
-                onPress={() => console.log('Borrar miembro')}
+                onPress={() => handleDeleteUser(member.id,member.name)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}
               />
+              
             </View>
           </View>
         ))}
       </ScrollView>
+      <DeleteConfirmationModal
+                visible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onConfirmDelete={() => handleConfirmDelete(selectedUserName)}  
+                itemName={selectedUserName}            
+      />
     </View>
   );
 }

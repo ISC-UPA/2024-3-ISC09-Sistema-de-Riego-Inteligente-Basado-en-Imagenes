@@ -6,7 +6,7 @@ interface DeleteConfirmationModalProps {
   visible: boolean; // Controla si el modal está visible o no
   onClose: () => void; // Función para cerrar el modal
   onConfirmDelete: () => void; // Función para confirmar la eliminación
-  itemName: string; // Nombre del elemento que se está eliminando
+  itemName: string | null; // Nombre del elemento que se está eliminando
 }
 
 export default function DeleteConfirmationModal({
