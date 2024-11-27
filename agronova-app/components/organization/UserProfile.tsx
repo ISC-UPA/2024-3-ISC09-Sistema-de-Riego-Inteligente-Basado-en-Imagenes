@@ -1,38 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Avatar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { Stack } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
+import { OrganizationContext } from '@/components/context/OrganizationContext'; // Importa el contexto
 
 export default function ProfileScreen() {
   const router = useRouter();
 
-  // Estado para almacenar el nombre completo y el correo electrónico
-  const [userFullName, setUserFullName] = useState<string>('Nombre no disponible');
-  const [userEmail, setUserEmail] = useState<string>('Email no disponible');
+  // Acceder al contexto
+  const organizationContext = useContext(OrganizationContext);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const fullName = await AsyncStorage.getItem('userFullName');
-        const email = await AsyncStorage.getItem('userEmail');
+  // Verificar si el contexto está definido
+  if (!organizationContext) {
+    return <Text>Error: No se ha podido cargar el contexto de la organización.</Text>;
+  }
 
-        if (fullName) {
-          setUserFullName(fullName); // Asigna el nombre del usuario si existe
-        }
-
-        if (email) {
-          setUserEmail(email); // Asigna el email del usuario si existe
-        }
-      } catch (error) {
-        console.error('Error al obtener la información del usuario de AsyncStorage', error);
-      }
-    };
-
-    fetchUserInfo(); // Llamada a la función al montar el componente
-  }, []);
+  const { userFullName, userEmail } = organizationContext;
 
   return (
     <LinearGradient
@@ -49,8 +34,8 @@ export default function ProfileScreen() {
         />
 
         {/* Información del usuario */}
-        <Text style={styles.name}>{userFullName}</Text>
-        <Text style={styles.email}>{userEmail}</Text>
+        <Text style={styles.name}>{userFullName || 'Nombre no disponible'}</Text>
+        <Text style={styles.email}>{userEmail || 'Email no disponible'}</Text>
         <Text style={styles.role}>Usuario</Text> {/* Puedes cambiar esto dinámicamente si tienes roles */}
 
         {/* Botones de acción */}

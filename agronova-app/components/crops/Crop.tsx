@@ -1,13 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Button, Switch, Card, IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
 import RecordsInfoCard from '../widgets/RecordsInfoCard';
 import ParallaxScrollView from '../widgets/ParallaxScrollView';
-import { useQuery } from '@apollo/client';
-import { GET_CROP_INFO } from '@/api/queries/queryUsers'; // Asegúrate de que la ruta sea correcta
 
 export default function CropScreen() {
   const cropContext = useContext(CropContext);
@@ -17,27 +15,10 @@ export default function CropScreen() {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { selectedCropId, clearCropId, setStatistics } = cropContext;
+  const { clearCropId, setStatistics } = cropContext;
+
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
-
-  // Realizar la petición para obtener los datos del cultivo
-  const { loading, error, data } = useQuery(GET_CROP_INFO, {
-    variables: { where: { id: selectedCropId } }, // Utilizar el `selectedCropId` como variable
-    skip: !selectedCropId, // Evitar el query si no hay un `id` seleccionado
-  });
-
-  // Manejo de carga y errores
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0284c7" />;
-  }
-  
-  if (error) {
-    return <Text>Error: {error.message}</Text>;
-  }
-
-  // Si los datos están disponibles
-  const crop = data?.crop;
 
   return (
     <LinearGradient
@@ -45,13 +26,13 @@ export default function CropScreen() {
       style={{ flex: 1 }}
     >
       <View style={styles.headerContainer}>
-        <IconButton
-          icon="chevron-left"
-          size={24}
-          onPress={clearCropId}
-        />
-        <Text style={styles.titleText}>{crop?.crop_name || 'Cultivo'}</Text>
-      </View>
+          <IconButton
+            icon="chevron-left"
+            size={24}
+            onPress={clearCropId}
+          />
+          <Text style={styles.titleText}>Cultivo X</Text>
+        </View>
       <ThemedView 
         style={{ flex: 1 }}
         lightColor="transparent"
@@ -64,23 +45,23 @@ export default function CropScreen() {
             <View style={styles.descriptionContainer}>
               <View style={styles.locationContainer}>
                 <IconButton icon="map-marker" size={20} />
-                <Text style={styles.locationText}>{crop?.location || 'Sin ubicación'}</Text>
+                <Text style={styles.locationText}>Ags, Ags</Text>
               </View>
               <View style={styles.switchContainer}>
-                <Text style={styles.text}>Automático</Text>
-                <Switch
-                  value={isAutomatic}
-                  onValueChange={toggleSwitch}
-                  color="#65a30d"
-                  thumbColor="#d1d5db"
-                />
+                  <Text style={styles.text}>Automático</Text>
+                  <Switch
+                    value={isAutomatic}
+                    onValueChange={toggleSwitch}
+                    color="#65a30d"
+                    thumbColor="#d1d5db"
+                  />
               </View>
             </View>
           </View>
           <View>
             <Card style={styles.imageContainer}>
               <Image 
-                source={{ uri: 'https://via.placeholder.com/150' }} // Puedes cambiar a una imagen real si tienes el enlace
+                source={{ uri: 'https://via.placeholder.com/150' }} 
                 style={styles.image}
               />
             </Card>
@@ -138,6 +119,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
+    //justifyContent: 'space-between',
     alignItems: 'center',
   },
   descriptionContainer: {
