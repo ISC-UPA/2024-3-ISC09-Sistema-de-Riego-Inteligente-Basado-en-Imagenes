@@ -7,24 +7,37 @@ import { ThemedView } from '@/components/widgets/ThemedView';
 import { StyleSheet, ScrollView, ActivityIndicator, Text } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
-import { OrganizationContext } from '../context/OrganizationContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CropList() {
-  const organizationContext = React.useContext(OrganizationContext);
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [ranchId, setRanchId] = React.useState<string | null>(null);
 
-  if (!organizationContext) {
-    throw new Error('OrganizationContext debe estar dentro de un proveedor OrganizationProvider');
-  }
+  // Cargar datos desde AsyncStorage cuando el componente se monta
+  React.useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+        if (storedRanchId) {
+          setRanchId(storedRanchId);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos desde AsyncStorage', error);
+      }
+    };
 
-  const { userId } = organizationContext;
+    loadUserData();
+  }, []);
 
   // Query para obtener el rancho del usuario
   const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
     variables: { where: { id: userId } },
+    skip: !userId, // Solo ejecutar este query si ya tenemos el userId
   });
-
-  // Extraer el ID del rancho
-  const ranchId = userRanchData?.user?.ranch_id?.id;
 
   // Query para obtener los cultivos del rancho
   const { data: ranchCropsData, loading: ranchCropsLoading, error: ranchCropsError } = useQuery(GET_RANCH_CROPS, {
@@ -46,7 +59,7 @@ export default function CropList() {
 
   return (
     <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+      colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
       <ThemedView style={{ flex: 1, padding: 16 }}

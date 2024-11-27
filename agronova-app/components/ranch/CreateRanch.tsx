@@ -2,33 +2,26 @@ import React, { useState, useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { router, Stack } from 'expo-router';
+import { router } from 'expo-router';
 import { useMutation } from '@apollo/client';
-import { CREATE_RANCH } from '@/api/queries/queryUsers';  // Asegúrate de que el path sea correcto
-import { OrganizationContext } from '../context/OrganizationContext';
+import { CREATE_RANCH, UPDATE_USER_STATUS } from '@/api/queries/queryUsers'; 
 
 const CreateRanchScreen: React.FC = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar el mensaje de error
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [createRanch, { loading, error }] = useMutation(CREATE_RANCH);
+  const [createRanch, { loading }] = useMutation(CREATE_RANCH);
+  const [updateUserStatus] = useMutation(UPDATE_USER_STATUS);
 
-  const oraganizationContext = useContext(OrganizationContext);
 
-  if (!oraganizationContext) {
-    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
-  }
-
-  const { userId } = oraganizationContext;
-  
   const handleCreateRanch = async () => {
     if (!nombre.trim() || !descripcion.trim()) {
-      setErrorMessage('Todos los campos son obligatorios');  // Mostrar el mensaje de error
-      Alert.alert('Error', 'Todos los campos son obligatorios'); // También mostrar el Alert como respaldo
+      setErrorMessage('Todos los campos son obligatorios');
+      Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
     }
-    setErrorMessage(''); // Limpiar el mensaje de error si todo está correcto
+    setErrorMessage('');
 
     try {
       const response = await createRanch({
@@ -37,14 +30,21 @@ const CreateRanchScreen: React.FC = () => {
             ranch_name: nombre,
             description: descripcion,
             user: {
-              connect: [{ id: userId }] // Cambia este valor por el ID correcto
+              connect: [{ id: userId }]
             }
           }
         }
       });
 
       if (response.data) {
-        Alert.alert('Éxito', 'Rancho creado exitosamente');
+        await updateUserStatus({
+          variables: {
+            where: { id: userId },
+            data: { accountStatus: 'active' }
+          }
+        });
+
+        Alert.alert('Éxito', 'Rancho creado y estado de usuario actualizado a activo');
         router.push('(tabs)');
       }
     } catch (error) {
@@ -55,10 +55,9 @@ const CreateRanchScreen: React.FC = () => {
 
   return (
     <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+      colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']} 
       style={{ flex: 1 }}
     >
-      <Stack.Screen options={{ title: '', headerShown: false }} />
       <View style={styles.header}>
         <Image
           source={require('@/assets/images/logo_text.png')}
@@ -85,7 +84,7 @@ const CreateRanchScreen: React.FC = () => {
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
           />
 
-          {errorMessage ? (  // Mostrar el mensaje de error si existe
+          {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
 
@@ -110,7 +109,6 @@ const CreateRanchScreen: React.FC = () => {
               Crear
             </Button>
           </View>
-          {error && <Text style={styles.errorText}>Error al crear el rancho</Text>}
         </View>
       </View>  
     </LinearGradient>    
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f9ff',
     paddingHorizontal: 10,
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
 });
 
