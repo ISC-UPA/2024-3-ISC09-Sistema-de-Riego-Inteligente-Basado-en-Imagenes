@@ -2,7 +2,7 @@ import Organization  from '@/components/organization/OrganizationInfo';
 import React, { useContext } from 'react';
 import { OrganizationContext } from '@/components/context/OrganizationContext';
 import AddMemberScreen from '@/components/organization/addMember';
-import DeleteConfirmationModal from '@/components/widgets/ConfirmModal';
+import MemberProfile from '@/components/organization/MemberProfile';
 
 export default function OrganizationScreen() {
   const organizationContext = useContext(OrganizationContext);
@@ -11,12 +11,12 @@ export default function OrganizationScreen() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {addMember, updateMember, deleteRanch} = organizationContext;
+  const {addMember, updateMember, viewMember} = organizationContext;
 
   if(addMember || updateMember){
     return <AddMemberScreen/>
-  }else if(deleteRanch){
-    /*Poner el componente para eliminar un rancho*/
+  }else if(viewMember){
+    return <MemberProfile></MemberProfile>
   } else {return (
     <Organization></Organization>
   );

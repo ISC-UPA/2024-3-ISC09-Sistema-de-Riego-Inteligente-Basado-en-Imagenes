@@ -6,21 +6,39 @@ import { Button, Avatar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OrganizationContext } from '../context/OrganizationContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
 
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
+  }
+
+  const {setUpdateMember, setViewMember, setSelectedUserId,
+          setSelectedUserName, setSelectedUserPhone, setSelectedUserRole} = organizationContext;
+
   // Estado para almacenar el nombre completo, correo electrónico y rol de usuario
   const [userFullName, setUserFullName] = useState<string>('Nombre no disponible');
+  const [userId, setUserId] = useState<string>('Id no disponible');
   const [userEmail, setUserEmail] = useState<string>('Email no disponible');
   const [userRole, setUserRole] = useState<string>('Rol no disponible');
+  const [userPhone, setUserPhone] = useState<string>('Número de telefono no disponible');
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
+        const id = await AsyncStorage.getItem('userId');
         const fullName = await AsyncStorage.getItem('userFullName');
         const email = await AsyncStorage.getItem('userEmail');
         const role = await AsyncStorage.getItem('userRole'); // Obtener el rol del usuario
+        const phone = await AsyncStorage.getItem('userPhoneNumber'); // Obtener el rol del usuario
+
+        if (id) {
+          setUserId(id); // Asigna el nombre del usuario si existe
+        }
 
         if (fullName) {
           setUserFullName(fullName); // Asigna el nombre del usuario si existe
@@ -33,6 +51,10 @@ export default function ProfileScreen() {
         if (role) {
           setUserRole(role); // Asigna el rol del usuario si existe
         }
+
+        if(phone){
+          setUserPhone(phone);
+        }
       } catch (error) {
         console.error('Error al obtener la información del usuario de AsyncStorage', error);
       }
@@ -40,6 +62,15 @@ export default function ProfileScreen() {
 
     fetchUserInfo(); // Llamada a la función al montar el componente
   }, []);
+
+  const handleUpdateUser = (userId : any, name : any, phone : any, role : any) => {
+    router.push('/organization')
+    setUpdateMember(true)
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
+    setSelectedUserPhone(phone);
+    setSelectedUserRole(role);
+  }
 
   return (
     <LinearGradient
@@ -66,7 +97,7 @@ export default function ProfileScreen() {
             mode="contained" 
             buttonColor="#0284c7"
             textColor="#fff"
-            onPress={() => alert('Editar perfil')}
+            onPress={() => handleUpdateUser(userId, userFullName, userPhone, userRole )}
             style={styles.button}
           >
             Editar perfil
