@@ -93,7 +93,7 @@ export default function MembersList() {
     setSelectedUserId(userId);
     setSelectedUserName(name);
     setSelectedUserPhone(phone);
-    setSelectedUserRole(role)
+    setSelectedUserRole(role);
   }
   const handleDeleteUser = (userId : any, name : any) => {
     setModalVisible(true);
