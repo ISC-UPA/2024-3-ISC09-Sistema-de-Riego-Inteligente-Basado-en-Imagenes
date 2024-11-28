@@ -19,6 +19,20 @@ const AddMemberScreen: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [createUser] = useMutation(CREATE_USER);
   const [updateUser] = useMutation(UPDATE_USER);
+  const [ranchId, setRanchId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRanchId = async () => {
+      try {
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        setRanchId(storedRanchId);
+      } catch (error) {
+        console.error('Error al obtener el ranchId del AsyncStorage:', error);
+      }
+    };
+
+    fetchRanchId();
+  }, []);
 
   const organizationContext = useContext(OrganizationContext)
   if (!organizationContext) {
@@ -133,7 +147,7 @@ const AddMemberScreen: React.FC = () => {
                 full_name: nombre,
                 email: email,
                 phone_number: telefono,
-                ranch_id: { connect: { id: "4564646546dsadasd" } },
+                ranch_id: { connect: { id: ranchId } },
                 role: rol,
                 accountStatus: accountStatus,
               },
@@ -240,7 +254,7 @@ const AddMemberScreen: React.FC = () => {
             >
               <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
               <Picker.Item label="Administrador" value="Administrador" />
-              <Picker.Item label="Agronomo" value="Agronomo" />
+              <Picker.Item label="Agrónomo" value="Agrónomo" />
               <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
             </Picker>
           </View>

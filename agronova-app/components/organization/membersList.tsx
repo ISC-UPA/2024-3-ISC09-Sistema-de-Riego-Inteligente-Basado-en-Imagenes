@@ -7,6 +7,8 @@ import DeleteConfirmationModal from '../widgets/ConfirmModal';
 import { GET_RANCH_MEMBERS } from '@/api/queries/queryUsers';
 import { useMutation, useQuery } from '@apollo/client';
 import { DELETE_USER } from '@/api/queries/queryUsers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 // const members = [
 
 //   { name: 'Antonio Leon', role: 'Administrador' },
@@ -29,11 +31,25 @@ export default function MembersList() {
   const {setAddMember, setUpdateMember, setSelectedUserId, selectedUserName, setSelectedUserName, setSelectedUserPhone, setSelectedUserRole, selectedUserId} = organizationContext;
   const [isModalVisible, setModalVisible] = useState(false);
   const [deleteUser] = useMutation(DELETE_USER);
+  const [ranchId, setRanchId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRanchId = async () => {
+      try {
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        setRanchId(storedRanchId);
+      } catch (error) {
+        console.error('Error al obtener el ranchId del AsyncStorage:', error);
+      }
+    };
+
+    fetchRanchId();
+  }, []);
 
   const { data, loading, error, refetch } = useQuery(GET_RANCH_MEMBERS, {
     variables: { 
       where: { 
-        id: "cm3qkpn4c0000yad7ded8nz44"
+        id: ranchId
       },
       userWhere2: {
         accountStatus: {
@@ -64,7 +80,7 @@ export default function MembersList() {
       console.error('Error al eliminar el usuario:', error);
       alert('Error al eliminar el usuario');
     }
-    console.log('Cultivo eliminado:', name);
+    console.log('Usuario eliminado:', name);
     setModalVisible(false); // Cerrar el modal después de confirmar la eliminación
   };
 
