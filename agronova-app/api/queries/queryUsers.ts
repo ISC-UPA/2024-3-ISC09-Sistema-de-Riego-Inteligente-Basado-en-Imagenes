@@ -252,6 +252,62 @@ export const GET_CROP_INFO = gql`query Query($where: CropWhereUniqueInput!) {
   }
 }`
 
+
+//Trae la info del cultivo con la imágen más reciente
+// {
+//   "where": {
+//     "id": "{id cultivo}"
+//   },
+//   "cropMediaWhere2": {
+//     "media_type": {
+//       "equals": "photo"
+//     }
+//   }
+// }
+export const GET_CROP_INFO_RECENT_IMAGE = gql`query Query($where: CropWhereUniqueInput!, $cropMediaWhere2: CropMediaWhereInput!) {
+  crop(where: $where) {
+    id
+    crop_name
+    location
+    latitude
+    longitude
+    device {
+      id
+      serial_number
+    }
+    crop_media(orderBy: { date: desc }, take: 1, where: $cropMediaWhere2) {
+      id
+      address
+      date
+      media_type
+    }
+  }
+}
+`
+
+//Trae la imágen más reciente de un cultivo
+// {
+//   "where": {
+//     "id": "{id cultivo}"
+//   },
+//   "cropMediaWhere2": {
+//     "media_type": {
+//       "equals": "photo"
+//     }
+//   }
+// }
+export const GET_CROP_RECENT_IMAGE = gql`query Query($where: CropWhereUniqueInput!, $cropMediaWhere2: CropMediaWhereInput!) {
+  crop(where: $where) {
+    crop_media(orderBy: { date: desc }, take: 1, where: $cropMediaWhere2) {
+      id
+      address
+      date
+      media_type
+    }
+  }
+}
+`
+
 //Crea un cultivo
 // Variables
 // "data": {
@@ -327,6 +383,7 @@ export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueI
   }
 }`
 
+
 //Obtener las 5 fotos más recientes
 // {
 //   "where": {
@@ -356,3 +413,20 @@ export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!, $ta
   }
 }
 `
+
+//Crea un dispositivo
+// {
+//   "data": {
+//     "serial_number": "45464fsdf546",
+//     "crop_id": {
+//       "connect": {
+//         "id": "{id cultivo}"
+//       }
+//     }
+//   }
+// }
+export const CREATE_DEVICE = gql`mutation Mutation($data: DeviceCreateInput!) {
+  createDevice(data: $data) {
+    id
+  }
+}`
