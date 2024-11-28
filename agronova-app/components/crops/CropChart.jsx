@@ -14,22 +14,18 @@ import {
 // Registrar los componentes necesarios de Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-export const CropChart = ({ labels = [], dataValues = [], label = '' }) => {
+export const CropChart = ({ labels = [], datasets = [] }) => {
   const data = {
     labels,
-    datasets: [
-      {
-        label,
-        data: dataValues,
-        borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
-        backgroundColor: 'rgba(75, 192, 192, 0.5)', // Color del relleno de los puntos
-        pointStyle: 'circle', // Estilo de los puntos siempre definido como círculo
-        pointRadius: 6, // Radio del punto
-        pointHoverRadius: 8, // Radio del punto al pasar el cursor
-        borderWidth: 2, // Grosor de la línea
-        showLine: true, // Oculta la línea para mostrar solo los puntos
-      },
-    ],
+    datasets: datasets.map((dataset) => ({
+      ...dataset,
+      pointStyle: 'circle', // Estilo de los puntos (círculo)
+      pointRadius: 6, // Radio del punto
+      pointHoverRadius: 8, // Radio del punto al pasar el cursor
+      borderWidth: 2, // Grosor de la línea
+      showLine: true, // Asegura que se dibujen líneas entre los puntos
+      tension: 0.4, // Controla la suavidad de las líneas
+    })),
   };
 
   const options = {
@@ -42,8 +38,7 @@ export const CropChart = ({ labels = [], dataValues = [], label = '' }) => {
     plugins: {
       legend: { position: 'top' },
       title: {
-        display: false,
-        text: 'Estadísticas del Cultivo',
+        display: true,
       },
     },
   };
