@@ -113,12 +113,11 @@ type User {
   phone_number: String
   billing_plan_id: BillingPlan
   ranch_id: Ranch
-  role_id: Role
   crops(where: CropWhereInput! = {}, orderBy: [CropOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CropWhereUniqueInput): [Crop!]
   cropsCount(where: CropWhereInput! = {}): Int
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input UserWhereUniqueInput {
@@ -136,11 +135,10 @@ input UserWhereInput {
   phone_number: StringFilter
   billing_plan_id: BillingPlanWhereInput
   ranch_id: RanchWhereInput
-  role_id: RoleWhereInput
   crops: CropManyRelationFilter
   profile_picture: StringFilter
+  role: StringNullableFilter
   accountStatus: StringNullableFilter
-  adAuthenticationStatus: BooleanFilter
 }
 
 input CropManyRelationFilter {
@@ -169,8 +167,8 @@ input UserOrderByInput {
   email: OrderDirection
   phone_number: OrderDirection
   profile_picture: OrderDirection
+  role: OrderDirection
   accountStatus: OrderDirection
-  adAuthenticationStatus: OrderDirection
 }
 
 input UserUpdateInput {
@@ -179,11 +177,10 @@ input UserUpdateInput {
   phone_number: String
   billing_plan_id: BillingPlanRelateToOneForUpdateInput
   ranch_id: RanchRelateToOneForUpdateInput
-  role_id: RoleRelateToOneForUpdateInput
   crops: CropRelateToManyForUpdateInput
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input BillingPlanRelateToOneForUpdateInput {
@@ -195,12 +192,6 @@ input BillingPlanRelateToOneForUpdateInput {
 input RanchRelateToOneForUpdateInput {
   create: RanchCreateInput
   connect: RanchWhereUniqueInput
-  disconnect: Boolean
-}
-
-input RoleRelateToOneForUpdateInput {
-  create: RoleCreateInput
-  connect: RoleWhereUniqueInput
   disconnect: Boolean
 }
 
@@ -222,11 +213,10 @@ input UserCreateInput {
   phone_number: String
   billing_plan_id: BillingPlanRelateToOneForCreateInput
   ranch_id: RanchRelateToOneForCreateInput
-  role_id: RoleRelateToOneForCreateInput
   crops: CropRelateToManyForCreateInput
   profile_picture: String
+  role: String
   accountStatus: String
-  adAuthenticationStatus: Boolean
 }
 
 input BillingPlanRelateToOneForCreateInput {
@@ -237,11 +227,6 @@ input BillingPlanRelateToOneForCreateInput {
 input RanchRelateToOneForCreateInput {
   create: RanchCreateInput
   connect: RanchWhereUniqueInput
-}
-
-input RoleRelateToOneForCreateInput {
-  create: RoleCreateInput
-  connect: RoleWhereUniqueInput
 }
 
 input CropRelateToManyForCreateInput {
@@ -352,8 +337,8 @@ input CropWhereInput {
   id: IDFilter
   crop_name: StringFilter
   location: StringFilter
-  latitude: FloatFilter
-  longitude: FloatFilter
+  latitude: FloatNullableFilter
+  longitude: FloatNullableFilter
   users: UserManyRelationFilter
   ranch_id: RanchWhereInput
   statistic: StatisticManyRelationFilter
@@ -363,7 +348,7 @@ input CropWhereInput {
   isDeleted: BooleanFilter
 }
 
-input FloatFilter {
+input FloatNullableFilter {
   equals: Float
   in: [Float!]
   notIn: [Float!]
@@ -371,7 +356,7 @@ input FloatFilter {
   lte: Float
   gt: Float
   gte: Float
-  not: FloatFilter
+  not: FloatNullableFilter
 }
 
 input UserManyRelationFilter {
@@ -524,7 +509,7 @@ input StatisticWhereInput {
   air_temperature: FloatFilter
 }
 
-input FloatNullableFilter {
+input FloatFilter {
   equals: Float
   in: [Float!]
   notIn: [Float!]
@@ -532,7 +517,7 @@ input FloatNullableFilter {
   lte: Float
   gt: Float
   gte: Float
-  not: FloatNullableFilter
+  not: FloatFilter
 }
 
 input StatisticOrderByInput {
@@ -690,6 +675,7 @@ type CropMedia {
   id: ID!
   crop_id: Crop
   address: String
+  date: DateTime
   media_type: String
 }
 
@@ -704,18 +690,21 @@ input CropMediaWhereInput {
   id: IDFilter
   crop_id: CropWhereInput
   address: StringFilter
+  date: DateTimeFilter
   media_type: StringFilter
 }
 
 input CropMediaOrderByInput {
   id: OrderDirection
   address: OrderDirection
+  date: OrderDirection
   media_type: OrderDirection
 }
 
 input CropMediaUpdateInput {
   crop_id: CropRelateToOneForUpdateInput
   address: String
+  date: DateTime
   media_type: String
 }
 
@@ -727,6 +716,7 @@ input CropMediaUpdateArgs {
 input CropMediaCreateInput {
   crop_id: CropRelateToOneForCreateInput
   address: String
+  date: DateTime
   media_type: String
 }
 
@@ -783,139 +773,6 @@ input RanchCreateInput {
   user: UserRelateToManyForCreateInput
   crop: CropRelateToManyForCreateInput
   isDeleted: Boolean
-}
-
-type Role {
-  id: ID!
-  role_name: String
-  description: String
-  permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
-  permissionsCount(where: PermissionWhereInput! = {}): Int
-  user(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
-  userCount(where: UserWhereInput! = {}): Int
-}
-
-input RoleWhereUniqueInput {
-  id: ID
-  role_name: String
-}
-
-input RoleWhereInput {
-  AND: [RoleWhereInput!]
-  OR: [RoleWhereInput!]
-  NOT: [RoleWhereInput!]
-  id: IDFilter
-  role_name: StringFilter
-  description: StringFilter
-  permissions: PermissionManyRelationFilter
-  user: UserManyRelationFilter
-}
-
-input PermissionManyRelationFilter {
-  every: PermissionWhereInput
-  some: PermissionWhereInput
-  none: PermissionWhereInput
-}
-
-input RoleOrderByInput {
-  id: OrderDirection
-  role_name: OrderDirection
-  description: OrderDirection
-}
-
-input RoleUpdateInput {
-  role_name: String
-  description: String
-  permissions: PermissionRelateToManyForUpdateInput
-  user: UserRelateToManyForUpdateInput
-}
-
-input PermissionRelateToManyForUpdateInput {
-  disconnect: [PermissionWhereUniqueInput!]
-  set: [PermissionWhereUniqueInput!]
-  create: [PermissionCreateInput!]
-  connect: [PermissionWhereUniqueInput!]
-}
-
-input RoleUpdateArgs {
-  where: RoleWhereUniqueInput!
-  data: RoleUpdateInput!
-}
-
-input RoleCreateInput {
-  role_name: String
-  description: String
-  permissions: PermissionRelateToManyForCreateInput
-  user: UserRelateToManyForCreateInput
-}
-
-input PermissionRelateToManyForCreateInput {
-  create: [PermissionCreateInput!]
-  connect: [PermissionWhereUniqueInput!]
-}
-
-type Permission {
-  id: ID!
-  permission_name: String
-  description: String
-  roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
-  rolesCount(where: RoleWhereInput! = {}): Int
-}
-
-input PermissionWhereUniqueInput {
-  id: ID
-  permission_name: String
-}
-
-input PermissionWhereInput {
-  AND: [PermissionWhereInput!]
-  OR: [PermissionWhereInput!]
-  NOT: [PermissionWhereInput!]
-  id: IDFilter
-  permission_name: StringFilter
-  description: StringFilter
-  roles: RoleManyRelationFilter
-}
-
-input RoleManyRelationFilter {
-  every: RoleWhereInput
-  some: RoleWhereInput
-  none: RoleWhereInput
-}
-
-input PermissionOrderByInput {
-  id: OrderDirection
-  permission_name: OrderDirection
-  description: OrderDirection
-}
-
-input PermissionUpdateInput {
-  permission_name: String
-  description: String
-  roles: RoleRelateToManyForUpdateInput
-}
-
-input RoleRelateToManyForUpdateInput {
-  disconnect: [RoleWhereUniqueInput!]
-  set: [RoleWhereUniqueInput!]
-  create: [RoleCreateInput!]
-  connect: [RoleWhereUniqueInput!]
-}
-
-input PermissionUpdateArgs {
-  where: PermissionWhereUniqueInput!
-  data: PermissionUpdateInput!
-}
-
-input PermissionCreateInput {
-  permission_name: String
-  description: String
-  roles: RoleRelateToManyForCreateInput
-}
-
-input RoleRelateToManyForCreateInput {
-  create: [RoleCreateInput!]
-  connect: [RoleWhereUniqueInput!]
 }
 
 type Device {
@@ -1059,18 +916,6 @@ type Mutation {
   updateRanches(data: [RanchUpdateArgs!]!): [Ranch]
   deleteRanch(where: RanchWhereUniqueInput!): Ranch
   deleteRanches(where: [RanchWhereUniqueInput!]!): [Ranch]
-  createRole(data: RoleCreateInput!): Role
-  createRoles(data: [RoleCreateInput!]!): [Role]
-  updateRole(where: RoleWhereUniqueInput!, data: RoleUpdateInput!): Role
-  updateRoles(data: [RoleUpdateArgs!]!): [Role]
-  deleteRole(where: RoleWhereUniqueInput!): Role
-  deleteRoles(where: [RoleWhereUniqueInput!]!): [Role]
-  createPermission(data: PermissionCreateInput!): Permission
-  createPermissions(data: [PermissionCreateInput!]!): [Permission]
-  updatePermission(where: PermissionWhereUniqueInput!, data: PermissionUpdateInput!): Permission
-  updatePermissions(data: [PermissionUpdateArgs!]!): [Permission]
-  deletePermission(where: PermissionWhereUniqueInput!): Permission
-  deletePermissions(where: [PermissionWhereUniqueInput!]!): [Permission]
   createDevice(data: DeviceCreateInput!): Device
   createDevices(data: [DeviceCreateInput!]!): [Device]
   updateDevice(where: DeviceWhereUniqueInput!, data: DeviceUpdateInput!): Device
@@ -1107,12 +952,6 @@ type Query {
   ranch(where: RanchWhereUniqueInput!): Ranch
   ranches(where: RanchWhereInput! = {}, orderBy: [RanchOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RanchWhereUniqueInput): [Ranch!]
   ranchesCount(where: RanchWhereInput! = {}): Int
-  role(where: RoleWhereUniqueInput!): Role
-  roles(where: RoleWhereInput! = {}, orderBy: [RoleOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: RoleWhereUniqueInput): [Role!]
-  rolesCount(where: RoleWhereInput! = {}): Int
-  permission(where: PermissionWhereUniqueInput!): Permission
-  permissions(where: PermissionWhereInput! = {}, orderBy: [PermissionOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PermissionWhereUniqueInput): [Permission!]
-  permissionsCount(where: PermissionWhereInput! = {}): Int
   device(where: DeviceWhereUniqueInput!): Device
   devices(where: DeviceWhereInput! = {}, orderBy: [DeviceOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: DeviceWhereUniqueInput): [Device!]
   devicesCount(where: DeviceWhereInput! = {}): Int

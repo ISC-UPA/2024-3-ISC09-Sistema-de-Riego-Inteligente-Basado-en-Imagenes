@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Switch, Card, IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
@@ -9,6 +9,8 @@ import { useQuery } from '@apollo/client';
 import { GET_STATISTICS } from '@/api/queries/queryStatistics';
 import RecordsInfoCard from '../widgets/RecordsInfoCard';
 import ParallaxScrollView from '../widgets/ParallaxScrollView';
+import { useQuery } from '@apollo/client';
+import { GET_CROP_INFO } from '@/api/queries/queryUsers'; // Asegúrate de que la ruta sea correcta
 
 export default function CropScreen() {
   const cropContext = useContext(CropContext);
@@ -18,10 +20,10 @@ export default function CropScreen() {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { clearCropId, setStatistics } = cropContext;
-
+  const { selectedCropId, clearCropId, setStatistics } = cropContext;
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
+
 
   const [selectedParameter, setSelectedParameter] = useState('air_temperature'); // Parámetro por defecto
 
@@ -70,6 +72,24 @@ export default function CropScreen() {
     },
   ];
 
+  // Realizar la petición para obtener los datos del cultivo
+  const { loading, error, data } = useQuery(GET_CROP_INFO, {
+    variables: { where: { id: selectedCropId } }, // Utilizar el `selectedCropId` como variable
+    skip: !selectedCropId, // Evitar el query si no hay un `id` seleccionado
+  });
+
+  // Manejo de carga y errores
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0284c7" />;
+  }
+  
+  if (error) {
+    return <Text>Error: {error.message}</Text>;
+  }
+
+  // Si los datos están disponibles
+  const crop = data?.crop;
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
@@ -81,9 +101,8 @@ export default function CropScreen() {
           size={24}
           onPress={clearCropId}
         />
-        <Text style={styles.titleText}>Cultivo X</Text>
+        <Text style={styles.titleText}>{crop?.crop_name || 'Cultivo'}</Text>
       </View>
-
       <ThemedView 
         style={{ flex: 1 }}
         lightColor="transparent"
@@ -96,23 +115,23 @@ export default function CropScreen() {
             <View style={styles.descriptionContainer}>
               <View style={styles.locationContainer}>
                 <IconButton icon="map-marker" size={20} />
-                <Text style={styles.locationText}>Ags, Ags</Text>
+                <Text style={styles.locationText}>{crop?.location || 'Sin ubicación'}</Text>
               </View>
               <View style={styles.switchContainer}>
-                  <Text style={styles.text}>Automático</Text>
-                  <Switch
-                    value={isAutomatic}
-                    onValueChange={toggleSwitch}
-                    color="#65a30d"
-                    thumbColor="#d1d5db"
-                  />
+                <Text style={styles.text}>Automático</Text>
+                <Switch
+                  value={isAutomatic}
+                  onValueChange={toggleSwitch}
+                  color="#65a30d"
+                  thumbColor="#d1d5db"
+                />
               </View>
             </View>
           </View>
           <View>
             <Card style={styles.imageContainer}>
               <Image 
-                source={{ uri: 'https://via.placeholder.com/150' }} 
+                source={{ uri: 'https://via.placeholder.com/150' }} // Puedes cambiar a una imagen real si tienes el enlace
                 style={styles.image}
               />
             </Card>

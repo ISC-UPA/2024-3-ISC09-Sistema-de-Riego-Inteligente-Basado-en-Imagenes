@@ -21,22 +21,19 @@ model AzureADIntegration {
 }
 
 model User {
-  id                     String       @id @default(cuid())
-  full_name              String       @default("")
-  email                  String       @unique @default("")
-  phone_number           String       @default("")
-  billing_plan_id        BillingPlan? @relation("BillingPlan_user")
-  ranch_id               Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
-  ranch_idId             String?      @map("ranch_id")
-  role_id                Role?        @relation("User_role_id", fields: [role_idId], references: [id])
-  role_idId              String?      @map("role_id")
-  crops                  Crop[]       @relation("Crop_users")
-  profile_picture        String       @default("")
-  accountStatus          String?      @default("active")
-  adAuthenticationStatus Boolean      @default(false)
+  id              String       @id @default(cuid())
+  full_name       String       @default("")
+  email           String       @unique @default("")
+  phone_number    String       @default("")
+  billing_plan_id BillingPlan? @relation("BillingPlan_user")
+  ranch_id        Ranch?       @relation("User_ranch_id", fields: [ranch_idId], references: [id])
+  ranch_idId      String?      @map("ranch_id")
+  crops           Crop[]       @relation("Crop_users")
+  profile_picture String       @default("")
+  role            String?      @default("crop_worker")
+  accountStatus   String?      @default("Inactive")
 
   @@index([ranch_idId])
-  @@index([role_idId])
 }
 
 model Irrigation {
@@ -54,8 +51,8 @@ model Crop {
   id         String       @id @default(cuid())
   crop_name  String       @default("")
   location   String       @default("")
-  latitude   Float
-  longitude  Float
+  latitude   Float?
+  longitude  Float?
   users      User[]       @relation("Crop_users")
   ranch_id   Ranch?       @relation("Crop_ranch_id", fields: [ranch_idId], references: [id])
   ranch_idId String?      @map("ranch_id")
@@ -101,11 +98,12 @@ model FeaturePlan {
 }
 
 model CropMedia {
-  id         String  @id @default(cuid())
-  crop_id    Crop?   @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
-  crop_idId  String? @map("crop_id")
-  address    String  @default("")
-  media_type String  @default("photo")
+  id         String   @id @default(cuid())
+  crop_id    Crop?    @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
+  crop_idId  String?  @map("crop_id")
+  address    String   @default("")
+  date       DateTime @default(now())
+  media_type String   @default("photo")
 
   @@index([crop_idId])
 }
@@ -117,21 +115,6 @@ model Ranch {
   user        User[]  @relation("User_ranch_id")
   crop        Crop[]  @relation("Crop_ranch_id")
   isDeleted   Boolean @default(false)
-}
-
-model Role {
-  id          String       @id @default(cuid())
-  role_name   String       @unique @default("")
-  description String       @default("")
-  permissions Permission[] @relation("Permission_roles")
-  user        User[]       @relation("User_role_id")
-}
-
-model Permission {
-  id              String @id @default(cuid())
-  permission_name String @unique @default("")
-  description     String @default("")
-  roles           Role[] @relation("Permission_roles")
 }
 
 model Device {

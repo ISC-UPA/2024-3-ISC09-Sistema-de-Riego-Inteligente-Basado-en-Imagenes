@@ -5,6 +5,10 @@ import {
   makeRedirectUri,
   useAuthRequest,
   useAutoDiscovery,
+  TokenResponse,
+  TokenResponseConfig,
+  RefreshTokenRequestConfig,
+  DiscoveryDocument
 } from 'expo-auth-session';
 import { Text, SafeAreaView, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -25,7 +29,7 @@ export default function App() {
   const navigation = useNavigation();
   
   // Acceder al contexto
-  const { setUserId, setUserFullName, setUserEmail } = useContext(OrganizationContext);
+  const { setUserId, setUserFullName, setUserEmail} = useContext(OrganizationContext);
 
   const discovery = useAutoDiscovery(
     'https://login.microsoftonline.com/f03c71fb-da10-4831-93b3-79b594a2ec2a/v2.0',
@@ -46,7 +50,7 @@ export default function App() {
   const [request, , promptAsync] = useAuthRequest(
     {
       clientId,
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      scopes: ['openid', 'profile', 'email', 'offline_access','https://graph.microsoft.com/User.Invite.All'],
       redirectUri,
     },
     discovery,
@@ -63,10 +67,128 @@ export default function App() {
       console.log('Datos del usuario:', data.user);
       // Guardar datos en el contexto
       setUserId(data.user.id);
-      setUserFullName(data.user.fullName);
+      setUserFullName(data.user.full_name);
       setUserEmail(data.user.email);
+
+      if (data.user.accountStatus === 'inactive' && data.user.role === 'administrator') {
+        navigation.navigate('create-ranch');
+      } else {
+        navigation.navigate('(tabs)');
+      }
     }
   }, [data]);
+
+  useEffect(() => {
+    if (data && data.user) {
+      console.log('Datos del usuario:', data.user);
+      
+      // Guardar datos en el contexto
+      setUserId(data.user.id);
+      setUserFullName(data.user.full_name);
+      setUserEmail(data.user.email);
+  
+      // Almacenar los datos del usuario en AsyncStorage
+      const storeUserData = async () => {
+        try {
+          await AsyncStorage.setItem('userId', data.user.id);
+          await AsyncStorage.setItem('userFullName', data.user.full_name);
+          await AsyncStorage.setItem('userEmail', data.user.email);
+          await AsyncStorage.setItem('userRole', data.user.role);
+          if (data.user.ranch_id) {
+            await AsyncStorage.setItem('ranchId', data.user.ranch_id.id);
+          }
+          console.log('Datos del usuario guardados en AsyncStorage');
+        } catch (error) {
+          console.error('Error al guardar datos del usuario en AsyncStorage', error);
+        }
+      };
+  
+      storeUserData();
+  
+      // Lógica de navegación
+      if (data.user.accountStatus === 'inactive' && data.user.role === 'administrator') {
+        navigation.navigate('create-ranch');
+      } else {
+        navigation.navigate('(tabs)');
+      }
+    }
+  }, [data]);
+  
+
+  // Verificar si ya existe un token en AsyncStorage al iniciar la aplicación
+  useEffect(() => {
+    //Función para obtener el token de AsyncStorage
+    const loadToken = async () => {
+      const savedToken = await AsyncStorage.getItem('accessToken');
+      //Si existe el token, agregarlo al estado local
+      if (savedToken) {
+        setToken(savedToken);
+        await handleRefresh();
+        navigation.navigate('(tabs)')
+      }
+    };
+    //Llamada a la función para revisar si se necesita actualizar el token
+    
+    loadToken();
+
+  }, []);
+
+  const handleRefresh = async () => {
+    try {
+      // Obtener datos de AsyncStorage
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const expiresIn = await AsyncStorage.getItem('expiresIn');
+      const issuedAt = await AsyncStorage.getItem('issuedAt');
+
+      // Crear TokenResponseConfig con los datos de AsyncStorage
+      if (accessToken && refreshToken && expiresIn && issuedAt) {
+        const tokenConfig: TokenResponseConfig = {
+          accessToken: accessToken,
+          expiresIn: Number(expiresIn),
+          refreshToken: refreshToken,
+          issuedAt: Number(issuedAt),
+        };
+        
+        const tokenResponse = new TokenResponse(tokenConfig);
+
+        //La función shouldRefresh verifica si el token necesita actualizarse
+        
+        if (tokenResponse.shouldRefresh()) {
+          console.log('El token necesita ser refrescado');
+
+          //Crear configuración para actualizar el token
+          const refreshConfig: RefreshTokenRequestConfig = { clientId: clientId,refreshToken: tokenConfig.refreshToken }
+
+          //Crear el endpoint del token
+          const endpointConfig: Pick<DiscoveryDocument, "tokenEndpoint"> = { tokenEndpoint }
+
+          //Intentar refrescar el token de acceso usando refreshAsync
+          
+          const newTokenResponse = await tokenResponse.refreshAsync(refreshConfig, endpointConfig);
+
+          if (newTokenResponse) {
+            setToken(newTokenResponse.accessToken);
+
+            // Actualizar valores en AsyncStorage
+            await AsyncStorage.setItem('accessToken', newTokenResponse.accessToken);
+            await AsyncStorage.setItem('refreshToken', newTokenResponse.refreshToken ?? '');
+            await AsyncStorage.setItem('expiresIn', newTokenResponse.expiresIn?.toString() ?? '');
+            await AsyncStorage.setItem('issuedAt', newTokenResponse.issuedAt.toString());
+
+            console.log('Token refrescado y guardado correctamente');
+          }
+        } else {
+          console.log('El token es válido y no necesita refresco');
+        }
+      } else {
+        console.log('No se encontraron todos los datos necesarios en AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error al manejar el refresh del token:', error);
+      await handleSignOut()
+    }
+  }
 
   const handleSignIn = async () => {
     const result = await promptAsync();
@@ -97,7 +219,6 @@ export default function App() {
         await AsyncStorage.setItem('refreshToken', code.refreshToken ?? '');
         await AsyncStorage.setItem('expiresIn', code.expiresIn?.toString() || '');
         await AsyncStorage.setItem('issuedAt', code.issuedAt.toString());
-        navigation.navigate('(tabs)');
         console.log('Access token guardado correctamente');
       } catch (error) {
         console.error('Error al guardar access token en AsyncStorage', error);
@@ -134,7 +255,9 @@ export default function App() {
         <Text style={styles.descriptionText}>
           {token ? 'Sesión iniciada' : 'Por favor, inicia sesión'}
         </Text>
-        <Button
+
+        {
+          !token ? <Button
           disabled={!request && !discovery}
           icon="microsoft"
           buttonColor={'#1e40af'}
@@ -143,6 +266,8 @@ export default function App() {
         >
           {token ? 'Sign Out' : 'Iniciar sesión'}
         </Button>
+          : <></>
+        }
       </SafeAreaView>
     </LinearGradient>
   );

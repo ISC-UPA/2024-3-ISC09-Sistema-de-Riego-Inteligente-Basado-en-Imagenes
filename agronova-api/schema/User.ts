@@ -17,17 +17,27 @@ export const user = {
     phone_number: text({ validation: { isRequired: true } }),
     billing_plan_id: relationship({ ref: 'BillingPlan.user', many: false }),
     ranch_id: relationship({ ref: 'Ranch.user', many: false }),
-    role_id : relationship({ ref: 'Role.user', many: false }),
     crops: relationship({ref: 'Crop.users', many: true}),
     profile_picture: text(),
+    role: select({
+      options: [
+        { label: 'Administrator', value: 'Administrador' },
+        { label: 'Agronomist', value: 'Agrónomo' },
+        { label: 'Irrigation Manager', value: 'Supervisor de riego' },
+        { label: 'Crop Worker', value: 'Trabajador agrícola' },
+      ],
+      defaultValue: 'crop_worker',
+      ui: {
+        displayMode: 'segmented-control',
+      },
+    }),
     accountStatus: select({
       options: [
         { label: 'Active', value: 'active' },
         { label: 'Inactive', value: 'inactive' },
         { label: 'Suspended', value: 'suspended' },
       ],
-      defaultValue: 'active',
+      defaultValue: 'Inactive',
     }),
-    adAuthenticationStatus: checkbox(),
   },
 };
