@@ -19,7 +19,7 @@ export default function CropCard(props: CropCardProps) {
     throw new Error('CropCard debe ser utilizado dentro de un CropProvider');
   }
 
-  const { selectedCropId, setSelectedCropId, setUpdateCrop, setSelectedCropName, setSelectedCropLocation, setSelectedCropDevice } = cropContext; // Acceder al valor y la función del contexto
+  const { selectedCropId, setSelectedCropId, setUpdateCrop, setSelectedCropName, setSelectedCropLocation, setSelectedCropDevice, setReFetchCrop } = cropContext; // Acceder a setReFetchCrop
   const [itemId, setItemId] = useState<number>(0);
   const [isModalVisible, setModalVisible] = useState(false); // Estado del modal
   const [selectedItemName, setSelectedItemName] = useState(''); // Nombre del cultivo seleccionado
@@ -46,7 +46,6 @@ export default function CropCard(props: CropCardProps) {
     setSelectedCropLocation(props.location);
     setSelectedCropDevice(props.device);
     console.log('Editar cultivo', itemId);
-
   };
 
   const handleDeletePress = () => {
@@ -65,6 +64,9 @@ export default function CropCard(props: CropCardProps) {
       });
       console.log('Cultivo eliminado:', props.crop_name);
       setModalVisible(false); // Cerrar el modal después de confirmar la eliminación
+
+      // Actualizar el estado de reFetchCrop a true
+      setReFetchCrop(true); // Indicar que se debe hacer un refetch de los cultivos
     } catch (error) {
       console.error('Error eliminando el cultivo:', error);
     }
@@ -112,11 +114,9 @@ export default function CropCard(props: CropCardProps) {
   );
 }
 
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#f0f9ff',
-    margin: 10,
   },
   content: {
     justifyContent: 'center',

@@ -9,7 +9,6 @@ import { useQuery } from '@apollo/client';
 import { GET_STATISTICS } from '@/api/queries/queryStatistics';
 import RecordsInfoCard from '../widgets/RecordsInfoCard';
 import ParallaxScrollView from '../widgets/ParallaxScrollView';
-import { useQuery } from '@apollo/client';
 import { GET_CROP_INFO } from '@/api/queries/queryUsers'; // Asegúrate de que la ruta sea correcta
 
 export default function CropScreen() {
@@ -73,7 +72,7 @@ export default function CropScreen() {
   ];
 
   // Realizar la petición para obtener los datos del cultivo
-  const { loading, error, data } = useQuery(GET_CROP_INFO, {
+  const { loading, error, data: cropData } = useQuery(GET_CROP_INFO, {
     variables: { where: { id: selectedCropId } }, // Utilizar el `selectedCropId` como variable
     skip: !selectedCropId, // Evitar el query si no hay un `id` seleccionado
   });
@@ -88,7 +87,7 @@ export default function CropScreen() {
   }
 
   // Si los datos están disponibles
-  const crop = data?.crop;
+  const crop = cropData?.crop;
 
   return (
     <LinearGradient
@@ -145,7 +144,7 @@ export default function CropScreen() {
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
                 onPress={() => setSelectedParameter('air_temperature')}>
-                {lastTemperature ? `${lastTemperature}°C` : 'Cargando...'}
+                {lastTemperature ? `${lastTemperature}°C` : '...'}
               </Button>
               <Button 
                 icon="air-humidifier" 
@@ -154,7 +153,7 @@ export default function CropScreen() {
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
                 onPress={() => setSelectedParameter('air_humidity')}>
-                {lastHumidity ? `${lastHumidity}%` : 'Cargando...'}
+                {lastHumidity ? `${lastHumidity}%` : '...'}
               </Button>
               <Button 
                 icon="water-pump" 
@@ -163,7 +162,7 @@ export default function CropScreen() {
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
                 onPress={() => setSelectedParameter('soil_moisture')}>
-                {lastSoilMoisture ? `${lastSoilMoisture}%` : 'Cargando...'}
+                {lastSoilMoisture ? `${lastSoilMoisture}%` : '...'}
               </Button>
             </View>
           </View>

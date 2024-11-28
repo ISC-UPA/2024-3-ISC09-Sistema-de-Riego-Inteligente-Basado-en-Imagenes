@@ -4,14 +4,24 @@ import CropCard from '@/components/crops/CropCard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
-import { StyleSheet, ScrollView, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, Text, View } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CropContext } from '@/components/context/CropContext'; // Asegúrate de importar el contexto
+import ParallaxScrollView from '../widgets/ParallaxScrollView';
 
 export default function CropList() {
   const [userId, setUserId] = React.useState<string | null>(null);
   const [ranchId, setRanchId] = React.useState<string | null>(null);
+
+  // Obtener el contexto de cultivos
+  const cropContext = React.useContext(CropContext);
+  if (!cropContext) {
+    throw new Error('CropContext debe estar dentro de un CropProvider');
+  }
+  
+  const { reFetchCrop, setReFetchCrop } = cropContext;
 
   // Cargar datos desde AsyncStorage cuando el componente se monta
   React.useEffect(() => {
@@ -39,11 +49,19 @@ export default function CropList() {
     skip: !userId, // Solo ejecutar este query si ya tenemos el userId
   });
 
-  // Query para obtener los cultivos del rancho
-  const { data: ranchCropsData, loading: ranchCropsLoading, error: ranchCropsError } = useQuery(GET_RANCH_CROPS, {
+  // Query para obtener los cultivos del rancho con la función refetch
+  const { data: ranchCropsData, loading: ranchCropsLoading, error: ranchCropsError, refetch } = useQuery(GET_RANCH_CROPS, {
     variables: { where: { id: ranchId }, cropWhere2: { isDeleted: { equals: false } } },
     skip: !ranchId, // Solo ejecutar este query si ya tenemos el ranchId
   });
+
+  // Refetch crops cuando reFetchCrop es true
+  React.useEffect(() => {
+    if (reFetchCrop && ranchId) {
+      refetch(); // Hacemos el refetch de los cultivos
+      setReFetchCrop(false); // Resetear reFetchCrop para que no se repita el refetch innecesariamente
+    }
+  }, [reFetchCrop, ranchId, refetch, setReFetchCrop]);
 
   // Manejo de estados de carga y error
   if (userRanchLoading || ranchCropsLoading) {
@@ -62,7 +80,7 @@ export default function CropList() {
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
-      <ThemedView style={{ flex: 1, padding: 16 }}
+      <ThemedView style={{ flex: 1 }}
         lightColor="transparent"
         darkColor="transparent"
       >
@@ -70,18 +88,17 @@ export default function CropList() {
         <ThemedText style={styles.titleText}>
           {`Rancho "${ranchName}"`}
         </ThemedText>
-
-        {/* Button to add new crop */}
-        <AddButton />
-
         {/* Crops list */}
-        <ScrollView style={{ marginVertical: 25 }}>
+        <ParallaxScrollView>
           {crops.length > 0 ? (
             crops.map((crop: any) => <CropCard key={crop.id} {...crop} />)
           ) : (
             <ThemedText>No hay cultivos disponibles</ThemedText>
           )}
-        </ScrollView>
+        </ParallaxScrollView>
+        <View>
+          <AddButton />
+        </View>
       </ThemedView>
     </LinearGradient>
   );
@@ -92,5 +109,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#0c4a6e',
+    margin: 20,
   },
 });

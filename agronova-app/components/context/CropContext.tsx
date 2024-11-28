@@ -29,6 +29,9 @@ interface CropContextType {
 
   updateCrop: boolean;  
   setUpdateCrop: (value: boolean) => void; 
+
+  reFetchCrop: boolean;
+  setReFetchCrop: (value: boolean) => void; 
   
   //updateCrop:[];
   //setVar1:[
@@ -58,6 +61,7 @@ export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
   const [statistics, setStatistics] = useState<boolean>(false);
   const [addCrop, setAddCrop] = useState<boolean>(false);  
   const [updateCrop, setUpdateCrop] = useState<boolean>(false);  
+  const [reFetchCrop, setReFetchCrop] = useState<boolean>(false);  
 
   // Función para borrar el crop id
   const clearCropId = () => {
@@ -85,7 +89,8 @@ export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
         record, setRecord, 
         statistics, setStatistics,
         addCrop, setAddCrop, 
-        updateCrop, setUpdateCrop 
+        updateCrop, setUpdateCrop,
+        reFetchCrop, setReFetchCrop 
       }}>
       {children}
     </CropContext.Provider>

@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/client';
-import { CREATE_CROP, UPDATE_CROP_INFO } from '@/api/queries/queryUsers';
+import { CREATE_CROP, UPDATE_CROP_INFO, CREATE_DEVICE } from '@/api/queries/queryUsers';
 import { CropContext } from '@/components/context/CropContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,12 +19,27 @@ const CreateCropScreen: React.FC = () => {
     throw new Error('CropContext must be used within a CropProvider');
   }
 
-  const { setAddCrop, setUpdateCrop, updateCrop, selectedCropId, selectedCropName, selectedCropLocation, selectedCropDevice } = cropContext;
+  const { setAddCrop, setUpdateCrop, updateCrop, selectedCropId, selectedCropName, 
+    selectedCropLocation, selectedCropDevice, setReFetchCrop, setSelectedCropId } = cropContext;
 
   // Mutaciones
   const [createCrop] = useMutation(CREATE_CROP, {
-    onCompleted: () => {
-      Alert.alert('Éxito', 'El cultivo ha sido creado con éxito');
+    onCompleted: async (data) => {
+      const cropId = data.createCrop.id; // Obtén el ID del cultivo creado
+      // Aquí creas el dispositivo después de crear el cultivo
+      await createDevice({
+        variables: {
+          data: {
+            serial_number: device,
+            crop_id: {
+              connect: { id: cropId },
+            },
+          },
+        },
+      });
+      // Establece reFetchCrop a true
+      setReFetchCrop(true);
+      Alert.alert('Éxito', 'El cultivo y el dispositivo han sido creados con éxito');
       setAddCrop(false);
     },
     onError: (error) => {
@@ -34,6 +49,8 @@ const CreateCropScreen: React.FC = () => {
 
   const [updateCropMutation] = useMutation(UPDATE_CROP_INFO, {
     onCompleted: () => {
+      // Establece reFetchCrop a true
+      setReFetchCrop(true);
       Alert.alert('Éxito', 'El cultivo ha sido actualizado con éxito');
       setUpdateCrop(false);
     },
@@ -42,13 +59,22 @@ const CreateCropScreen: React.FC = () => {
     },
   });
 
+  const [createDevice] = useMutation(CREATE_DEVICE, {
+    onCompleted: () => {
+      // No necesitas hacer nada extra aquí, ya que el dispositivo se crea después del cultivo
+    },
+    onError: (error) => {
+      Alert.alert('Error', `Hubo un problema al crear el dispositivo: ${error.message}`);
+    },
+  });
+
   // Efecto para manejar la actualización del cultivo
   useEffect(() => {
     if (updateCrop) {
       setIsUpdate(true);
-      setName(selectedCropName || ''); // Aseguramos que no sea undefined
-      setLocation(selectedCropLocation || ''); // Aseguramos que no sea undefined
-      setDevice(selectedCropDevice || ''); // Aseguramos que no sea undefined
+      setName(selectedCropName || '');
+      setLocation(selectedCropLocation || '');
+      setDevice(selectedCropDevice || '');
     } else {
       // Si no estamos actualizando, limpiamos los campos
       setName('');
@@ -56,6 +82,7 @@ const CreateCropScreen: React.FC = () => {
       setDevice('');
     }
   }, [updateCrop, selectedCropName, selectedCropLocation]);
+
   const handleCreateCrop = async () => {
     if (!name.trim() || !location.trim() || !device) {
       setErrorMessage('Todos los campos son obligatorios');
@@ -77,9 +104,6 @@ const CreateCropScreen: React.FC = () => {
           data: {
             crop_name: name,
             location: location,
-            device: {
-              connect: {id : device}
-            },
             users: {
               connect: [{ id: userId }],
             },
@@ -108,10 +132,10 @@ const CreateCropScreen: React.FC = () => {
           data: {
             crop_name: name,
             location: location,
-            device: device,
           },
         },
       });
+      setSelectedCropId(null);
     } catch (error) {
       Alert.alert('Error', 'Hubo un problema al actualizar el cultivo');
     }
@@ -120,6 +144,7 @@ const CreateCropScreen: React.FC = () => {
   const handleBackPress = () => {
     setAddCrop(false);
     setUpdateCrop(false);
+    setSelectedCropId(null);
   };
 
   return (
