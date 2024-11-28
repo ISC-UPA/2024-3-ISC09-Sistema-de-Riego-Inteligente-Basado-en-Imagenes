@@ -4,7 +4,7 @@ import { text, relationship, select, checkbox, timestamp } from '@keystone-6/cor
 export const Device = {
   access: allowAll,
   fields: {
-    device_name: text({ validation: { isRequired: true }, label: 'Nombre del dispositivo' }),
+    device_name: text({ validation: { isRequired: false }, label: 'Nombre del dispositivo' }),
     serial_number: text({
       validation: { isRequired: true },
       isIndexed: 'unique',
@@ -20,7 +20,7 @@ export const Device = {
       label: 'Estado del dispositivo',
     }),
     iot_hub_connection_string: text({
-      validation: { isRequired: true },
+      validation: { isRequired: false },
       label: 'Cadena de conexión IoT Hub',
     }),
     crop_id: relationship({ ref: 'Crop.device', many: false }),
