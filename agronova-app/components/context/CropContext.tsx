@@ -6,6 +6,18 @@ interface CropContextType {
   setSelectedCropId: (id: number | null) => void;
   clearCropId: () => void;
 
+  selectedCropName: string | null;
+  setSelectedCropName: (name: string | null) => void;
+  clearSelectedCropName: () => void;
+
+  selectedCropLocation: string | null;
+  setSelectedCropLocation: (name: string | null) => void;
+  clearSelectedCropLocation: () => void;
+
+  selectedCropDevice: string | null;
+  setSelectedCropDevice: (name: string | null) => void;
+  clearSelectedCropDevice: () => void;
+
   record: boolean;  
   setRecord: (value: boolean) => void;  
 
@@ -39,6 +51,9 @@ interface CropProviderProps {
 // Crear el proveedor del contexto
 export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
   const [selectedCropId, setSelectedCropId] = useState<number | null>(null);
+  const [selectedCropName, setSelectedCropName] = useState<string | null>(null);
+  const [selectedCropLocation, setSelectedCropLocation] = useState<string | null>(null);
+  const [selectedCropDevice, setSelectedCropDevice] = useState<string | null>(null);
   const [record, setRecord] = useState<boolean>(false);  
   const [statistics, setStatistics] = useState<boolean>(false);
   const [addCrop, setAddCrop] = useState<boolean>(false);  
@@ -49,9 +64,24 @@ export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
     setSelectedCropId(null);
   };
 
+  const clearSelectedCropName = () => {
+    setSelectedCropName(null);
+  };
+
+  const clearSelectedCropLocation = () => {
+    setSelectedCropLocation(null);
+  };
+
+  const clearSelectedCropDevice = () => {
+    setSelectedCropDevice(null);
+  };
+
   return (
     <CropContext.Provider value={{ 
         selectedCropId, setSelectedCropId, clearCropId, 
+        selectedCropName, setSelectedCropName, clearSelectedCropName, 
+        selectedCropLocation, setSelectedCropLocation, clearSelectedCropLocation, 
+        selectedCropDevice, setSelectedCropDevice, clearSelectedCropDevice, 
         record, setRecord, 
         statistics, setStatistics,
         addCrop, setAddCrop, 

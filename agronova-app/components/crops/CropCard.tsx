@@ -9,6 +9,8 @@ import { DELETE_CROP } from '@/api/queries/queryUsers'; // Asegúrate de que la 
 interface CropCardProps {
   id: number;
   crop_name: string;
+  location: string;
+  device: string;
 }
 
 export default function CropCard(props: CropCardProps) {
@@ -17,7 +19,7 @@ export default function CropCard(props: CropCardProps) {
     throw new Error('CropCard debe ser utilizado dentro de un CropProvider');
   }
 
-  const { selectedCropId, setSelectedCropId, setUpdateCrop } = cropContext; // Acceder al valor y la función del contexto
+  const { selectedCropId, setSelectedCropId, setUpdateCrop, setSelectedCropName, setSelectedCropLocation, setSelectedCropDevice } = cropContext; // Acceder al valor y la función del contexto
   const [itemId, setItemId] = useState<number>(0);
   const [isModalVisible, setModalVisible] = useState(false); // Estado del modal
   const [selectedItemName, setSelectedItemName] = useState(''); // Nombre del cultivo seleccionado
@@ -40,7 +42,11 @@ export default function CropCard(props: CropCardProps) {
   const handleEditPress = () => {
     setSelectedCropId(itemId); // Actualizar el contexto con el ID del cultivo seleccionado
     setUpdateCrop(true); // Activar el flag para abrir la ventana de edición
+    setSelectedCropName(props.crop_name);
+    setSelectedCropLocation(props.location);
+    setSelectedCropDevice(props.device);
     console.log('Editar cultivo', itemId);
+
   };
 
   const handleDeletePress = () => {

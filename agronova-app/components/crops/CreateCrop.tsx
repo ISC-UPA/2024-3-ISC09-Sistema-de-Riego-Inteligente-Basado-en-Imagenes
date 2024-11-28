@@ -1,39 +1,64 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/client';
-import { CREATE_CROP } from '@/api/queries/queryUsers';
+import { CREATE_CROP, UPDATE_CROP_INFO } from '@/api/queries/queryUsers';
 import { CropContext } from '@/components/context/CropContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreateCropScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
-  const [deviceId, setDeviceId] = useState('');
+  const [device, setDevice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isUpdate, setIsUpdate] = useState(false); // Para detectar si estamos actualizando un cultivo
   const cropContext = useContext(CropContext);
 
   if (!cropContext) {
     throw new Error('CropContext must be used within a CropProvider');
   }
 
-  const { setAddCrop, setUpdateCrop, updateCrop } = cropContext;
+  const { setAddCrop, setUpdateCrop, updateCrop, selectedCropId, selectedCropName, selectedCropLocation, selectedCropDevice } = cropContext;
 
+  // Mutaciones
   const [createCrop] = useMutation(CREATE_CROP, {
-    onCompleted: (data) => {
-      Alert.alert('Success', 'The crop has been successfully created');
+    onCompleted: () => {
+      Alert.alert('Éxito', 'El cultivo ha sido creado con éxito');
       setAddCrop(false);
     },
     onError: (error) => {
-      Alert.alert('Error', `There was an issue creating the crop: ${error.message}`);
+      Alert.alert('Error', `Hubo un problema al crear el cultivo: ${error.message}`);
     },
   });
 
+  const [updateCropMutation] = useMutation(UPDATE_CROP_INFO, {
+    onCompleted: () => {
+      Alert.alert('Éxito', 'El cultivo ha sido actualizado con éxito');
+      setUpdateCrop(false);
+    },
+    onError: (error) => {
+      Alert.alert('Error', `Hubo un problema al actualizar el cultivo: ${error.message}`);
+    },
+  });
+
+  // Efecto para manejar la actualización del cultivo
+  useEffect(() => {
+    if (updateCrop) {
+      setIsUpdate(true);
+      setName(selectedCropName || ''); // Aseguramos que no sea undefined
+      setLocation(selectedCropLocation || ''); // Aseguramos que no sea undefined
+      setDevice(selectedCropDevice || ''); // Aseguramos que no sea undefined
+    } else {
+      // Si no estamos actualizando, limpiamos los campos
+      setName('');
+      setLocation('');
+      setDevice('');
+    }
+  }, [updateCrop, selectedCropName, selectedCropLocation]);
   const handleCreateCrop = async () => {
-    if (!name.trim() || !location.trim() || !deviceId) {
+    if (!name.trim() || !location.trim() || !device) {
       setErrorMessage('Todos los campos son obligatorios');
-      Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
     }
     setErrorMessage('');
@@ -43,7 +68,7 @@ const CreateCropScreen: React.FC = () => {
       const ranchId = await AsyncStorage.getItem('ranchId');
 
       if (!userId || !ranchId) {
-        Alert.alert('Error', 'Failed to retrieve user or ranch information');
+        Alert.alert('Error', 'Error al obtener la información de usuario o rancho');
         return;
       }
 
@@ -52,6 +77,9 @@ const CreateCropScreen: React.FC = () => {
           data: {
             crop_name: name,
             location: location,
+            device: {
+              connect: {id : device}
+            },
             users: {
               connect: [{ id: userId }],
             },
@@ -62,26 +90,49 @@ const CreateCropScreen: React.FC = () => {
         },
       });
     } catch (error) {
-      Alert.alert('Error', 'There was an issue retrieving data from AsyncStorage');
+      Alert.alert('Error', 'Hubo un problema al obtener datos de AsyncStorage');
+    }
+  };
+
+  const handleUpdateCrop = async () => {
+    if (!name.trim() || !location.trim()) {
+      setErrorMessage('Todos los campos son obligatorios');
+      return;
+    }
+    setErrorMessage('');
+
+    try {
+      updateCropMutation({
+        variables: {
+          where: { id: selectedCropId },
+          data: {
+            crop_name: name,
+            location: location,
+            device: device,
+          },
+        },
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Hubo un problema al actualizar el cultivo');
     }
   };
 
   const handleBackPress = () => {
-    setAddCrop(false); // Cambiamos `record` a false sin afectar el selectedCropId
+    setAddCrop(false);
     setUpdateCrop(false);
   };
 
   return (
-    <LinearGradient colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} style={{ flex: 1 }}>
+    <LinearGradient colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']} style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>Create New Crop</Text>
+          <Text style={styles.titleText}>{isUpdate ? 'Actualizar Cultivo' : 'Crear un nuevo cultivo'}</Text>
           <TextInput
             label="Nombre"
             value={name}
             onChangeText={setName}
             style={styles.input}
-            mode='outlined'
+            mode="outlined"
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
           />
           <TextInput
@@ -89,38 +140,42 @@ const CreateCropScreen: React.FC = () => {
             value={location}
             onChangeText={setLocation}
             style={styles.input}
-            mode='outlined'
+            mode="outlined"
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
           />
           <TextInput
             label="Número de serie"
-            value={deviceId}
-            onChangeText={setDeviceId}
+            value={device}
+            onChangeText={setDevice}
             style={styles.input}
-            mode='outlined'
+            mode="outlined"
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
+            disabled={isUpdate} // Deshabilitar si estamos actualizando
           />
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
           <View style={styles.buttonContainer}>
-            <Button 
-              mode="contained" 
-              labelStyle={{ color: "#0284c7" }}
+            <Button
+              mode="contained"
+              labelStyle={{ color: '#0284c7' }}
               onPress={handleBackPress}
               buttonColor={'#bae6fd'}
               style={styles.button}
             >
-              Cancel
+              Cancelar
             </Button>
-            <Button 
-              mode="contained" 
-              onPress={handleCreateCrop}
+            <Button
+              mode="contained"
+              onPress={isUpdate ? handleUpdateCrop : handleCreateCrop}
               buttonColor={'#0284c7'}
               style={styles.button}
             >
-              {updateCrop ? 'Update' : 'Create'}
+              {isUpdate ? 'Actualizar' : 'Crear'}
             </Button>
           </View>
         </View>
-      </View>  
+      </View>
     </LinearGradient>
   );
 };
@@ -150,7 +205,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 8,
   },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+  },
 });
 
 export default CreateCropScreen;
-
