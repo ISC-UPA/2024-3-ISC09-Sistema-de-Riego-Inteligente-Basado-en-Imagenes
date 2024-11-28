@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Avatar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { Stack } from 'expo-router';
-import { OrganizationContext } from '@/components/context/OrganizationContext'; // Importa el contexto
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const router = useRouter();
