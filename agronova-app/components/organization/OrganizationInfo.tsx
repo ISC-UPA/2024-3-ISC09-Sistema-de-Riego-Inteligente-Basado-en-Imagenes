@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,9 +20,6 @@ export default function Organization() {
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
         </View>
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.deleteButtonText}>Eliminar rancho</Text>
-        </TouchableOpacity>
       </ThemedView>
     </LinearGradient>
   );
@@ -40,17 +37,4 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: '#0c4a6e',
   },
-  deleteButton: {
-    backgroundColor: '#dc2626', // Rojo peligroso
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
-  deleteButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  }
 });
