@@ -1,93 +1,137 @@
-# 2024-3-ISC09-Sistema-de-Riego-Inteligente-Basado-en-Imagenes
+# **2024-3-ISC09-Intelligent-Irrigation-System-Based-on-Images**
 
-## Overview
+![Agronova Logo](./agronova-app/assets/images/logo.png)
 
-This monorepo contains multiple packages related to the Agronova application. The main packages are:
+## **Overview**
 
-- `RaspberryApp`: Placeholder for Raspberry Pi related applications.
-- `agronova-api`: Backend API built with KeystoneJS.
-- `agronova-app`: Frontend application built with EXPO REACT NATIVE.
+This monorepo contains multiple packages related to the **Agronova** application. The main packages are:
 
-## Repository Structure
+- **RaspberryApp**: Applications related to the Raspberry Pi.
+- **agronova-api**: Backend API built with KeystoneJS.
+- **agronova-app**: Frontend application built with Expo React Native.
 
-### Packages
+---
 
-#### RaspberryApp
+## **Repository Structure**
 
-This directory contains the programs found on the raspberry.
+### **Packages**
 
-#### agronova-api
+#### **RaspberryApp**
 
-This package contains the backend API for the agronova application. It is built using KeystoneJS.
+Contains the programs developed for the Raspberry Pi.
 
-- **Main Files:**
-  - `keystone.ts`: KeystoneJS configuration and setup.
-  - `schema.ts`: Call all the schemes.
-  - `dockerfile`: Build the backend image.
+---
 
-#### agronova-app
+#### **agronova-api**
 
-This package contains the frontend application for the agronova platform. It is built using React.
+Backend API for the **Agronova** application, built using KeystoneJS.
 
 - **Main Files:**
-  - `app/`: Contains the main application layout and pages.
-  - `assets/`: Contains fonts and images used in the application.
-  - `components/`: Contains reusable React components.
-  - `constants/`: Contains application-wide constants.
-  - `hooks/`: Contains custom React hooks.
-  - `scripts/`: Contains utility scripts.
-  - `tsconfig.json`: TypeScript configuration file.
-  - `babel.config.js`: Babel configuration file.
+  - keystone.ts: KeystoneJS configuration and setup.
+  - schema.ts: Main file for schemas.
+  - Dockerfile: Builds the backend image.
 
-For more details, refer to the [README.md](packages/vive-hub-app/README.md) in the `vive-hub-app` directory.
+---
 
-## Getting Started
+#### **agronova-app**
 
-### Prerequisites
+Frontend application for the **Agronova** platform, built with React Native.
 
-- Node.js
-- Yarn
+- **Main Files:**
+  - app/: Main layout and pages of the application.
+  - assets/: Fonts and images used in the app.
+  - components/: Reusable React components.
+  - tsconfig.json: TypeScript configuration file.
+  - babel.config.js: Babel configuration file.
 
-### Installation
+---
+
+## **Getting Started**
+
+### **Prerequisites**
+
+- **Node.js** (recommended version)
+- **Yarn** or **NPM**
+- **Expo CLI** (for the frontend application)
+
+---
+
+### **Installation**
 
 1. Clone the repository:
+    
     ```sh
     git clone <repository-url>
-    cd 2024-3-PM-ViveHUBApp
+    cd 2024-3-ISC09-Intelligent-Irrigation-System-Based-on-Images
     ```
 
 2. Install dependencies:
+   Run the following commands inside the **agronova-app** and **agronova-api** folders (once in each).
+
+   If using **Yarn**:
+    
     ```sh
     yarn install
     ```
 
-### Running the Applications
-
-#### Backend (vive-hub-api)
-
-Navigate to the `vive-hub-api` directory and start the KeystoneJS server:
-
+   If using **NPM**:
+    
     ```sh
-    cd packages/vive-hub-api
-    yarn start
+    npm install
     ```
 
-#### Frontend (vive-hub-app)
+---
 
-Navigate to the `vive-hub-app` directory and start the React Native App:
+### **Running the Applications**
 
+#### **Backend (agronova-api)**
+
+Navigate to the **agronova-api** folder and start the KeystoneJS server:
+
+1. Open the folder:
+    
     ```sh
-    cd packages/vive-hub-api
-    yarn start
+    cd agronova-api
     ```
 
-For Android:
+2. Start the server:
+    - Using Yarn:
+      
+      ```sh
+      yarn start
+      ```
 
-    ```sh
-    yarn android
-    ```
-For iOS:
+    - Using NPM:
+      
+      ```sh
+      npx keystone dev
+      ```
 
+---
+
+#### **Frontend (agronova-app)**
+
+Navigate to the **agronova-app** folder and start the React Native application:
+
+1. Open the folder:
+    
     ```sh
-    yarn ios
+    cd agronova-app
     ```
+
+2. Start the application:
+    - Using Yarn:
+      
+      ```sh
+      yarn start
+      ```
+
+    - Using NPM:
+      
+      ```sh
+      npx expo start
+      ```
+
+---
+
+You are now ready to work with the **Agronova Intelligent Irrigation System**! 🚀
