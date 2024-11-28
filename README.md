@@ -1,6 +1,8 @@
 # **2024-3-ISC09-Intelligent-Irrigation-System-Based-on-Images**
 
-![Agronova Logo](./agronova-app/assets/images/logo.png)
+<p align="center">
+  <img src="./agronova-app/assets/images/logo.png" alt="Agronova Logo" />
+</p>
 
 ## **Overview**
 
