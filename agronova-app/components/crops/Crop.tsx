@@ -1,9 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Button, Switch, Card, IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
+import { CropChart } from './CropChart';
+import { useQuery } from '@apollo/client';
+import { GET_STATISTICS } from '@/api/queries/queryStatistics';
 import RecordsInfoCard from '../widgets/RecordsInfoCard';
 import ParallaxScrollView from '../widgets/ParallaxScrollView';
 
@@ -20,19 +23,67 @@ export default function CropScreen() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
+  const [selectedParameter, setSelectedParameter] = useState('air_temperature'); // Parámetro por defecto
+
+  const cropId = 'cm40jdigj0003k5ivborce77f';
+
+  const { data, refetch } = useQuery(GET_STATISTICS, {
+    variables: {
+      where: {
+        crop_id: { id: { equals: cropId } },
+      },
+      take: 10,
+      orderBy: { timestamp: 'desc' },
+    },
+  });
+
+  // Actualización automática
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch(); // Refresca los datos
+    }, 30000); // Cada 30,000 ms (0.5 minutos)
+  
+    return () => clearInterval(interval); // Limpia el intervalo al desmontar
+  }, [refetch]);
+
+  const statistics = data?.statistics || [];
+  const labels = statistics.map((stat) => new Date(stat.timestamp).toLocaleTimeString()).reverse();
+
+  // Obtener el último valor de cada parámetro
+  const lastTemperature = statistics[0]?.air_temperature;
+  const lastHumidity = statistics[0]?.air_humidity;
+  const lastSoilMoisture = statistics[0]?.soil_moisture;
+
+  // Dataset dinámico según el parámetro seleccionado
+  const datasets = [
+    {
+      label: selectedParameter === 'air_humidity'
+        ? 'Humedad del Aire (%)'
+        : selectedParameter === 'soil_moisture'
+        ? 'Humedad del Suelo (%)'
+        : 'Temperatura (°C)', // Cambiado a "Temperatura"
+      data: statistics.map((stat) => stat[selectedParameter]).reverse(),
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1,
+      tension: 0.4,
+    },
+  ];
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
       style={{ flex: 1 }}
     >
       <View style={styles.headerContainer}>
-          <IconButton
-            icon="chevron-left"
-            size={24}
-            onPress={clearCropId}
-          />
-          <Text style={styles.titleText}>Cultivo X</Text>
-        </View>
+        <IconButton
+          icon="chevron-left"
+          size={24}
+          onPress={clearCropId}
+        />
+        <Text style={styles.titleText}>Cultivo X</Text>
+      </View>
+
       <ThemedView 
         style={{ flex: 1 }}
         lightColor="transparent"
@@ -74,8 +125,8 @@ export default function CropScreen() {
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
-                onPress={() => {}}>
-                37°
+                onPress={() => setSelectedParameter('air_temperature')}>
+                {lastTemperature ? `${lastTemperature}°C` : 'Cargando...'}
               </Button>
               <Button 
                 icon="air-humidifier" 
@@ -83,8 +134,8 @@ export default function CropScreen() {
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
-                onPress={() => {}}>
-                65%
+                onPress={() => setSelectedParameter('air_humidity')}>
+                {lastHumidity ? `${lastHumidity}%` : 'Cargando...'}
               </Button>
               <Button 
                 icon="water-pump" 
@@ -92,11 +143,12 @@ export default function CropScreen() {
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
                 style={{ margin: 0 }}
-                onPress={() => {}}>
-                80%
+                onPress={() => setSelectedParameter('soil_moisture')}>
+                {lastSoilMoisture ? `${lastSoilMoisture}%` : 'Cargando...'}
               </Button>
             </View>
           </View>
+          <CropChart labels={labels} datasets={datasets}/>
           <View>
             <Button 
               icon="chart-line" 
@@ -119,7 +171,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    //justifyContent: 'space-between',
     alignItems: 'center',
   },
   descriptionContainer: {
@@ -167,3 +218,4 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
+
