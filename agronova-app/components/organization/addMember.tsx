@@ -21,6 +21,7 @@ const AddMemberScreen: React.FC = () => {
   const [updateUser] = useMutation(UPDATE_USER);
   const [ranchId, setRanchId] = useState<string | null>(null);
   const [storedUserId, setStoredUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchRanchId = async () => {
@@ -144,7 +145,9 @@ const AddMemberScreen: React.FC = () => {
 
   const handleSubmitCreate = async () => {
     if (validateInputs()) {
+      setIsLoading(true)
       const invited = await inviteUserAzure(email)
+      
       if (invited) {
         try {
           await createUser({
@@ -160,6 +163,7 @@ const AddMemberScreen: React.FC = () => {
             },
           });
           alert('Usuario creado con éxito');
+          setIsLoading(false)
           handleBackPress();
         } catch (error) {
           console.error('Error al crear usuario:', error);
@@ -232,6 +236,7 @@ const AddMemberScreen: React.FC = () => {
             mode="outlined"
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
             error={!!errors.nombre}
+            disabled={isLoading}
           />
           {errors.nombre ? <Text style={styles.errorText}>{errors.nombre}</Text> : null}
 
@@ -245,6 +250,7 @@ const AddMemberScreen: React.FC = () => {
               theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
               keyboardType="email-address"
               error={!!errors.email}
+              disabled={isLoading}
             />
           )}
           {!updateMember && errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
@@ -259,6 +265,7 @@ const AddMemberScreen: React.FC = () => {
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
             keyboardType="numeric"
             error={!!errors.telefono}
+            disabled={isLoading}
           />
           {errors.telefono ? <Text style={styles.errorText}>{errors.telefono}</Text> : null}
 
@@ -267,11 +274,12 @@ const AddMemberScreen: React.FC = () => {
               selectedValue={rol}
               onValueChange={(itemValue) => { setRol(itemValue); console.log(itemValue) }}
               style={styles.picker}
+              enabled={!isLoading}
             >
               <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
               <Picker.Item label="Administrador" value="Administrador" />
-              <Picker.Item label="Agrónomo" value="Agrónomo" />
-              <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
+              <Picker.Item label="Agronomo" value="Agrónomo" />
+              <Picker.Item label="Supervisor de riego" value="Supervisor de riego" />
             </Picker>
           </View>
 
@@ -283,6 +291,7 @@ const AddMemberScreen: React.FC = () => {
               onPress={handleBackPress}
               buttonColor="#bae6fd"
               style={styles.button}
+              disabled={isLoading}
             >
               Cancelar
             </Button>
@@ -291,6 +300,7 @@ const AddMemberScreen: React.FC = () => {
               onPress={updateMember ? handleSubmitUpdate : handleSubmitCreate}
               buttonColor="#0284c7"
               style={styles.button}
+              disabled={isLoading}
             >
               {updateMember ? 'Actualizar' : 'Crear'}
             </Button>
