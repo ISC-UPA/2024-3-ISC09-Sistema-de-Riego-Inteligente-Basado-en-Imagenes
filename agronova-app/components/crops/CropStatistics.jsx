@@ -21,22 +21,9 @@ export default function CropStatisticsScreen() {
     setStatistics(false);
   };
 
-  const startDate = new Date('2024-11-27').toISOString();
-  const endDate = new Date('2024-11-28').toISOString();
   const cropId = 'cm40jdigj0003k5ivborce77f';
-
-  const { data} = useQuery(GET_STATISTICS_BY_DAY, {
-    variables: {
-      where: {
-        crop_id: { id: { equals: cropId } },  // Filtro por crop_id
-        timestamp: {
-          gte: startDate,  // Mayor o igual a la fecha de inicio
-          lte: endDate,    // Menor o igual a la fecha de fin
-        },
-      },
-    },
-  });
-
+  const [startDate, setStartDate] = useState('2024-11-26'); // Fecha de inicio predeterminada (ISO)
+  const [endDate, setEndDate] = useState('2024-11-27'); // Fecha de fin predeterminada (ISO)
   const [chartsData, setChartsData] = useState({
     labels: [],
     airHumidity: [],
@@ -44,21 +31,36 @@ export default function CropStatisticsScreen() {
     soilMoisture: [],
   });
 
+  // Función para transformar fecha a ISO 8601 con hora
+  const toISO8601 = (date, isEndOfDay = false) => {
+    return isEndOfDay
+      ? `${date}T23:59:59.999Z`
+      : `${date}T00:00:00.000Z`;
+  };
+
+  // Consulta a GraphQL
+  const { data, refetch } = useQuery(GET_STATISTICS_BY_DAY, {
+    variables: {
+      where: {
+        crop_id: { id: { equals: cropId } },
+        timestamp: {
+          gte: toISO8601(startDate), // Fecha de inicio al principio del día
+          lte: toISO8601(endDate, true), // Fecha de fin al final del día
+        },
+      },
+    },
+    skip: !startDate || !endDate, // Evita ejecutar la consulta sin fechas válidas
+  });
+
+  // Lógica para procesar los datos de la consulta
   useEffect(() => {
     if (data && data.statistics) {
-      // Agrupar datos por fecha
       const groupedData = data.statistics.reduce((acc, stat) => {
-        const date = new Date(stat.timestamp).toLocaleDateString(); // Usar fecha como clave
-        
+        const date = stat.timestamp.split('T')[0]; // Extraer fecha (YYYY-MM-DD)
         if (!acc[date]) {
-          acc[date] = {
-            airHumidity: [],
-            airTemperature: [],
-            soilMoisture: [],
-          };
+          acc[date] = { airHumidity: [], airTemperature: [], soilMoisture: [] };
         }
 
-        // Agregar los valores de cada métrica por día
         acc[date].airHumidity.push(stat.air_humidity);
         acc[date].airTemperature.push(stat.air_temperature);
         acc[date].soilMoisture.push(stat.soil_moisture);
@@ -66,7 +68,6 @@ export default function CropStatisticsScreen() {
         return acc;
       }, {});
 
-      // Calcular los promedios por día
       const labels = [];
       const airHumidity = [];
       const airTemperature = [];
@@ -83,16 +84,42 @@ export default function CropStatisticsScreen() {
         soilMoisture.push(avgSoilMoisture);
       });
 
-      // Actualizar el estado con los datos promediados
       setChartsData({ labels, airHumidity, airTemperature, soilMoisture });
     }
   }, [data]);
+
+  // Refrescar datos cuando cambian las fechas
+  useEffect(() => {
+    if (startDate && endDate) {
+      refetch();
+    }
+  }, [startDate, endDate]);
 
   return (
     <LinearGradient colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']} style={{ flex: 1 }}>
       <View style={styles.headerContainer}>
         <IconButton icon="chevron-left" size={24} onPress={handleBackPress} />
         <Text style={styles.titleText}>Estadísticas del Cultivo</Text>
+      </View>
+      <View style={styles.dateContainer}>
+        <View>
+          <Text>Inicio:</Text>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)} // Actualizar fecha ISO
+            style={styles.dateInput}
+          />
+        </View>
+        <View>
+          <Text>Fin:</Text>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)} // Actualizar fecha ISO
+            style={styles.dateInput}
+          />
+        </View>
       </View>
       <ScrollView>
         <ThemedView style={{ flex: 1, padding: 16 }} lightColor="transparent" darkColor="transparent">
@@ -104,8 +131,8 @@ export default function CropStatisticsScreen() {
                 {
                   label: 'Humedad del Aire',
                   data: chartsData.airHumidity,
-                  backgroundColor: 'rgba(255, 165, 0, 0.5)', // Naranja claro
-                  borderColor: 'rgba(255, 165, 0, 1)', // Naranja oscuro
+                  backgroundColor: 'rgba(255, 165, 0, 0.5)',
+                  borderColor: 'rgba(255, 165, 0, 1)',
                   borderWidth: 1,
                   tension: 0.4,
                 },
@@ -121,8 +148,8 @@ export default function CropStatisticsScreen() {
                 {
                   label: 'Temperatura del Aire',
                   data: chartsData.airTemperature,
-                  backgroundColor: 'rgba(220, 20, 60, 0.5)', // Rojo claro
-                  borderColor: 'rgba(220, 20, 60, 1)', // Rojo oscuro
+                  backgroundColor: 'rgba(220, 20, 60, 0.5)',
+                  borderColor: 'rgba(220, 20, 60, 1)',
                   borderWidth: 1,
                   tension: 0.4,
                 },
@@ -138,8 +165,8 @@ export default function CropStatisticsScreen() {
                 {
                   label: 'Humedad del Suelo',
                   data: chartsData.soilMoisture,
-                  backgroundColor: 'rgba(50, 205, 50, 0.5)', // Verde claro
-                  borderColor: 'rgba(34, 139, 34, 1)', // Verde oscuro
+                  backgroundColor: 'rgba(50, 205, 50, 0.5)',
+                  borderColor: 'rgba(34, 139, 34, 1)',
                   borderWidth: 1,
                   tension: 0.4,
                 },
@@ -161,6 +188,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#0c4a6e',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 16,
+  },
+  dateInput: {
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
   },
   chartContainer: {
     marginBottom: 24,
