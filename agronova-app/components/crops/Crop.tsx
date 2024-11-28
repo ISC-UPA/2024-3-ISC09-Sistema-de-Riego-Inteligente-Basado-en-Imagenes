@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Button, Switch, Card, IconButton } from 'react-native-paper';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { CropContext } from '@/components/context/CropContext';
@@ -19,7 +19,7 @@ export default function CropScreen() {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { selectedCropId, clearCropId, setStatistics } = cropContext;
+  const { selectedCropId, clearCropId, setStatistics, setImages } = cropContext;
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
@@ -128,12 +128,14 @@ export default function CropScreen() {
             </View>
           </View>
           <View>
-            <Card style={styles.imageContainer}>
-              <Image 
-                source={{ uri: 'https://via.placeholder.com/150' }} // Puedes cambiar a una imagen real si tienes el enlace
-                style={styles.image}
-              />
-            </Card>
+            <TouchableOpacity onPress={() => setImages(true)}>
+              <Card style={styles.imageContainer}>
+                <Image 
+                  source={{ uri: 'https://via.placeholder.com/150' }} 
+                  style={styles.image}
+                />
+              </Card>
+            </TouchableOpacity>
           </View>
           <View>
             <View style={styles.stadisticsContainer}>

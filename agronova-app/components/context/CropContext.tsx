@@ -23,6 +23,9 @@ interface CropContextType {
 
   statistics: boolean;  
   setStatistics: (value: boolean) => void; 
+
+  images: boolean;  
+  setImages: (value: boolean) => void; 
   
   addCrop: boolean;  
   setAddCrop: (value: boolean) => void; 
@@ -59,6 +62,7 @@ export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
   const [selectedCropDevice, setSelectedCropDevice] = useState<string | null>(null);
   const [record, setRecord] = useState<boolean>(false);  
   const [statistics, setStatistics] = useState<boolean>(false);
+  const [images, setImages] = useState<boolean>(false);
   const [addCrop, setAddCrop] = useState<boolean>(false);  
   const [updateCrop, setUpdateCrop] = useState<boolean>(false);  
   const [reFetchCrop, setReFetchCrop] = useState<boolean>(false);  
@@ -88,6 +92,7 @@ export const CropProvider: React.FC<CropProviderProps> = ({ children }) => {
         selectedCropDevice, setSelectedCropDevice, clearSelectedCropDevice, 
         record, setRecord, 
         statistics, setStatistics,
+        images, setImages,
         addCrop, setAddCrop, 
         updateCrop, setUpdateCrop,
         reFetchCrop, setReFetchCrop 
