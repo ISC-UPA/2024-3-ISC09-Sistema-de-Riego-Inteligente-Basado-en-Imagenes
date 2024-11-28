@@ -21,14 +21,14 @@ import { useEffect } from 'react';
 
 export default function MembersList() {
 
-
   const organizationContext = useContext(OrganizationContext);
 
   if (!organizationContext) {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {setAddMember, setUpdateMember, setSelectedUserId, selectedUserName, setSelectedUserName, setSelectedUserPhone, setSelectedUserRole, selectedUserId} = organizationContext;
+  const {setAddMember, setUpdateMember, setViewMember, setSelectedUserId, selectedUserName, setUserEmail, 
+          setSelectedUserName, setSelectedUserPhone, setSelectedUserRole, selectedUserId} = organizationContext;
   const [isModalVisible, setModalVisible] = useState(false);
   const [deleteUser] = useMutation(DELETE_USER);
   const [ranchId, setRanchId] = useState<string | null>(null);
@@ -88,6 +88,14 @@ export default function MembersList() {
   const handleAddUser = () => {
     setAddMember(true)
   }
+  const handleViewUser = (userId : any, name : any, phone : any, role : any, email: any) => {
+    setViewMember(true)
+    setSelectedUserId(userId);
+    setSelectedUserName(name);
+    setSelectedUserPhone(phone);
+    setSelectedUserRole(role);
+    setUserEmail(email);
+  }
   const handleUpdateUser = (userId : any, name : any, phone : any, role : any) => {
     setUpdateMember(true)
     setSelectedUserId(userId);
@@ -136,7 +144,7 @@ export default function MembersList() {
             <View style={styles.iconContainer}>
               <IconButton
                 icon="eye"
-                onPress={() => console.log('Ver miembro')}
+                onPress={() => handleViewUser(member.id,member.full_name, member.phone_number, member.role, member.email)}
                 iconColor={'#4b5563'}
                 style={styles.iconButton}
                 size={18}

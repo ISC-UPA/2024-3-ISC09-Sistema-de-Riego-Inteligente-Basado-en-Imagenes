@@ -39,6 +39,10 @@ interface OrganizationContextType {
   deleteRanch: boolean;
   setDeleteRanch: (value : boolean ) => void;
 
+  viewMember: boolean;
+  setViewMember: (value : boolean ) => void;
+
+
 }
 
 // Inicializamos el contexto con valores por defecto
@@ -58,6 +62,7 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [addMember, setAddMember] = useState<boolean>(false);  
   const [updateMember, setUpdateMember] = useState<boolean>(false);  
   const [deleteRanch, setDeleteRanch] = useState<boolean>(false);
+  const [viewMember, setViewMember] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null); 
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null); 
   const [selectedUserPhone, setSelectedUserPhone] = useState<string | null>(null); 
@@ -75,17 +80,17 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const clearUserEmail = () => {
     setUserEmail(null);
   };
-  
-
-
 
   return (
     <OrganizationContext.Provider value={{ 
       userId, setUserId, clearUserId, 
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
-      help, setHelp,addMember, setAddMember, updateMember,
-      setUpdateMember,deleteRanch, setDeleteRanch,
+      help, setHelp,
+      addMember, setAddMember, 
+      updateMember,setUpdateMember,
+      viewMember, setViewMember,
+      deleteRanch, setDeleteRanch,
       selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName,
       selectedUserPhone, setSelectedUserPhone, selectedUserRole, setSelectedUserRole
       }}>

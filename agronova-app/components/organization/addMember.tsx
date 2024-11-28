@@ -20,6 +20,7 @@ const AddMemberScreen: React.FC = () => {
   const [createUser] = useMutation(CREATE_USER);
   const [updateUser] = useMutation(UPDATE_USER);
   const [ranchId, setRanchId] = useState<string | null>(null);
+  const [storedUserId, setStoredUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRanchId = async () => {
@@ -40,14 +41,19 @@ const AddMemberScreen: React.FC = () => {
   }
 
 
-  const { addMember, setAddMember, updateMember, setUpdateMember, selectedUserId, selectedUserPhone, selectedUserRole, selectedUserName } = organizationContext;
+  const { addMember, setAddMember, updateMember, setUpdateMember, selectedUserId, selectedUserPhone, 
+    selectedUserRole, selectedUserName } = organizationContext;
 
   useEffect(() => {
     const loadToken = async () => {
       const savedToken = await AsyncStorage.getItem('accessToken');
+      const id = await AsyncStorage.getItem('userId');
       //Si existe el token, agregarlo al estado local
       if (savedToken) {
         setToken(savedToken);
+      }
+      if (id) {
+        setStoredUserId(id);  // Establecer el userId en el estado
       }
     }
     loadToken()
@@ -198,6 +204,16 @@ const AddMemberScreen: React.FC = () => {
     }
   };
 
+  let titleText = '';
+
+  if (addMember) {
+    titleText = 'Agregar Miembro';
+  } else if (selectedUserId === storedUserId) {
+    titleText = 'Actualizar Perfil';
+  } else {
+    titleText = 'Actualizar Miembro';
+  }
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
@@ -205,7 +221,7 @@ const AddMemberScreen: React.FC = () => {
     >
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>{addMember ? 'Agregar Miembro' : 'Actualizar Miembro'}</Text>
+          <Text style={styles.titleText}>{titleText}</Text>
 
           {/* Input de Nombre */}
           <TextInput
