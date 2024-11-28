@@ -326,3 +326,33 @@ export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueI
     id
   }
 }`
+
+//Obtener las 5 fotos más recientes
+// {
+//   "where": {
+//     "crop_id": {
+//       "id": {
+//         "equals": "{id del cultivo}"
+//       }
+//     },
+//     "media_type": {
+//       "equals": "photo"
+//     }
+//   },
+//   "take": 5,
+//   "skip": 0,
+//   "orderBy": [
+//     {
+//       "date": "desc"
+//     }
+//   ]
+// }
+export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!, $take: Int, $skip: Int, $orderBy: [CropMediaOrderByInput!]) {
+  cropMedias(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+    id
+    address
+    media_type
+    date
+  }
+}
+`
