@@ -47,33 +47,40 @@ export default function CropRecordsScreen() {
   // Verifica si hay irrigaciones en los datos
   const irrigations = data?.irrigations || []; // Asegúrate de acceder a la propiedad correcta
 
-// Función para formatear las horas en formato DD/MM HH:mm
-const formatTime = (time) => {
-  const date = new Date(time);
-  const day = date.getDate().toString().padStart(2, '0'); // Día con 2 dígitos
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mes con 2 dígitos
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
+  // Función para calcular la duración entre start_time y end_time
+  const calculateDuration = (startTime, endTime) => {
+    const start = new Date(startTime); // Convertir start_time a objeto Date
 
-  return `${day}/${month} ${hours}:${minutes}`; // Fecha sin año + hora
-};
+    // Si no hay end_time, calcular la duración hasta el momento actual (consideramos el riego como "en proceso")
+    if (!endTime || new Date(endTime).getTime() === start.getTime()) {
+      const now = new Date();
+      const durationInMs = now - start; // Duración en milisegundos hasta el momento actual
 
-// Función para calcular la duración entre dos tiempos
-const calculateDuration = (startTime, endTime) => {
-  const start = new Date(startTime); // Convertir start_time a objeto Date
-  const end = new Date(endTime); // Convertir end_time a objeto Date
+      const hours = Math.floor(durationInMs / (1000 * 60 * 60)); // Calcular horas
+      const minutes = Math.floor((durationInMs % (1000 * 60 * 60)) / (1000 * 60)); // Calcular minutos
 
-  const durationInMs = end - start; // Duración en milisegundos
+      return `${hours}h ${minutes}m`; // Retorna la duración hasta el momento actual (en proceso)
+    }
 
-  const hours = Math.floor(durationInMs / (1000 * 60 * 60)); // Calcular las horas
-  const minutes = Math.floor((durationInMs % (1000 * 60 * 60)) / (1000 * 60)); // Calcular los minutos restantes
+    // Si existe end_time y es diferente de start_time, calcula la duración entre start_time y end_time
+    const end = new Date(endTime);
+    const durationInMs = end - start; // Duración en milisegundos
 
-  return `${hours}h ${minutes}m`; // Retorna la duración en formato "Xh Ym"
-};
+    const hours = Math.floor(durationInMs / (1000 * 60 * 60)); // Calcular horas
+    const minutes = Math.floor((durationInMs % (1000 * 60 * 60)) / (1000 * 60)); // Calcular minutos
+
+    return `${hours}h ${minutes}m`; // Retorna la duración entre start_time y end_time
+  };
+
+  // Formatear la hora de inicio
+  const formatTime = (time) => {
+    const date = new Date(time);
+    return `${date.getDate()}/${date.getMonth() + 1} ${date.getHours()}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}`;
+  };
 
   return (
     <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+      colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
       <View style={styles.headerContainer}>
@@ -84,7 +91,7 @@ const calculateDuration = (startTime, endTime) => {
         />
         <Text style={styles.titleText}>Historial del cultivo X</Text>
       </View>
-      <ThemedView 
+      <ThemedView
         style={{ flex: 1, padding: 16 }}
         lightColor="transparent"
         darkColor="transparent"
@@ -103,23 +110,20 @@ const calculateDuration = (startTime, endTime) => {
             </DataTable.Title>
           </DataTable.Header>
 
-          {/* Rows */}
           {irrigations.length > 0 ? (
             irrigations.map((item) => (
               <DataTable.Row key={item.id}>
                 <DataTable.Cell>
-                  <Text style={{ color: '#000000' }}>
-                    {formatTime(item.start_time)} {/* Formatea el inicio con día y hora */}
-                  </Text>
+                  <Text style={{ color: '#000000' }}>{formatTime(item.start_time)}</Text> {/* Formatear la fecha de inicio */}
                 </DataTable.Cell>
                 <DataTable.Cell>
                   <Text style={{ color: '#000000' }}>
-                    {formatTime(item.end_time)} {/* Formatea el fin con día y hora */}
+                    {item.end_time != item.start_time ? formatTime(item.end_time) : "En proceso"} {/* Si no hay end_time, mostrar "En proceso" */}
                   </Text>
                 </DataTable.Cell>
                 <DataTable.Cell numeric>
                   <Text style={{ color: '#000000' }}>
-                    {calculateDuration(item.start_time, item.end_time)} {/* Duración calculada */}
+                    {calculateDuration(item.start_time, item.end_time)} {/* Mostrar duración o en proceso */}
                   </Text>
                 </DataTable.Cell>
               </DataTable.Row>
@@ -127,6 +131,8 @@ const calculateDuration = (startTime, endTime) => {
           ) : (
             <Text>No hay irrigaciones disponibles</Text>
           )}
+
+
         </DataTable>
       </ThemedView>
     </LinearGradient>
