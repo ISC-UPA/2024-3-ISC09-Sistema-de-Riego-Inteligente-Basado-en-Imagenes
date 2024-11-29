@@ -677,6 +677,7 @@ type CropMedia {
   address: String
   date: DateTime
   media_type: String
+  state_description: String
 }
 
 input CropMediaWhereUniqueInput {
@@ -691,7 +692,8 @@ input CropMediaWhereInput {
   crop_id: CropWhereInput
   address: StringFilter
   date: DateTimeFilter
-  media_type: StringFilter
+  media_type: StringNullableFilter
+  state_description: StringFilter
 }
 
 input CropMediaOrderByInput {
@@ -699,6 +701,7 @@ input CropMediaOrderByInput {
   address: OrderDirection
   date: OrderDirection
   media_type: OrderDirection
+  state_description: OrderDirection
 }
 
 input CropMediaUpdateInput {
@@ -706,6 +709,7 @@ input CropMediaUpdateInput {
   address: String
   date: DateTime
   media_type: String
+  state_description: String
 }
 
 input CropMediaUpdateArgs {
@@ -718,6 +722,7 @@ input CropMediaCreateInput {
   address: String
   date: DateTime
   media_type: String
+  state_description: String
 }
 
 type Ranch {

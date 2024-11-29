@@ -12,13 +12,13 @@ export default function OrganizationScreen() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const {addMember, updateMember, viewMember, updateRanch} = organizationContext;
+  const {addMember, updateMember, viewMember, viewUpdateRanch} = organizationContext;
 
   if(addMember || updateMember){
     return <AddMemberScreen/>
   }else if(viewMember){
     return <MemberProfile/>
-  }else if(updateRanch){
+  }else if(viewUpdateRanch){
     return <CreateRanch/>
   }
   else {return (

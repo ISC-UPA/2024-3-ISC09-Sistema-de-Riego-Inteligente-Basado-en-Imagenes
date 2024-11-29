@@ -30,7 +30,6 @@ const CreateCropScreen: React.FC = () => {
     onCompleted: () => {
       // Establece reFetchCrop a true
       setReFetchCrop(true);
-      Alert.alert('Éxito', 'El cultivo ha sido creado con éxito');
       setAddCrop(false);
     },
     onError: (error) => {
@@ -42,7 +41,6 @@ const CreateCropScreen: React.FC = () => {
     onCompleted: () => {
       // Establece reFetchCrop a true
       setReFetchCrop(true);
-      Alert.alert('Éxito', 'El cultivo ha sido actualizado con éxito');
       setUpdateCrop(false);
     },
     onError: (error) => {
