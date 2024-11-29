@@ -167,6 +167,13 @@ const AddMemberScreen: React.FC = () => {
                 ranch_id: { connect: { id: ranchId } },
                 role: rol,
                 accountStatus: accountStatus,
+                crops: {
+                  connect: [
+                    {
+                      id: "cm41yvt5d00024yg6h986dzh2"
+                    }
+                  ]
+                }
               },
             },
           });
