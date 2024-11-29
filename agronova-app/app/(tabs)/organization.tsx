@@ -52,12 +52,13 @@ export default function OrganizationScreen() {
   if (showSessionExpired) {
     return <ExpiredSessionModal visible={true} />;
 
+  }
 
   if (addMember || updateMember) {
     return <AddMemberScreen />;
   } else if (viewMember) {
     return <MemberProfile />;
-  } else if (updateRanch) {
+  } else if (viewUpdateRanch) {
     return <CreateRanch />;
   } else {
     return <Organization />;
