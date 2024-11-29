@@ -21,9 +21,9 @@ export default function CropStatisticsScreen() {
     setStatistics(false);
   };
 
-  const cropId = 'cm40jdigj0003k5ivborce77f';
+  const cropId = cropContext.selectedCropId;
   const [startDate, setStartDate] = useState('2024-11-26'); // Fecha de inicio predeterminada (ISO)
-  const [endDate, setEndDate] = useState('2024-11-27'); // Fecha de fin predeterminada (ISO)
+  const [endDate, setEndDate] = useState('2024-11-30'); // Fecha de fin predeterminada (ISO)
   const [chartsData, setChartsData] = useState({
     labels: [],
     airHumidity: [],

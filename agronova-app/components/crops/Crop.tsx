@@ -26,7 +26,7 @@ export default function CropScreen() {
 
   const [selectedParameter, setSelectedParameter] = useState('air_temperature'); // Parámetro por defecto
 
-  const cropId = 'cm40jdigj0003k5ivborce77f';
+  const cropId = cropContext.selectedCropId;
 
   const { data, refetch } = useQuery(GET_STATISTICS, {
     variables: {
