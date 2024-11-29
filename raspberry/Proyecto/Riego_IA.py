@@ -8,42 +8,39 @@ from azure.storage.blob import BlobServiceClient
 from picamera2 import Picamera2
 import requests
 
-# Configuración de pines
-PIN_LED = 27  # Pin GPIO conectado al LED
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIN_LED, GPIO.OUT)
-
-
-def encender_led(estado):
-    GPIO.output(PIN_LED, GPIO.HIGH if estado else GPIO.LOW)
-
-
-# Configuración de conexión para Azure IoT Hub y Blob Storage
+# ConfiguraciÃ³n de conexiÃ³n para Azure IoT Hub y Blob Storage
 IOT_HUB_CONNECTION_STRING = "HostName=CropData.azure-devices.net;DeviceId=ras_1;SharedAccessKey=jd2Gc81JRmib4Xi72yQRUcM/n7bwJYHSkLmZJpmJffc="
 BLOB_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=datacrop;AccountKey=LAr6eQ7W40a9CZaV1lygm61fGKgpHrl1wpuz609THDTlr7zesmw7GViB451yg+VbuVsSuZsTcju8+AStxV7kFg==;EndpointSuffix=core.windows.net"
 CONTAINER_NAME = "cropimage"
 
 #credenciales de custom vision
 CUSTOM_VISION_URL = "https://hectorvision-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/ed973681-2567-40e4-af2e-ce2ebd54edd5/classify/iterations/Iteration1/url"
-#TRAINING_KEY = "Y26oNQAzbLdkNKMlBLCH9bF6e3UK1OV2uz8NjkeD45fcjS0KOnshJQQJ99AKACYeBjFXJ3w3AAAJACOGHqdS"
 CUSTOM_VISION_PREDICTION_KEY = "NGXld6gHxi8tCjucc35X3sGKevOw86ITB1HcqxVsUQWEQkp6gbhQJQQJ99AKACYeBjFXJ3w3AAAIACOGLjMj"
-PROJECT_ID = "ed973681-2567-40e4-af2e-ce2ebd54edd5"  # Opcional si tienes varias iteraciones
-ITERATION_NAME = "Iteration1"  # Nombre de la iteracion publicada
 
 # Inicializa cliente para IoT Hub y Blob Storage
 iot_client = IoTHubDeviceClient.create_from_connection_string(IOT_HUB_CONNECTION_STRING)
 blob_service_client = BlobServiceClient.from_connection_string(BLOB_STORAGE_CONNECTION_STRING)
 
-# Configuración de GPIO y sensor DHT11
+
+# Configuracion de pines
+PIN_LED = 27  # Pin GPIO conectado al LED
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIN_LED, GPIO.OUT)
+
+def encender_led(estado):
+    GPIO.output(PIN_LED, GPIO.HIGH if estado else GPIO.LOW)
+
+# Configuracion de GPIO y sensor DHT11
 GPIO.setwarnings(True)
 GPIO.setmode(GPIO.BCM)
 sensor = dht11.DHT11(pin=18)
 
-# Configuración de cámara
+# Configuracion de camara
 cam = Picamera2()
 
-# Configuración de ADC para el sensor de humedad del suelo
+# Configuracion de ADC para el sensor de humedad del suelo
 adc = Adafruit_ADS1x15.ADS1115(busnum=1)
 GAIN = 1
 channel = 0
@@ -51,7 +48,6 @@ channel = 0
 # Valores calibrados para el sensor de humedad del suelo
 VALOR_SECO = 17570  # Ajusta este valor con pruebas (sensor al aire libre)
 VALOR_HUMEDO = 7290  # Ajusta este valor con pruebas (sensor en agua)
-
 
 def leer_humedad_suelo():
     valor_analogico = adc.read_adc(channel, gain=GAIN)
@@ -70,18 +66,16 @@ def leer_datos_aire():
         return result.temperature, result.humidity
     return None, None
 
-
 def activar_riego(humedad_suelo):
     if humedad_suelo < 20:
         print("Humedad muy baja, activando riego...")
         encender_led(True)
     elif humedad_suelo > 60:
         print("Humedad muy alta, desactivando riego...")
-        encender_led(True)
-    else:
-        print("Humedad en rango óptimo, desactivando riego.")
         encender_led(False)
-
+    else:
+        print("Humedad en rango optimo, desactivando riego.")
+        encender_led(False)
 
 def capturar_y_subir_imagen():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -130,17 +124,24 @@ def analizar_imagen_custom_vision(url_imagen):
         print(f"Error al analizar la imagen: {e}")
         return None
 
-
-def enviar_datos_a_azure(temperatura, humedad_aire, humedad_suelo, url_imagen):
-    mensaje = Message(f'{{"id_crop": "cm40twn3n0000mluio8jbd5ft", "temperatura": {temperatura}, "humedad_aire": {humedad_aire}, "humedad_suelo": {humedad_suelo}, "url_imagen": "{url_imagen}"}}')
+def enviar_datos_a_azure(temperatura, humedad_aire, humedad_suelo, url_imagen, mensaje_cultivo, estado_riego):
+    mensaje = Message(
+        f'{{"id_crop": "cm41yvt5d00024yg6h986dzh2", '
+        f'"temperatura": {temperatura}, '
+        f'"humedad_aire": {humedad_aire}, '
+        f'"humedad_suelo": {humedad_suelo}, '
+        f'"url_imagen": "{url_imagen}", '
+        f'"estado_cultivo": "{mensaje_cultivo}", '
+        f'"estado_riego": "{estado_riego}"}}'
+    )
     iot_client.send_message(mensaje)
     print(f"Mensaje enviado a IoT Hub: {mensaje}")
 
-
+# Codigo con el flujo principal
 try:
     print("Conectando a Azure IoT Hub...")
     iot_client.connect()
-    print("Conexión exitosa. Enviando datos y controlando riego...")
+    print("ConexiÃ³n exitosa. Enviando datos y controlando riego...")
 
     while True:
         temperatura, humedad_aire = leer_datos_aire()
@@ -153,8 +154,12 @@ try:
 
             activar_riego(humedad_suelo)
 
+            # Determinar el estado del riego segÃºn el LED
+            estado_riego = "true" if GPIO.input(PIN_LED) else "false"
+
             url_imagen = capturar_y_subir_imagen()
 
+            mensaje_cultivo = "Sin datos de cultivo."  # Valor predeterminado
             if url_imagen:
                 predicciones = analizar_imagen_custom_vision(url_imagen)
                 if predicciones:
@@ -163,16 +168,14 @@ try:
                         probabilidad = prediccion['probability']
                         print(f"Etiqueta: {etiqueta}, Probabilidad: {probabilidad:.2f}")
 
-                        if etiqueta == "Seco" and probabilidad > 0.5:
-                            print("El terreno está seco. Activando riego...")
-                            encender_led(True)
+                        if etiqueta == "Cultivo seco" and probabilidad > 0.5:
+                            mensaje_cultivo = "Necesita riego."
                             break
-                        elif etiqueta == "Húmedo" and probabilidad > 0.5:
-                            print("El terreno está húmedo. Desactivando riego...")
-                            encender_led(False)
+                        elif etiqueta == "Cultivo sano" and probabilidad > 0.5:
+                            mensaje_cultivo = "Condiciones optimas."
                             break
 
-                enviar_datos_a_azure(temperatura, humedad_aire, humedad_suelo, url_imagen)
+                enviar_datos_a_azure(temperatura, humedad_aire, humedad_suelo, url_imagen, mensaje_cultivo, estado_riego)
 
         time.sleep(5)
 
@@ -183,11 +186,11 @@ except Exception as e:
     print(f"Error inesperado: {e}")
 
 finally:
-    print("Apagando cámara y limpiando GPIO...")
+    print("Apagando cÃ¡mara y limpiando GPIO...")
     try:
         cam.stop()
     except Exception as e:
-        print(f"Error al detener la cámara: {e}")
+        print(f"Error al detener la cÃ¡mara: {e}")
     try:
         iot_client.disconnect()
     except Exception as e:
