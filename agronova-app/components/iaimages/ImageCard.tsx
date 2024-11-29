@@ -5,6 +5,7 @@ import { StyleSheet, View, Image } from 'react-native';
 export default function IAimageCard({ imageUrl, mediaType, description, date }) {
   // Función para formatear la fecha
   const formatDate = (isoDate) => {
+    if (!isoDate) return 'Fecha no disponible';
     const dateObject = new Date(isoDate);
     return dateObject.toLocaleDateString('es-ES'); // Formato: dd/mm/yyyy
   };
@@ -16,9 +17,10 @@ export default function IAimageCard({ imageUrl, mediaType, description, date }) 
           {/* Contenedor con flexDirection: 'row' para poner la imagen al lado del texto */}
           <Image source={{ uri: imageUrl }} style={styles.image} />
           <View>
-            <Text style={styles.titleText}>{mediaType}</Text> {/* Mostramos el tipo de medio */}
-            <Text style={styles.subtitleText}>{description}</Text> {/* Descripción */}
-            <Text style={styles.dateText}>Fecha: {formatDate(date)}</Text> {/* Fecha formateada */}
+            {/* Envolvemos todo el texto en componentes <Text> */}
+            <Text style={styles.titleText}>{mediaType || 'Tipo no especificado'}</Text> 
+            <Text style={styles.subtitleText}>{description || 'Descripción no disponible'}</Text>
+            <Text style={styles.dateText}>Fecha: {formatDate(date)}</Text> 
           </View>
         </Card.Content>
       </Card>

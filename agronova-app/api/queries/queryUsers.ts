@@ -296,14 +296,9 @@ export const GET_CROP_INFO_RECENT_IMAGE = gql`query Query($where: CropWhereUniqu
 //     }
 //   }
 // }
-export const GET_CROP_RECENT_IMAGE = gql`query Query($where: CropWhereUniqueInput!, $cropMediaWhere2: CropMediaWhereInput!) {
-  crop(where: $where) {
-    crop_media(orderBy: { date: desc }, take: 1, where: $cropMediaWhere2) {
-      id
-      address
-      date
-      media_type
-    }
+export const GET_CROP_RECENT_IMAGE = gql`query Query($where: CropMediaWhereInput!, $take: Int, $orderBy: [CropMediaOrderByInput!]!) {
+  cropMedias(where: $where, take: $take, orderBy: $orderBy) {
+    address
   }
 }
 `
@@ -404,8 +399,8 @@ export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueI
 //     }
 //   ]
 // }
-export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!) {
-  cropMedias(where: $where) {
+export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!,  $orderBy: [CropMediaOrderByInput!]!) {
+  cropMedias(where: $where, orderBy: $orderBy) {
     id
     address
     media_type

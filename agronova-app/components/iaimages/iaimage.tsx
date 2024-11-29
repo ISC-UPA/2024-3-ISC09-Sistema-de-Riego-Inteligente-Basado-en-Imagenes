@@ -21,7 +21,8 @@ export default function IAimagesList() {
 
   // Query para obtener las imágenes del cultivo
   const { data, loading, error } = useQuery(GET_CROP_IMAGES, {
-    variables: { where: { crop_id: { id: { equals: selectedCropId } } } },
+    variables: { where: { crop_id: { id: { equals: selectedCropId } } },
+      orderBy:[{id:"desc"}]},
   });
 
   useEffect(() => {

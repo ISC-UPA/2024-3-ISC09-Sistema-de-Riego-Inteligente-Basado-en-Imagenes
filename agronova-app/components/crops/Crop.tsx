@@ -10,6 +10,7 @@ import { GET_STATISTICS } from '@/api/queries/queryStatistics';
 import RecordsInfoCard from '../widgets/RecordsInfoCard';
 import ParallaxScrollView from '../widgets/ParallaxScrollView';
 import { GET_CROP_INFO } from '@/api/queries/queryUsers'; // Asegúrate de que la ruta sea correcta
+import { GET_CROP_RECENT_IMAGE } from '@/api/queries/queryUsers';
 
 export default function CropScreen() {
   const cropContext = useContext(CropContext);
@@ -23,10 +24,8 @@ export default function CropScreen() {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
-
   const [selectedParameter, setSelectedParameter] = useState('air_temperature'); // Parámetro por defecto
-
-  const cropId = 'cm40jdigj0003k5ivborce77f';
+  const cropId = cropContext.selectedCropId;
 
   const { data, refetch } = useQuery(GET_STATISTICS, {
     variables: {
@@ -38,14 +37,33 @@ export default function CropScreen() {
     },
   });
 
-  // Actualización automática
+  // Query para obtener la imagen más reciente
+  const { loading: loadingImage, error: errorImage, data: imageData, refetch: refetchImage } = useQuery(GET_CROP_RECENT_IMAGE, {
+    variables: {
+      where: { crop_id: { id: { equals: cropId } } }, // ID del cultivo seleccionado
+      take: 1,
+      orderBy: [
+        {
+          id :"desc"
+        }
+      ]
+    },
+    skip: !selectedCropId, // Evita ejecutar el query si no hay un cultivo seleccionado
+  });
+
+  // Obtener la URL de la imagen más reciente
+  const recentImage = imageData?.cropMedias[0];
+  console.log(recentImage?.address);
+
+  // Actualización automática de estadísticas
   useEffect(() => {
     const interval = setInterval(() => {
-      refetch(); // Refresca los datos
-    }, 30000); // Cada 30,000 ms (0.5 minutos)
-  
-    return () => clearInterval(interval); // Limpia el intervalo al desmontar
-  }, [refetch]);
+      refetch(); // Refresca las estadísticas cada 30 segundos
+      refetchImage(); // Refresca la imagen cada 30 segundos
+    }, 30000); // 30,000 ms (30 segundos)
+
+    return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
+  }, [refetch, refetchImage]);
 
   const statistics = data?.statistics || [];
   const labels = statistics.map((stat) => new Date(stat.timestamp).toLocaleTimeString()).reverse();
@@ -61,8 +79,8 @@ export default function CropScreen() {
       label: selectedParameter === 'air_humidity'
         ? 'Humedad del Aire (%)'
         : selectedParameter === 'soil_moisture'
-        ? 'Humedad del Suelo (%)'
-        : 'Temperatura (°C)', // Cambiado a "Temperatura"
+          ? 'Humedad del Suelo (%)'
+          : 'Temperatura (°C)', // Cambiado a "Temperatura"
       data: statistics.map((stat) => stat[selectedParameter]).reverse(),
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
       borderColor: 'rgba(255, 99, 132, 1)',
@@ -81,7 +99,7 @@ export default function CropScreen() {
   if (loading) {
     return <ActivityIndicator size="large" color="#0284c7" />;
   }
-  
+
   if (error) {
     return <Text>Error: {error.message}</Text>;
   }
@@ -91,7 +109,7 @@ export default function CropScreen() {
 
   return (
     <LinearGradient
-      colors={['#f0f9ff', '#e0f2fe', '#bae6fd','#7dd3fc']} 
+      colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
       style={{ flex: 1 }}
     >
       <View style={styles.headerContainer}>
@@ -102,7 +120,7 @@ export default function CropScreen() {
         />
         <Text style={styles.titleText}>{crop?.crop_name || 'Cultivo'}</Text>
       </View>
-      <ThemedView 
+      <ThemedView
         style={{ flex: 1 }}
         lightColor="transparent"
         darkColor="transparent">
@@ -129,18 +147,21 @@ export default function CropScreen() {
           </View>
           <View>
             <TouchableOpacity onPress={() => setImages(true)}>
-              <Card style={styles.imageContainer}>
-                <Image 
-                  source={{ uri: 'https://via.placeholder.com/150' }} 
-                  style={styles.image}
-                />
+              <Card style={styles.card}>  {/* Utilizando el estilo 'card' para asegurar que tenga el tamaño adecuado */}
+                <Card.Content style={styles.content}>
+                  <Image
+                    source={{ uri: recentImage?.address }}
+                    style={styles.image}
+                  />
+                </Card.Content>
               </Card>
             </TouchableOpacity>
+
           </View>
           <View>
             <View style={styles.stadisticsContainer}>
-              <Button 
-                icon="coolant-temperature" 
+              <Button
+                icon="coolant-temperature"
                 mode="contained"
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
@@ -148,8 +169,8 @@ export default function CropScreen() {
                 onPress={() => setSelectedParameter('air_temperature')}>
                 {lastTemperature ? `${lastTemperature}°C` : '...'}
               </Button>
-              <Button 
-                icon="air-humidifier" 
+              <Button
+                icon="air-humidifier"
                 mode="contained"
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
@@ -157,8 +178,8 @@ export default function CropScreen() {
                 onPress={() => setSelectedParameter('air_humidity')}>
                 {lastHumidity ? `${lastHumidity}%` : '...'}
               </Button>
-              <Button 
-                icon="water-pump" 
+              <Button
+                icon="water-pump"
                 mode="contained"
                 buttonColor="#e0f2fe"
                 labelStyle={{ color: "#0ea5e9" }}
@@ -168,17 +189,17 @@ export default function CropScreen() {
               </Button>
             </View>
           </View>
-          <CropChart labels={labels} datasets={datasets}/>
+          <CropChart labels={labels} datasets={datasets} />
           <View>
-            <Button 
-              icon="chart-line" 
-              buttonColor={'#bae6fd'} 
+            <Button
+              icon="chart-line"
+              buttonColor={'#bae6fd'}
               labelStyle={{ color: "#0284c7", }}
               onPress={() => setStatistics(true)}  >
               Estadísticas
             </Button>
           </View>
-        </ParallaxScrollView> 
+        </ParallaxScrollView>
       </ThemedView>
     </LinearGradient>
   );
@@ -186,23 +207,21 @@ export default function CropScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,   
-    alignItems: 'center',  
+    flex: 1,
+    alignItems: 'center',
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   descriptionContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between',  
-    alignItems: 'center',  
-  },
-  imageContainer: {
-    height: 250,
-    marginVertical: 16,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  card: {
+    marginVertical: 16,
+    width: '100%',  // Asegúrate de que el Card ocupe el ancho completo
   },
   locationContainer: {
     flexDirection: 'row',
@@ -210,9 +229,9 @@ const styles = StyleSheet.create({
   },
   stadisticsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',  
+    width: '100%',
   },
   locationText: {
     fontSize: 16,
@@ -229,13 +248,18 @@ const styles = StyleSheet.create({
     color: '#0c4a6e',
   },
   text: {
-    color: '#374151',  
-    fontWeight: '600', 
+    color: '#374151',
+    fontWeight: '600',
     marginRight: 10,
+  },
+  content: {
+    padding: 0,  // Opcional: Si no quieres padding adicional alrededor de la imagen
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 250,  // Ajusta la altura de la imagen según sea necesario
+    resizeMode: 'cover',  // Esto asegura que la imagen se ajusta al tamaño del contenedor sin distorsionarse
   },
 });
-
