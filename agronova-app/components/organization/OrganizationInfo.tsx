@@ -4,11 +4,22 @@ import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@apollo/client';
 import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
+import { OrganizationContext } from '../context/OrganizationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MembersList from './membersList'; // Asegúrate de importar el componente correctamente
-import React from 'react';
+import React, { useContext } from 'react';
+import { IconButton } from 'react-native-paper';
 
 export default function Organization() {
+
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
+  }
+
+  const { setUpdateRanch, setRanchName, setRanchDescription } = organizationContext;
+
 
   const [userId, setUserId] = React.useState<string | null>(null);
   const [ranchId, setRanchId] = React.useState<string | null>(null);
@@ -42,6 +53,12 @@ export default function Organization() {
   const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
   const ranchDescription = userRanchData?.user?.ranch_id?.description || 'Sin descripción';
 
+  const handleUpdateRanch = (name : any, description : any) => {
+    setUpdateRanch(true)
+    setRanchName(name);
+    setRanchDescription(description);
+  }
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
@@ -49,12 +66,14 @@ export default function Organization() {
     >
       <ThemedView style={{ flex: 1, padding: 16 }} lightColor="transparent" darkColor="transparent">
         <View>
-          {/* Ranch name */}
-          <ThemedText style={styles.titleText}>
-            {`Rancho "${ranchName}"`}
-          </ThemedText>
+          <View style={styles.headerContainer}>
+            <ThemedText style={styles.titleText}>
+              {`Rancho "${ranchName}"`}
+            </ThemedText>
+            <IconButton icon="pencil" size={24} onPress={() => handleUpdateRanch(ranchName, ranchDescription)} />
+          </View>
           <ThemedText style={styles.descriptionText}>
-            {ranchName}
+            {ranchDescription}
           </ThemedText>
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
@@ -65,6 +84,11 @@ export default function Organization() {
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', 
+  },
   titleText: {
     fontSize: 24,
     fontWeight: 'bold',

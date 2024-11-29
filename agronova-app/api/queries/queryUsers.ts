@@ -430,3 +430,10 @@ export const CREATE_DEVICE = gql`mutation Mutation($data: DeviceCreateInput!) {
     id
   }
 }`
+
+export const GET_DEVICES = gql`query Query {
+  devices {
+    id
+    serial_number
+  }
+}`

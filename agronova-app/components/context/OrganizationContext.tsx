@@ -3,7 +3,6 @@ import React, { createContext, useState, ReactNode } from 'react';
 // Definir los tipos del contexto
 interface OrganizationContextType {
   userId: string | null;
-  
   setUserId: (id: string | null) => void;
   clearUserId: () => void;
 
@@ -42,6 +41,15 @@ interface OrganizationContextType {
   viewMember: boolean;
   setViewMember: (value : boolean ) => void;
 
+  updateRanch: boolean;
+  setUpdateRanch: (value : boolean ) => void;
+
+  ranchName: string | null;
+  setRanchName: (name: string | null) => void;
+
+  ranchDescription: string | null;
+  setRanchDescription: (description: string | null) => void;
+
 
 }
 
@@ -63,10 +71,13 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [updateMember, setUpdateMember] = useState<boolean>(false);  
   const [deleteRanch, setDeleteRanch] = useState<boolean>(false);
   const [viewMember, setViewMember] = useState<boolean>(false);
+  const [updateRanch, setUpdateRanch] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null); 
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null); 
   const [selectedUserPhone, setSelectedUserPhone] = useState<string | null>(null); 
   const [selectedUserRole, setSelectedUserRole] = useState<string | null>(null); 
+  const [ranchName, setRanchName] = useState<string | null>(null); 
+  const [ranchDescription, setRanchDescription] = useState<string | null>(null); 
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -83,16 +94,25 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
 
   return (
     <OrganizationContext.Provider value={{ 
+      //Loged User
       userId, setUserId, clearUserId, 
       userFullName, setUserFullName, clearUserFullName,
       userEmail, setUserEmail, clearUserEmail,
+      //Handle view
       help, setHelp,
       addMember, setAddMember, 
       updateMember,setUpdateMember,
       viewMember, setViewMember,
+      updateRanch, setUpdateRanch,
       deleteRanch, setDeleteRanch,
-      selectedUserId, setSelectedUserId,selectedUserName, setSelectedUserName,
-      selectedUserPhone, setSelectedUserPhone, selectedUserRole, setSelectedUserRole
+      //Selected User
+      selectedUserId, setSelectedUserId,
+      selectedUserName, setSelectedUserName,
+      selectedUserPhone, setSelectedUserPhone, 
+      selectedUserRole, setSelectedUserRole,
+      //Ranch Info
+      ranchName, setRanchName, 
+      ranchDescription, setRanchDescription
       }}>
       {children}
     </OrganizationContext.Provider>

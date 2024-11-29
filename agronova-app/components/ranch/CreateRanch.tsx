@@ -1,12 +1,46 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react'; 
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useMutation } from '@apollo/client';
 import { CREATE_RANCH, UPDATE_USER_STATUS } from '@/api/queries/queryUsers'; 
+import { OrganizationContext } from '../context/OrganizationContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreateRanchScreen: React.FC = () => {
+  const organizationContext = useContext(OrganizationContext);
+
+  if (!organizationContext) {
+    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
+  }
+
+  const { updateRanch, setUpdateRanch } = organizationContext;
+
+
+  const [userId, setUserId] = React.useState<string | null>(null);
+  const [ranchId, setRanchId] = React.useState<string | null>(null);
+
+  // Cargar datos desde AsyncStorage cuando el componente se monta
+  React.useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedRanchId = await AsyncStorage.getItem('ranchId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+        if (storedRanchId) {
+          setRanchId(storedRanchId);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos desde AsyncStorage', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -53,20 +87,33 @@ const CreateRanchScreen: React.FC = () => {
     }
   };
 
+  const handleCancel = () => {
+
+    if(updateRanch){
+      setUpdateRanch(false)
+    }
+    else(
+      router.push('/')
+    )
+  }
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']} 
       style={{ flex: 1 }}
     >
-      <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/logo_text.png')}
-          style={styles.logo}
-        />
-      </View>
+      {!updateRanch && (
+        <View style={styles.header}>
+          <Image
+            source={require('@/assets/images/logo_text.png')}
+            style={styles.logo}
+          />
+        </View>
+      )}
+
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>Crear nuevo rancho</Text>
+          <Text style={styles.titleText}>{updateRanch? 'Actualizar rancho': 'Crear nuevo rancho'}</Text>
           <TextInput
             label="Nombre"
             value={nombre}
@@ -92,7 +139,7 @@ const CreateRanchScreen: React.FC = () => {
             <Button 
               mode="contained" 
               labelStyle={{ color: "#0284c7" }}
-              onPress={() => router.push('/')}
+              onPress={handleCancel}
               buttonColor={'#bae6fd'}
               style={styles.button}
             >
@@ -106,7 +153,7 @@ const CreateRanchScreen: React.FC = () => {
               buttonColor={'#0284c7'}
               style={styles.button}
             >
-              Crear
+              {updateRanch? 'Actualizar': 'Crear'}
             </Button>
           </View>
         </View>
