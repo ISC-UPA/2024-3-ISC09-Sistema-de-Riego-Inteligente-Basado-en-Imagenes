@@ -1,49 +1,40 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react'; 
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { useMutation } from '@apollo/client';
-import { CREATE_CROP, UPDATE_CROP_INFO, CREATE_DEVICE } from '@/api/queries/queryUsers';
+import { useMutation, useQuery } from '@apollo/client';
+import { CREATE_CROP, UPDATE_CROP_INFO, GET_DEVICES } from '@/api/queries/queryUsers';
 import { CropContext } from '@/components/context/CropContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
+import { Platform } from 'react-native';
 
 const CreateCropScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
-  const [device, setDevice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isUpdate, setIsUpdate] = useState(false); // Para detectar si estamos actualizando un cultivo
   const cropContext = useContext(CropContext);
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState(null);
 
   if (!cropContext) {
     throw new Error('CropContext must be used within a CropProvider');
   }
 
   const { setAddCrop, setUpdateCrop, updateCrop, selectedCropId, selectedCropName, 
-    selectedCropLocation, selectedCropDevice, setReFetchCrop, setSelectedCropId } = cropContext;
+    selectedCropLocation, setReFetchCrop, setSelectedCropId } = cropContext;
 
   // Mutaciones
   const [createCrop] = useMutation(CREATE_CROP, {
-    onCompleted: async (data) => {
-      const cropId = data.createCrop.id; // Obtén el ID del cultivo creado
-      // Aquí creas el dispositivo después de crear el cultivo
-      await createDevice({
-        variables: {
-          data: {
-            serial_number: device,
-            crop_id: {
-              connect: { id: cropId },
-            },
-          },
-        },
-      });
+    onCompleted: () => {
       // Establece reFetchCrop a true
       setReFetchCrop(true);
-      Alert.alert('Éxito', 'El cultivo y el dispositivo han sido creados con éxito');
+      Alert.alert('Éxito', 'El cultivo ha sido creado con éxito');
       setAddCrop(false);
     },
     onError: (error) => {
-      Alert.alert('Error', `Hubo un problema al crear el cultivo: ${error.message}`);
+      console.log(error);
     },
   });
 
@@ -55,16 +46,7 @@ const CreateCropScreen: React.FC = () => {
       setUpdateCrop(false);
     },
     onError: (error) => {
-      Alert.alert('Error', `Hubo un problema al actualizar el cultivo: ${error.message}`);
-    },
-  });
-
-  const [createDevice] = useMutation(CREATE_DEVICE, {
-    onCompleted: () => {
-      // No necesitas hacer nada extra aquí, ya que el dispositivo se crea después del cultivo
-    },
-    onError: (error) => {
-      Alert.alert('Error', `Hubo un problema al crear el dispositivo: ${error.message}`);
+      console.log(error);
     },
   });
 
@@ -74,17 +56,15 @@ const CreateCropScreen: React.FC = () => {
       setIsUpdate(true);
       setName(selectedCropName || '');
       setLocation(selectedCropLocation || '');
-      setDevice(selectedCropDevice || '');
     } else {
       // Si no estamos actualizando, limpiamos los campos
       setName('');
       setLocation('');
-      setDevice('');
     }
   }, [updateCrop, selectedCropName, selectedCropLocation]);
 
   const handleCreateCrop = async () => {
-    if (!name.trim() || !location.trim() || !device) {
+    if (!name.trim() || !location.trim()) {
       setErrorMessage('Todos los campos son obligatorios');
       return;
     }
@@ -105,11 +85,14 @@ const CreateCropScreen: React.FC = () => {
             crop_name: name,
             location: location,
             users: {
-              connect: [{ id: userId }],
+              connect: [{ id: userId }], // Conecta el usuario al cultivo
             },
             ranch_id: {
-              connect: { id: ranchId },
+              connect: { id: ranchId }, // Conecta el rancho al cultivo
             },
+            device: {
+              connect: { id: selectedDevice },
+            }
           },
         },
       });
@@ -117,6 +100,13 @@ const CreateCropScreen: React.FC = () => {
       Alert.alert('Error', 'Hubo un problema al obtener datos de AsyncStorage');
     }
   };
+
+  // Ejecuta el query para obtener los dispositivos (si lo necesitas)
+  const { loading, error, data } = useQuery(GET_DEVICES);
+
+  // Maneja el caso de que la data esté cargando o haya errores
+  if (loading) return <Text>Cargando dispositivos...</Text>;
+  if (error) return <Text>Error al cargar dispositivos</Text>;
 
   const handleUpdateCrop = async () => {
     if (!name.trim() || !location.trim()) {
@@ -168,15 +158,31 @@ const CreateCropScreen: React.FC = () => {
             mode="outlined"
             theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
           />
-          <TextInput
-            label="Número de serie"
-            value={device}
-            onChangeText={setDevice}
-            style={styles.input}
-            mode="outlined"
-            theme={{ colors: { primary: '#0284c7', outline: '#ffffff' } }}
-            disabled={isUpdate} // Deshabilitar si estamos actualizando
-          />
+          {!updateCrop && (
+            <View style={styles.pickerWrapper}>
+              {/* Label similar to TextInput */}
+              <Text style={[styles.label, isFocused ? styles.labelFocused : styles.labelNotFocused]}>
+                Dispositivo
+              </Text>
+
+              <View style={[styles.pickerContainer, isFocused ? styles.pickerFocused : null]}>
+                <Picker
+                  selectedValue={selectedDevice}
+                  onValueChange={(itemValue) => {
+                    setSelectedDevice(itemValue);
+                  }}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  style={styles.picker}
+                  mode="dropdown"
+                >
+                  {data?.devices.map((device: { id: string; serial_number: string }) => (
+                    <Picker.Item key={device.id} label={device.serial_number} value={device.id} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          )}
           {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
@@ -235,6 +241,65 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 10,
+  },
+  pickerWrapper: {
+    marginVertical: 10,
+    position: 'relative',
+    width: '100%',  // Asegura que el contenedor tenga un ancho completo
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#0284c7', // Color principal (#0284c7)
+    borderRadius: 4,
+    height: 56, // Ajuste de altura
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    width: '100%',  // Asegura que el Picker ocupe todo el espacio disponible
+  },
+  pickerFocused: {
+    borderColor: '#0284c7', // Color de borde cuando está enfocado
+  },
+  picker: {
+    color: '#0284c7', // Color del texto en el picker
+    height: '100%',
+    width: '100%',  // Asegura que el Picker ocupe todo el espacio disponible en el contenedor
+    fontFamily: 'sans-serif',
+    fontSize: 16,
+    ...Platform.select({
+      android: {
+        color: '#0284c7', // Color del texto en Android
+      },
+      ios: {
+        height: '100%', // Ajuste de altura para iOS
+      },
+    }),
+  },
+  label: {
+    position: 'absolute',
+    top: 18,
+    left: 5,
+    fontSize: 16,
+    color: '#6e6e6e', // Color gris claro de la etiqueta
+    zIndex: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 4,
+  },
+  labelNotFocused: {
+    position: 'absolute',
+    top: 18,
+    left: 5,
+    fontSize: 16,
+    color: '#6e6e6e', // Color gris claro de la etiqueta
+    zIndex: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 4,
+    width: 300,  // Aplica el ancho cuando no está enfocado
+  },
+  labelFocused: {
+    top: -8,
+    left: 8,
+    fontSize: 12,
+    color: '#0284c7', // Color de la etiqueta cuando está enfocada
   },
 });
 
