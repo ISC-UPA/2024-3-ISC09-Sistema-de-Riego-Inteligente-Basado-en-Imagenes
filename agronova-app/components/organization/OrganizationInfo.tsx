@@ -22,6 +22,7 @@ export default function Organization() {
 
   const [userId, setUserId] = useState<string | null>(null);
   const [ranchId, setRanchId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null); 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false); // Estado para controlar el modal
 
   // Cargar datos desde AsyncStorage cuando el componente se monta
@@ -30,11 +31,15 @@ export default function Organization() {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
         const storedRanchId = await AsyncStorage.getItem('ranchId');
+        const storedUserRole = await AsyncStorage.getItem('userRole'); 
         if (storedUserId) {
           setUserId(storedUserId);
         }
         if (storedRanchId) {
           setRanchId(storedRanchId);
+        }
+        if (storedUserRole) {
+          setUserRole(storedUserRole); // Establecer el rol
         }
       } catch (error) {
         console.error('Error al cargar datos desde AsyncStorage', error);
@@ -73,6 +78,9 @@ export default function Organization() {
     setDeleteModalVisible(false); // Cierra el modal después de presionar "Soporte"
   };
 
+  // Condicional basado en el rol del usuario
+  const isAdmin = userRole === 'Administrador';
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc']}
@@ -84,7 +92,8 @@ export default function Organization() {
             <ThemedText style={styles.titleText}>
               {`Rancho "${ranchName}"`}
             </ThemedText>
-            <IconButton icon="pencil" size={24} onPress={() => handleUpdateRanch(ranchName, ranchDescription)} />
+            {isAdmin && (
+            <IconButton icon="pencil" size={24} onPress={() => handleUpdateRanch(ranchName, ranchDescription)} />)}
           </View>
           <ThemedText style={styles.descriptionText}>
             {ranchDescription}
@@ -94,10 +103,11 @@ export default function Organization() {
         </View>
 
         {/* Botón de eliminar cultivo */}
-        <TouchableOpacity style={styles.deleteButton} onPress={() => setDeleteModalVisible(true)}>
-          <ThemedText style={styles.buttonLabel}>Eliminar rancho</ThemedText>
-        </TouchableOpacity>
-
+        {isAdmin && (
+          <TouchableOpacity style={styles.deleteButton} onPress={() => setDeleteModalVisible(true)}>
+            <ThemedText style={styles.buttonLabel}>Eliminar rancho</ThemedText>
+          </TouchableOpacity>
+        )}
         {/* Modal de confirmación de eliminación */}
         <DeleteConfirmationModal
           visible={deleteModalVisible}
