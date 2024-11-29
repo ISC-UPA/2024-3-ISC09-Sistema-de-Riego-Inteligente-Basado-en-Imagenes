@@ -8,6 +8,7 @@ import { CREATE_USER } from '@/api/queries/queryUsers';
 import { UPDATE_USER } from '@/api/queries/queryUsers';
 import { useMutation } from '@apollo/client';
 import { Picker } from '@react-native-picker/picker';
+import { Platform } from 'react-native';
 
 const AddMemberScreen: React.FC = () => {
   const [nombre, setNombre] = useState('');
@@ -21,6 +22,7 @@ const AddMemberScreen: React.FC = () => {
   const [updateUser] = useMutation(UPDATE_USER);
   const [ranchId, setRanchId] = useState<string | null>(null);
   const [storedUserId, setStoredUserId] = useState<string | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const fetchRanchId = async () => {
@@ -261,20 +263,30 @@ const AddMemberScreen: React.FC = () => {
             error={!!errors.telefono}
           />
           {errors.telefono ? <Text style={styles.errorText}>{errors.telefono}</Text> : null}
+          <View style={styles.pickerWrapper}>
+            <Text style={[styles.label, isFocused ? styles.labelFocused : styles.labelNotFocused]}>
+              Rol
+            </Text>
 
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={rol}
-              onValueChange={(itemValue) => { setRol(itemValue); console.log(itemValue) }}
-              style={styles.picker}
-            >
-              <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
-              <Picker.Item label="Administrador" value="Administrador" />
-              <Picker.Item label="Agrónomo" value="Agrónomo" />
-              <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
-            </Picker>
+            <View style={[styles.pickerContainer, isFocused ? styles.pickerFocused : null]}>
+              <Picker
+                selectedValue={rol}
+                onValueChange={(itemValue) => { 
+                  setRol(itemValue); 
+                  console.log(itemValue);
+                }}
+                onFocus={() => setIsFocused(true)} // Mantener el foco
+                onBlur={() => setIsFocused(false)} // Cambiar el estado de enfoque
+                style={styles.picker}
+                mode="dropdown"
+              >
+                <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
+                <Picker.Item label="Administrador" value="Administrador" />
+                <Picker.Item label="Agrónomo" value="Agrónomo" />
+                <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
+              </Picker>
+            </View>
           </View>
-
           {/* Botones */}
           <View style={styles.buttonContainer}>
             <Button
@@ -331,19 +343,64 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 8,
   },
-  picker: {
-    marginVertical: 8,
-    height: 50,
-    width: '100%',
-    borderWidth: 0
+  pickerWrapper: {
+    marginVertical: 10,
+    position: 'relative',
+    width: '100%',  // Asegura que el contenedor tenga un ancho completo
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#0284c7',
-    borderRadius: 5,
-    marginBottom: 16,
-    padding: 1,
+    borderColor: '#0284c7', // Color principal (#0284c7)
+    borderRadius: 4,
+    height: 56, // Ajuste de altura
+    justifyContent: 'center',
     backgroundColor: '#fff',
+    width: '100%',  // Asegura que el Picker ocupe todo el espacio disponible
+  },
+  pickerFocused: {
+    borderColor: '#0284c7', // Color de borde cuando está enfocado
+  },
+  picker: {
+    color: '#0284c7', // Color del texto en el picker
+    height: '100%',
+    width: '100%',  // Asegura que el Picker ocupe todo el espacio disponible en el contenedor
+    fontFamily: 'sans-serif',
+    fontSize: 16,
+    ...Platform.select({
+      android: {
+        color: '#0284c7', // Color del texto en Android
+      },
+      ios: {
+        height: '100%', // Ajuste de altura para iOS
+      },
+    }),
+  },
+  label: {
+    position: 'absolute',
+    top: 18,
+    left: 5,
+    fontSize: 16,
+    color: '#6e6e6e', // Color gris claro de la etiqueta
+    zIndex: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 4,
+  },
+  labelNotFocused: {
+    position: 'absolute',
+    top: 18,
+    left: 5,
+    fontSize: 16,
+    color: '#6e6e6e', // Color gris claro de la etiqueta
+    zIndex: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 4,
+    width: 300,  // Aplica el ancho cuando no está enfocado
+  },
+  labelFocused: {
+    top: -8,
+    left: 8,
+    fontSize: 12,
+    color: '#0284c7', // Color de la etiqueta cuando está enfocada
   },
 });
 
