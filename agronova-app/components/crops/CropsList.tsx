@@ -62,6 +62,12 @@ export default function CropList() {
     skip: (!userId && !ranchId) || !userRole, // Ejecutar solo si tenemos el userId, ranchId y el rol
   });
 
+  // Query para obtener el rancho del usuario
+  const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
+    variables: { where: { id: userId } },
+    skip: !userId, // Solo ejecutar este query si ya tenemos el userId
+  });
+
   // Refetch crops cuando reFetchCrop es true
   React.useEffect(() => {
     if (reFetchCrop && ranchId) {
@@ -71,16 +77,17 @@ export default function CropList() {
   }, [reFetchCrop, ranchId, refetch, setReFetchCrop]);
 
   // Manejo de estados de carga y error
-  if (loading) {
+  if (loading || userRanchLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  if (error) {
+  if (error || userRanchError) {
     return <Text>Error al cargar los datos</Text>;
   }
 
+  // Acceder al ranch_name desde la respuesta correcta
+  const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
   const crops = isAdminOrAgronomist ? data?.ranch?.crop || [] : data?.user?.crops || [];
-  const ranchName = data?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
 
   return (
     <LinearGradient
@@ -99,9 +106,9 @@ export default function CropList() {
           )}
         </ParallaxScrollView>
         <View>
-        {userRole === 'Administrador' || userRole === 'Agrónomo' ? (
-          <AddButton />)
-        : null}
+        {isAdminOrAgronomist && (
+          <AddButton />
+        )}
         </View>
       </ThemedView>
     </LinearGradient>

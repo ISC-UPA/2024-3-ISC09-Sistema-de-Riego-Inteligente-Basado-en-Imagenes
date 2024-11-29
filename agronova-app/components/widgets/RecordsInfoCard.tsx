@@ -23,6 +23,7 @@ export default function InfoCard() {
 
         {/* Botones redondos */}
         <View style={styles.buttonContainer}>
+          {/*
           <IconButton
             icon="water"
             size={28}
@@ -31,6 +32,7 @@ export default function InfoCard() {
             iconColor="#f0f9ff"
             onPress={() => console.log('Regar')}
           />
+          */}
           <IconButton
             icon="history"
             size={28}
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '50%',
   },
   roundButton: {
