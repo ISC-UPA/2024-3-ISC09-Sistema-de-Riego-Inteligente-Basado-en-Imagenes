@@ -404,12 +404,13 @@ export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueI
 //     }
 //   ]
 // }
-export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!, $take: Int, $skip: Int, $orderBy: [CropMediaOrderByInput!]) {
-  cropMedias(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!) {
+  cropMedias(where: $where) {
     id
     address
     media_type
     date
+    state_description
   }
 }
 `
