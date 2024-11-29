@@ -220,6 +220,7 @@ export default function App() {
         await AsyncStorage.setItem('refreshToken', code.refreshToken ?? '');
         await AsyncStorage.setItem('expiresIn', code.expiresIn?.toString() || '');
         await AsyncStorage.setItem('issuedAt', code.issuedAt.toString());
+        navigation.navigate('(tabs)')
         console.log('Access token guardado correctamente');
       } catch (error) {
         console.error('Error al guardar access token en AsyncStorage', error);
