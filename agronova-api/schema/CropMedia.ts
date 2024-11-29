@@ -19,7 +19,8 @@ export const CropMedia = {
       ui: {
         displayMode: 'segmented-control', // Opcional para mejor visualización en el panel de administración
       },
-      validation: { isRequired: true },
+      validation: { isRequired: false },
     }),
+    state_description : text({ validation: { isRequired: false } }),
   },
 };

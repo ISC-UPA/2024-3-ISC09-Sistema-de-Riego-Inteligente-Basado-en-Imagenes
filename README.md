@@ -8,7 +8,7 @@
 
 This monorepo contains multiple packages related to the **Agronova** application. The main packages are:
 
-- **RaspberryApp**: Applications related to the Raspberry Pi.
+- **raspberry**: Applications related to the Raspberry Pi.
 - **agronova-api**: Backend API built with KeystoneJS.
 - **agronova-app**: Frontend application built with Expo React Native.
 
@@ -18,7 +18,7 @@ This monorepo contains multiple packages related to the **Agronova** application
 
 ### **Packages**
 
-#### **RaspberryApp**
+#### **raspberry**
 
 Contains the programs developed for the Raspberry Pi.
 
@@ -52,32 +52,51 @@ Frontend application for the **Agronova** platform, built with React Native.
 
 ### **Prerequisites**
 
-- **Node.js** (recommended version)
+Before starting, make sure you have the following installed:
+
+- **Node.js**
 - **Yarn** or **NPM**
 - **Expo CLI** (for the frontend application)
+- **Python 3** (for Raspberry Pi scripts)
+- **Raspberry Pi** (for the hardware integration)
 
 ---
 
 ### **Installation**
 
 1. Clone the repository:
-    
+
     ```sh
     git clone <repository-url>
     cd 2024-3-ISC09-Intelligent-Irrigation-System-Based-on-Images
     ```
 
-2. Install dependencies:
-   Run the following commands inside the **agronova-app** and **agronova-api** folders (once in each).
+2. Install dependencies for both **agronova-app** and **agronova-api**:
+
+   For **agronova-app**:
 
    If using **Yarn**:
-    
+
     ```sh
     yarn install
     ```
 
    If using **NPM**:
-    
+
+    ```sh
+    npm install
+    ```
+
+   For **agronova-api**:
+
+   If using **Yarn**:
+
+    ```sh
+    yarn install
+    ```
+
+   If using **NPM**:
+
     ```sh
     npm install
     ```
@@ -88,15 +107,14 @@ Frontend application for the **Agronova** platform, built with React Native.
 
 #### **Backend (agronova-api)**
 
-Navigate to the **agronova-api** folder and start the KeystoneJS server:
+1. Navigate to the **agronova-api** folder:
 
-1. Open the folder:
-    
     ```sh
     cd agronova-api
     ```
 
-2. Start the server:
+2. Start the KeystoneJS server:
+
     - Using Yarn:
       
       ```sh
@@ -113,15 +131,14 @@ Navigate to the **agronova-api** folder and start the KeystoneJS server:
 
 #### **Frontend (agronova-app)**
 
-Navigate to the **agronova-app** folder and start the React Native application:
+1. Navigate to the **agronova-app** folder:
 
-1. Open the folder:
-    
     ```sh
     cd agronova-app
     ```
 
-2. Start the application:
+2. Start the React Native application:
+
     - Using Yarn:
       
       ```sh
@@ -136,4 +153,53 @@ Navigate to the **agronova-app** folder and start the React Native application:
 
 ---
 
-You are now ready to work with the **Agronova Intelligent Irrigation System**! 🚀
+#### **RaspberryPi Setup (RaspberryApp)**
+
+1. Clone the repository to your Raspberry Pi:
+
+    ```sh
+    git clone <repository-url>
+    cd 2024-3-ISC09-Intelligent-Irrigation-System-Based-on-Images/RaspberryApp
+    ```
+
+2. Install Python dependencies.
+
+3. Run the Raspberry Pi scripts to handle the irrigation system's data collection:
+
+    ```sh
+    python3 Riego_IA.py
+    ```
+
+---
+
+## **Deployment on Azure**
+
+Both the **agronova-api** and **agronova-app** applications are automatically built and pushed to **GitHub** via Docker containers whenever changes are made.
+
+### **1. Azure Resources**
+
+1. **Azure App Service** for hosting both **agronova-api** and **agronova-app**:
+   - Go to the [Azure Portal](https://portal.azure.com).
+   - Create two **App Services**: one for the **agronova-api** and another for the **agronova-app**.
+   - Configure each App Service with the appropriate settings for **Node.js** runtime stack.
+
+2. **Azure Blob Storage** (Optional) for storing images and other static assets:
+   - Create a **Storage Account** in Azure.
+   - Use **Azure Blob Storage** to store images used in your application.
+
+### **2. Continuous Deployment with GitHub Actions**
+
+The **agronova-api** and **agronova-app** applications are automatically deployed to Azure through **GitHub Actions**:
+
+1. GitHub Actions are configured to build Docker images and push them to the appropriate container registries each time there are updates to the repository.
+
+2. These workflows are set up in the `.github/workflows/` directory:
+   - **agronova-api** workflow: Builds and pushes the Docker image for the backend API to the container registry and then deploys to **Azure App Service**.
+   - **agronova-app** workflow: Builds and pushes the Docker image for the frontend React Native app and then deploys to **Azure App Service**.
+
+### **3. Monitor and Manage**
+
+1. After the deployment is complete, you can manage and monitor both the **agronova-api** and **agronova-app** via the **Azure Portal**.
+2. Check logs and performance metrics to ensure everything is working smoothly.
+
+
