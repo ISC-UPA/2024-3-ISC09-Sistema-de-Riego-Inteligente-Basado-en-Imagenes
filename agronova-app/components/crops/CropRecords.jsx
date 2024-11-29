@@ -89,7 +89,7 @@ export default function CropRecordsScreen() {
           size={24}
           onPress={handleBackPress} // Llamamos a handleBackPress cuando se presiona la flecha
         />
-        <Text style={styles.titleText}>Historial del cultivo X</Text>
+        <Text style={styles.titleText}>Historial de riego</Text>
       </View>
       <ThemedView
         style={{ flex: 1, padding: 16 }}
