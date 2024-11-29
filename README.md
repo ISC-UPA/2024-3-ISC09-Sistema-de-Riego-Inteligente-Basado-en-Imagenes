@@ -169,7 +169,14 @@ Before starting, make sure you have the following installed:
     ```sh
     python3 Riego_IA.py
     ```
-
+    To modify the automatic execution of the program, access from the terminal. 
+    ```sh
+    sudo nano /etc/rc.local
+    ```
+    To disable the automation, uncomment line 4 and restart the raspberry.
+    ```sh
+    python3 /home/pi/Documents/Project/Riego_IA.py 
+    ```
 ---
 
 ## **Deployment on Azure**

@@ -3,6 +3,7 @@ import { Card, IconButton } from 'react-native-paper';
 import { CropContext } from '@/components/context/CropContext'; // Importar el CropContext
 import { Text, StyleSheet, View } from 'react-native';
 import DeleteConfirmationModal from '@/components/widgets/ConfirmModal'; // Importar el modal
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importar AsyncStorage
 import { useMutation } from '@apollo/client';
 import { DELETE_CROP } from '@/api/queries/queryUsers'; // Asegúrate de que la ruta sea correcta
 
@@ -23,6 +24,7 @@ export default function CropCard(props: CropCardProps) {
   const [itemId, setItemId] = useState<number>(0);
   const [isModalVisible, setModalVisible] = useState(false); // Estado del modal
   const [selectedItemName, setSelectedItemName] = useState(''); // Nombre del cultivo seleccionado
+  const [userRole, setUserRole] = useState<string | null>(null); // Estado para el rol del usuario
 
   // Mutación para marcar como eliminado
   const [deleteCrop, { loading: deleteLoading, error: deleteError }] = useMutation(DELETE_CROP);
@@ -32,6 +34,19 @@ export default function CropCard(props: CropCardProps) {
       setItemId(props.id);
     }
   }, [props.id]);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const role = await AsyncStorage.getItem('userRole');
+        setUserRole(role);
+      } catch (error) {
+        console.error('Error al obtener el rol del usuario desde AsyncStorage', error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   const handleViewDetails = () => {
     console.log('ID del cultivo antes de actualizar:', { itemId });
@@ -59,7 +74,7 @@ export default function CropCard(props: CropCardProps) {
       await deleteCrop({
         variables: {
           where: { id: itemId }, // ID del cultivo
-          data: { isDeleted: true } // Marcar como eliminado
+          data: { isDeleted: true }, // Marcar como eliminado
         },
       });
       console.log('Cultivo eliminado:', props.crop_name);
@@ -86,20 +101,24 @@ export default function CropCard(props: CropCardProps) {
             style={styles.iconButton}
             size={18}
           />
-          <IconButton
-            icon="pencil"
-            onPress={handleEditPress}
-            iconColor={'#84cc16'}
-            style={styles.iconButton}
-            size={18}
-          />
-          <IconButton
-            icon="trash-can"
-            onPress={handleDeletePress} // Abre el modal de confirmación
-            iconColor={'#84cc16'}
-            style={styles.iconButton}
-            size={18}
-          />
+          {userRole === 'Administrador' || userRole === 'Agrónomo' ? (
+            <>
+              <IconButton
+                icon="pencil"
+                onPress={handleEditPress}
+                iconColor={'#84cc16'}
+                style={styles.iconButton}
+                size={18}
+              />
+              <IconButton
+                icon="trash-can"
+                onPress={handleDeletePress} // Abre el modal de confirmación
+                iconColor={'#84cc16'}
+                style={styles.iconButton}
+                size={18}
+              />
+            </>
+          ) : null}
         </Card.Actions>
       </Card>
 

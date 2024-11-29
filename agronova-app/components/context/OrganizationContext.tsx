@@ -41,8 +41,8 @@ interface OrganizationContextType {
   viewMember: boolean;
   setViewMember: (value : boolean ) => void;
 
-  updateRanch: boolean;
-  setUpdateRanch: (value : boolean ) => void;
+  viewUpdateRanch: boolean;
+  setViewUpdateRanch: (value : boolean ) => void;
 
   ranchName: string | null;
   setRanchName: (name: string | null) => void;
@@ -50,6 +50,8 @@ interface OrganizationContextType {
   ranchDescription: string | null;
   setRanchDescription: (description: string | null) => void;
 
+  reFetchOrganization: boolean;
+  setReFetchOrganization: (value: boolean) => void; 
 
 }
 
@@ -71,13 +73,14 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
   const [updateMember, setUpdateMember] = useState<boolean>(false);  
   const [deleteRanch, setDeleteRanch] = useState<boolean>(false);
   const [viewMember, setViewMember] = useState<boolean>(false);
-  const [updateRanch, setUpdateRanch] = useState<boolean>(false);
+  const [viewUpdateRanch, setViewUpdateRanch] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null); 
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null); 
   const [selectedUserPhone, setSelectedUserPhone] = useState<string | null>(null); 
   const [selectedUserRole, setSelectedUserRole] = useState<string | null>(null); 
   const [ranchName, setRanchName] = useState<string | null>(null); 
   const [ranchDescription, setRanchDescription] = useState<string | null>(null); 
+  const [reFetchOrganization, setReFetchOrganization] = useState<boolean>(false);  
 
   // Función para borrar el crop id
   const clearUserId = () => {
@@ -103,7 +106,7 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       addMember, setAddMember, 
       updateMember,setUpdateMember,
       viewMember, setViewMember,
-      updateRanch, setUpdateRanch,
+      viewUpdateRanch, setViewUpdateRanch,
       deleteRanch, setDeleteRanch,
       //Selected User
       selectedUserId, setSelectedUserId,
@@ -112,7 +115,9 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       selectedUserRole, setSelectedUserRole,
       //Ranch Info
       ranchName, setRanchName, 
-      ranchDescription, setRanchDescription
+      ranchDescription, setRanchDescription,
+
+      reFetchOrganization, setReFetchOrganization
       }}>
       {children}
     </OrganizationContext.Provider>

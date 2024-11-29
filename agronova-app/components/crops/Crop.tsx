@@ -25,6 +25,7 @@ export default function CropScreen() {
   const toggleSwitch = () => setIsAutomatic(!isAutomatic);
 
   const [selectedParameter, setSelectedParameter] = useState('air_temperature'); // Parámetro por defecto
+
   const cropId = cropContext.selectedCropId;
 
   const { data, refetch } = useQuery(GET_STATISTICS, {

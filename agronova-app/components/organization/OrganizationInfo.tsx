@@ -1,40 +1,45 @@
-import { StyleSheet, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/widgets/ThemedText';
 import { ThemedView } from '@/components/widgets/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@apollo/client';
-import { GET_USER_RANCH, GET_RANCH_CROPS } from '@/api/queries/queryUsers';
+import { GET_USER_RANCH } from '@/api/queries/queryUsers';
 import { OrganizationContext } from '../context/OrganizationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MembersList from './membersList'; // Asegúrate de importar el componente correctamente
-import React, { useContext } from 'react';
+import MembersList from './membersList';
 import { IconButton } from 'react-native-paper';
+import DeleteConfirmationModal from '@/components/widgets/DeleteRanchModal'; // Importa el modal aquí
 
 export default function Organization() {
-
   const organizationContext = useContext(OrganizationContext);
 
   if (!organizationContext) {
-    throw new Error('CropContext debe estar dentro del proveedor CropProvider');
+    throw new Error('OrganizationContext debe estar dentro del proveedor OrganizationProvider');
   }
 
-  const { setUpdateRanch, setRanchName, setRanchDescription } = organizationContext;
+  const { setViewUpdateRanch, setRanchName, setRanchDescription, reFetchOrganization, setReFetchOrganization } = organizationContext;
 
-
-  const [userId, setUserId] = React.useState<string | null>(null);
-  const [ranchId, setRanchId] = React.useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [ranchId, setRanchId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null); 
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false); // Estado para controlar el modal
 
   // Cargar datos desde AsyncStorage cuando el componente se monta
-  React.useEffect(() => {
+  useEffect(() => {
     const loadUserData = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
         const storedRanchId = await AsyncStorage.getItem('ranchId');
+        const storedUserRole = await AsyncStorage.getItem('userRole'); 
         if (storedUserId) {
           setUserId(storedUserId);
         }
         if (storedRanchId) {
           setRanchId(storedRanchId);
+        }
+        if (storedUserRole) {
+          setUserRole(storedUserRole); // Establecer el rol
         }
       } catch (error) {
         console.error('Error al cargar datos desde AsyncStorage', error);
@@ -45,19 +50,36 @@ export default function Organization() {
   }, []);
 
   // Query para obtener el rancho del usuario
-  const { data: userRanchData, loading: userRanchLoading, error: userRanchError } = useQuery(GET_USER_RANCH, {
+  const { data: userRanchData, loading: userRanchLoading, error: userRanchError, refetch } = useQuery(GET_USER_RANCH, {
     variables: { where: { id: userId } },
     skip: !userId, // Solo ejecutar este query si ya tenemos el userId
   });
 
+  // Si ReFetchOrganization es true, realizar un refetch
+  useEffect(() => {
+    if (reFetchOrganization && ranchId) {
+      refetch();
+      setReFetchOrganization(false);
+    }
+  }, [reFetchOrganization, ranchId, refetch, setReFetchOrganization]);
+
   const ranchName = userRanchData?.user?.ranch_id?.ranch_name || 'Rancho desconocido';
   const ranchDescription = userRanchData?.user?.ranch_id?.description || 'Sin descripción';
 
-  const handleUpdateRanch = (name : any, description : any) => {
-    setUpdateRanch(true)
+  const handleUpdateRanch = (name: any, description: any) => {
+    setViewUpdateRanch(true);
     setRanchName(name);
     setRanchDescription(description);
-  }
+  };
+
+  const handleSupportPress = () => {
+    // Implementa aquí la acción para contactar con soporte
+    console.log('Contacto con soporte');
+    setDeleteModalVisible(false); // Cierra el modal después de presionar "Soporte"
+  };
+
+  // Condicional basado en el rol del usuario
+  const isAdmin = userRole === 'Administrador';
 
   return (
     <LinearGradient
@@ -65,12 +87,13 @@ export default function Organization() {
       style={{ flex: 1 }}
     >
       <ThemedView style={{ flex: 1, padding: 16 }} lightColor="transparent" darkColor="transparent">
-        <View>
+        <View style={{ flex: 1 }}>
           <View style={styles.headerContainer}>
             <ThemedText style={styles.titleText}>
               {`Rancho "${ranchName}"`}
             </ThemedText>
-            <IconButton icon="pencil" size={24} onPress={() => handleUpdateRanch(ranchName, ranchDescription)} />
+            {isAdmin && (
+            <IconButton icon="pencil" size={24} onPress={() => handleUpdateRanch(ranchName, ranchDescription)} />)}
           </View>
           <ThemedText style={styles.descriptionText}>
             {ranchDescription}
@@ -78,6 +101,19 @@ export default function Organization() {
           {/* Aquí llamas al componente MembersList */}
           <MembersList />
         </View>
+
+        {/* Botón de eliminar cultivo */}
+        {isAdmin && (
+          <TouchableOpacity style={styles.deleteButton} onPress={() => setDeleteModalVisible(true)}>
+            <ThemedText style={styles.buttonLabel}>Eliminar rancho</ThemedText>
+          </TouchableOpacity>
+        )}
+        {/* Modal de confirmación de eliminación */}
+        <DeleteConfirmationModal
+          visible={deleteModalVisible}
+          onClose={() => setDeleteModalVisible(false)}
+          onSupportPress={handleSupportPress}
+        />
       </ThemedView>
     </LinearGradient>
   );
@@ -100,4 +136,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: '#0c4a6e',
   },
+  deleteButton: {
+    position: 'absolute', // Fijar el botón al fondo
+    bottom: 20,
+    left: 16,
+    right: 16,
+    backgroundColor: '#ef4444',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonLabel: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });

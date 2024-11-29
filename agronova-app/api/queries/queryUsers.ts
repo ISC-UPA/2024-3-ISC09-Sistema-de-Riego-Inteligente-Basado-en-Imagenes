@@ -433,3 +433,19 @@ export const GET_DEVICES = gql`query Query {
     serial_number
   }
 }`
+
+//{
+//  "where": {
+//    "id": "cm41xjpg8004smluilnenwtb9"
+//  },
+//  "data": {
+//    "ranch_name": "Rancho",
+//    "description": "Rancho 6"
+//  }
+//}
+
+export const UPDATE_RANCH = gql`mutation UpdateRanch($where: RanchWhereUniqueInput!, $data: RanchUpdateInput!) {
+  updateRanch(where: $where, data: $data) {
+    id
+  }
+}`

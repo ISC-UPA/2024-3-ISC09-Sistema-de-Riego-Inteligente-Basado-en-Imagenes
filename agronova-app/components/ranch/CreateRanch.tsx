@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react'; 
+import React, { useState, useContext, useEffect } from 'react'; 
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet, Text, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useMutation } from '@apollo/client';
-import { CREATE_RANCH, UPDATE_USER_STATUS } from '@/api/queries/queryUsers'; 
+import { CREATE_RANCH, UPDATE_USER_STATUS, UPDATE_RANCH } from '@/api/queries/queryUsers'; 
 import { OrganizationContext } from '../context/OrganizationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,14 +15,14 @@ const CreateRanchScreen: React.FC = () => {
     throw new Error('CropContext debe estar dentro del proveedor CropProvider');
   }
 
-  const { updateRanch, setUpdateRanch } = organizationContext;
+  const { viewUpdateRanch, setViewUpdateRanch, ranchName, ranchDescription, setReFetchOrganization } = organizationContext;
 
 
   const [userId, setUserId] = React.useState<string | null>(null);
   const [ranchId, setRanchId] = React.useState<string | null>(null);
 
   // Cargar datos desde AsyncStorage cuando el componente se monta
-  React.useEffect(() => {
+  useEffect(() => {
     const loadUserData = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
@@ -41,12 +41,23 @@ const CreateRanchScreen: React.FC = () => {
     loadUserData();
   }, []);
 
+  // Establecer valores por defecto para la actualización
+  useEffect(() => {
+    if (viewUpdateRanch) {
+      setNombre(ranchName || '');
+      console.log(ranchName)
+      setDescripcion(ranchDescription || '');
+    }
+  }, [viewUpdateRanch, ranchName, ranchDescription]);
+
+
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const [createRanch, { loading }] = useMutation(CREATE_RANCH);
   const [updateUserStatus] = useMutation(UPDATE_USER_STATUS);
+  const [updateRanch] = useMutation(UPDATE_RANCH);
 
 
   const handleCreateRanch = async () => {
@@ -87,10 +98,40 @@ const CreateRanchScreen: React.FC = () => {
     }
   };
 
+  const handleUpdateRanch = async () => {
+    if (!nombre.trim() || !descripcion.trim()) {
+      setErrorMessage('Todos los campos son obligatorios');
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
+    }
+    setErrorMessage('');
+  
+    try {
+      const response = await updateRanch({
+        variables: {
+          where: { id: ranchId }, // Usar el ranchId para identificar el rancho a actualizar
+          data: {
+            ranch_name: nombre,
+            description: descripcion,
+          },
+        },
+      });
+  
+      if (response.data) {
+        setViewUpdateRanch(false)
+        setReFetchOrganization(true)
+      }
+    } catch (error) {
+      console.error('Error al actualizar rancho:', error);
+    }
+  };
+  
+
+
   const handleCancel = () => {
 
-    if(updateRanch){
-      setUpdateRanch(false)
+    if(viewUpdateRanch){
+      setViewUpdateRanch(false)
     }
     else(
       router.push('/')
@@ -113,7 +154,7 @@ const CreateRanchScreen: React.FC = () => {
 
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>{updateRanch? 'Actualizar rancho': 'Crear nuevo rancho'}</Text>
+          <Text style={styles.titleText}>{viewUpdateRanch? 'Actualizar rancho': 'Crear nuevo rancho'}</Text>
           <TextInput
             label="Nombre"
             value={nombre}
@@ -147,13 +188,13 @@ const CreateRanchScreen: React.FC = () => {
             </Button>
             <Button 
               mode="contained" 
-              onPress={handleCreateRanch}
+              onPress={viewUpdateRanch? handleUpdateRanch : handleCreateRanch}
               loading={loading}
               disabled={loading}
               buttonColor={'#0284c7'}
               style={styles.button}
             >
-              {updateRanch? 'Actualizar': 'Crear'}
+              {viewUpdateRanch? 'Actualizar': 'Crear'}
             </Button>
           </View>
         </View>
