@@ -2,19 +2,25 @@ import React from 'react';
 import { Card, Text } from 'react-native-paper';
 import { StyleSheet, View, Image } from 'react-native';
 
-export default function IAimageCard() {
+export default function IAimageCard({ imageUrl, mediaType, description, date }) {
+  // Función para formatear la fecha
+  const formatDate = (isoDate) => {
+    if (!isoDate) return 'Fecha no disponible';
+    const dateObject = new Date(isoDate);
+    return dateObject.toLocaleDateString('es-ES'); // Formato: dd/mm/yyyy
+  };
+
   return (
     <View>
       <Card style={styles.card}>
         <Card.Content style={styles.content}>
           {/* Contenedor con flexDirection: 'row' para poner la imagen al lado del texto */}
-          <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9zz1sofRAtdzZyd_nhqhdnBDYM-7FXdw1jA&s' }} style={styles.image} />
+          <Image source={{ uri: imageUrl }} style={styles.image} />
           <View>
-            <Text style={styles.titleText}>Cultivo de Maíz</Text>
-            {/* Texto adicional debajo del título */}
-            <Text style={styles.subtitleText}>Informacion de la IA</Text>
-            {/* Fecha debajo del texto adicional */}
-            <Text style={styles.dateText}>Fecha: 25/11/2024</Text>
+            {/* Envolvemos todo el texto en componentes <Text> */}
+            <Text style={styles.titleText}>{mediaType || 'Tipo no especificado'}</Text> 
+            <Text style={styles.subtitleText}>{description || 'Descripción no disponible'}</Text>
+            <Text style={styles.dateText}>Fecha: {formatDate(date)}</Text> 
           </View>
         </Card.Content>
       </Card>

@@ -98,12 +98,13 @@ model FeaturePlan {
 }
 
 model CropMedia {
-  id         String   @id @default(cuid())
-  crop_id    Crop?    @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
-  crop_idId  String?  @map("crop_id")
-  address    String   @default("")
-  date       DateTime @default(now())
-  media_type String   @default("photo")
+  id                String   @id @default(cuid())
+  crop_id           Crop?    @relation("CropMedia_crop_id", fields: [crop_idId], references: [id])
+  crop_idId         String?  @map("crop_id")
+  address           String   @default("")
+  date              DateTime @default(now())
+  media_type        String?  @default("photo")
+  state_description String   @default("")
 
   @@index([crop_idId])
 }

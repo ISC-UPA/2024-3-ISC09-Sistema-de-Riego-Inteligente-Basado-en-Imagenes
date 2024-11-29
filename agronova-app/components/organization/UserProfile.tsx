@@ -89,6 +89,7 @@ export default function ProfileScreen() {
         {/* Información del usuario */}
         <Text style={styles.name}>{userFullName}</Text>
         <Text style={styles.email}>{userEmail}</Text>
+        <Text style={styles.email}>{userPhone}</Text>
         <Text style={styles.role}>{userRole}</Text> {/* Mostrando dinámicamente el rol del usuario */}
 
         {/* Botones de acción */}

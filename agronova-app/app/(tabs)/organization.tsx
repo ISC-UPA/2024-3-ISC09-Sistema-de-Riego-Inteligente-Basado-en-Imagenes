@@ -43,7 +43,7 @@ export default function OrganizationScreen() {
     throw new Error('organization context debe ser utilizado dentro de un OrganizationProvider');
   }
 
-  const { addMember, updateMember, viewMember, updateRanch } = organizationContext;
+  const {addMember, updateMember, viewMember, viewUpdateRanch} = organizationContext;
 
   if (isLoading) {
     return <LoadingModal visible={true} />;
@@ -51,7 +51,7 @@ export default function OrganizationScreen() {
 
   if (showSessionExpired) {
     return <ExpiredSessionModal visible={true} />;
-  }
+
 
   if (addMember || updateMember) {
     return <AddMemberScreen />;

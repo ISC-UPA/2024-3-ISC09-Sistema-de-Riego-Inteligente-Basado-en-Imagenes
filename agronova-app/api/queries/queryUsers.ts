@@ -296,14 +296,9 @@ export const GET_CROP_INFO_RECENT_IMAGE = gql`query Query($where: CropWhereUniqu
 //     }
 //   }
 // }
-export const GET_CROP_RECENT_IMAGE = gql`query Query($where: CropWhereUniqueInput!, $cropMediaWhere2: CropMediaWhereInput!) {
-  crop(where: $where) {
-    crop_media(orderBy: { date: desc }, take: 1, where: $cropMediaWhere2) {
-      id
-      address
-      date
-      media_type
-    }
+export const GET_CROP_RECENT_IMAGE = gql`query Query($where: CropMediaWhereInput!, $take: Int, $orderBy: [CropMediaOrderByInput!]!) {
+  cropMedias(where: $where, take: $take, orderBy: $orderBy) {
+    address
   }
 }
 `
@@ -404,12 +399,13 @@ export const UPDATE_USER_STATUS = gql`mutation Mutation($where: UserWhereUniqueI
 //     }
 //   ]
 // }
-export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!, $take: Int, $skip: Int, $orderBy: [CropMediaOrderByInput!]) {
-  cropMedias(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
+export const GET_CROP_IMAGES = gql`query Query($where: CropMediaWhereInput!,  $orderBy: [CropMediaOrderByInput!]!) {
+  cropMedias(where: $where, orderBy: $orderBy) {
     id
     address
     media_type
     date
+    state_description
   }
 }
 `
@@ -435,5 +431,21 @@ export const GET_DEVICES = gql`query Query {
   devices {
     id
     serial_number
+  }
+}`
+
+//{
+//  "where": {
+//    "id": "cm41xjpg8004smluilnenwtb9"
+//  },
+//  "data": {
+//    "ranch_name": "Rancho",
+//    "description": "Rancho 6"
+//  }
+//}
+
+export const UPDATE_RANCH = gql`mutation UpdateRanch($where: RanchWhereUniqueInput!, $data: RanchUpdateInput!) {
+  updateRanch(where: $where, data: $data) {
+    id
   }
 }`

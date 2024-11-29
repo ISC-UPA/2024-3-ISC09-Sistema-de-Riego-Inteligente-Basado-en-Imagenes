@@ -24,6 +24,7 @@ const AddMemberScreen: React.FC = () => {
   const [storedUserId, setStoredUserId] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null); 
 
 
   useEffect(() => {
@@ -52,12 +53,16 @@ const AddMemberScreen: React.FC = () => {
     const loadToken = async () => {
       const savedToken = await AsyncStorage.getItem('accessToken');
       const id = await AsyncStorage.getItem('userId');
+      const storedUserRole = await AsyncStorage.getItem('userRole');
       //Si existe el token, agregarlo al estado local
       if (savedToken) {
         setToken(savedToken);
       }
       if (id) {
         setStoredUserId(id);  // Establecer el userId en el estado
+      }
+      if (storedUserRole) {
+        setUserRole(storedUserRole); // Establecer el rol
       }
     }
     loadToken()
@@ -227,9 +232,8 @@ const AddMemberScreen: React.FC = () => {
       style={{ flex: 1 }}
     >
       <View style={styles.container}>
+        <Text style={styles.titleText}>{titleText}</Text>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>{titleText}</Text>
-
           {/* Input de Nombre */}
           <TextInput
             label="Nombre"
@@ -271,31 +275,32 @@ const AddMemberScreen: React.FC = () => {
             disabled={isLoading}
           />
           {errors.telefono ? <Text style={styles.errorText}>{errors.telefono}</Text> : null}
-          <View style={styles.pickerWrapper}>
-            <Text style={[styles.label, isFocused ? styles.labelFocused : styles.labelNotFocused]}>
-              Rol
-            </Text>
+          {userRole === 'Administrador' || userRole === 'Agrónomo' ? (
+            <View style={styles.pickerWrapper}>
+              <Text style={[styles.label, isFocused ? styles.labelFocused : styles.labelNotFocused]}>
+                Rol
+              </Text>
 
-            <View style={[styles.pickerContainer, isFocused ? styles.pickerFocused : null]}>
-              <Picker
-                selectedValue={rol}
-                onValueChange={(itemValue) => { 
-                  setRol(itemValue); 
-                  console.log(itemValue);
-                }}
-                onFocus={() => setIsFocused(true)} // Mantener el foco
-                onBlur={() => setIsFocused(false)} // Cambiar el estado de enfoque
-                style={styles.picker}
-                mode="dropdown"
-                enabled={!isLoading}
-              >
-                <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
-                <Picker.Item label="Administrador" value="Administrador" />
-                <Picker.Item label="Agrónomo" value="Agrónomo" />
-                <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
-              </Picker>
-            </View>
-          </View>
+              <View style={[styles.pickerContainer, isFocused ? styles.pickerFocused : null]}>
+                <Picker
+                  selectedValue={rol}
+                  onValueChange={(itemValue) => { 
+                    setRol(itemValue); 
+                    console.log(itemValue);
+                  }}
+                  onFocus={() => setIsFocused(true)} // Mantener el foco
+                  onBlur={() => setIsFocused(false)} // Cambiar el estado de enfoque
+                  style={styles.picker}
+                  mode="dropdown"
+                  enabled={!isLoading}
+                >
+                  <Picker.Item label="Trabajador agrícola" value="Trabajador agrícola" />
+                  <Picker.Item label="Administrador" value="Administrador" />
+                  <Picker.Item label="Agrónomo" value="Agrónomo" />
+                  <Picker.Item label="Supervisor de Riego" value="Supervisor de Riego" />
+                </Picker>
+              </View>
+            </View>): null}
           {/* Botones */}
           <View style={styles.buttonContainer}>
             <Button

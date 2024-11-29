@@ -32,12 +32,20 @@ export default function MembersList() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [deleteUser] = useMutation(DELETE_USER);
   const [ranchId, setRanchId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchRanchId = async () => {
       try {
         const storedRanchId = await AsyncStorage.getItem('ranchId');
-        setRanchId(storedRanchId);
+        const storedUserRole = await AsyncStorage.getItem('userRole');
+        if(storedRanchId){
+          setRanchId(storedRanchId);
+        }
+        
+        if (storedUserRole) {
+          setUserRole(storedUserRole); // Establecer el rol
+        }
       } catch (error) {
         console.error('Error al obtener el ranchId del AsyncStorage:', error);
       }
@@ -115,6 +123,7 @@ export default function MembersList() {
     <View style={styles.membersContainer}>
       <View style={styles.header}>
         <ThemedText style={styles.membersTitle}>Miembros</ThemedText>
+        {userRole === 'Administrador' || userRole === 'Agrónomo' ? (
         <View style={styles.addButtonContainer}>
           <IconButton
             icon="plus"
@@ -123,7 +132,7 @@ export default function MembersList() {
             size={20}
             style={styles.addButton}
           />
-        </View>
+        </View>): null}
       </View>
       <ScrollView style={styles.membersList} contentContainerStyle={styles.scrollContent}>
         {members.map((member : any, index: any) => (
@@ -149,21 +158,24 @@ export default function MembersList() {
                 style={styles.iconButton}
                 size={18}
               />
-              <IconButton
-                icon="pencil"
-                onPress={() => handleUpdateUser(member.id,member.full_name, member.phone_number, member.role)}
-                iconColor={'#4b5563'}
-                style={styles.iconButton}
-                size={18}
-              />
-              <IconButton
-                icon="trash-can"
-                onPress={() => handleDeleteUser(member.id,member.full_name)}
-                iconColor={'#4b5563'}
-                style={styles.iconButton}
-                size={18}
-              />
-              
+              {userRole === 'Administrador' || userRole === 'Agrónomo' ? (
+                <>
+                  <IconButton
+                    icon="pencil"
+                    onPress={() => handleUpdateUser(member.id,member.full_name, member.phone_number, member.role)}
+                    iconColor={'#4b5563'}
+                    style={styles.iconButton}
+                    size={18}
+                  />
+                  <IconButton
+                    icon="trash-can"
+                    onPress={() => handleDeleteUser(member.id,member.full_name)}
+                    iconColor={'#4b5563'}
+                    style={styles.iconButton}
+                    size={18}
+                  />
+                </>  
+              ):null}
             </View>
           </View>
         ))}
