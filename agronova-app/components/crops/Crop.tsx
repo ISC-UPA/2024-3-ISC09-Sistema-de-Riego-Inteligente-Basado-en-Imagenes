@@ -54,7 +54,6 @@ export default function CropScreen() {
 
   // Obtener la URL de la imagen más reciente
   const recentImage = imageData?.cropMedias[0];
-  console.log(recentImage?.address);
 
   // Actualización automática de estadísticas
   useEffect(() => {
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   content: {
-    padding: 0,  // Opcional: Si no quieres padding adicional alrededor de la imagen
+    padding: 15,  // Opcional: Si no quieres padding adicional alrededor de la imagen
     justifyContent: 'center',
     alignItems: 'center',
   },
