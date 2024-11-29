@@ -203,6 +203,12 @@ const AddMemberScreen: React.FC = () => {
           },
         });
         alert('Usuario actualizado con éxito');
+        const storageUserId = await AsyncStorage.getItem('userId')
+        if(storageUserId == selectedUserId){
+          await AsyncStorage.setItem('userFullName', nombre);
+          await AsyncStorage.setItem('userRole', rol);
+          await AsyncStorage.setItem('userPhoneNumber', telefono);
+        }
         handleBackPress();
       } catch (error) {
         console.error('Error al actualizar el usuario:', error);
