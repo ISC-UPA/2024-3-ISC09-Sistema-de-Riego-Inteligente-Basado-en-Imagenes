@@ -137,10 +137,11 @@ export default function CropScreen() {
               <View style={styles.switchContainer}>
                 <Text style={styles.text}>Automático</Text>
                 <Switch
-                  value={isAutomatic}
+                  value={true}
                   onValueChange={toggleSwitch}
                   color="#65a30d"
                   thumbColor="#d1d5db"
+                  disabled={true}
                 />
               </View>
             </View>
