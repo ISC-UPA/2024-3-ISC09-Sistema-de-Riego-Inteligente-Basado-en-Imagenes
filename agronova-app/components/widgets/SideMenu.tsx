@@ -59,6 +59,13 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose }) => {
       await AsyncStorage.removeItem('refreshToken');
       await AsyncStorage.removeItem('expiresIn');
       await AsyncStorage.removeItem('issuedAt');
+      await AsyncStorage.removeItem('userId');
+      await AsyncStorage.removeItem('userFullName');
+      await AsyncStorage.removeItem('userEmail');
+      await AsyncStorage.removeItem('userRole');
+      await AsyncStorage.removeItem('userPhoneNumber');
+      await AsyncStorage.removeItem('ranchId');
+
       navigation.navigate('/');
       console.log('Sesión cerrada y token eliminado');
     } catch (error) {
@@ -171,7 +178,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start', // Aseguramos que el contenido esté alineado a la izquierda
     paddingVertical: 5,  // Añadimos más espacio arriba y abajo
     borderRadius: 10,  // Añadimos borde redondeado a los ítems
-    paddingHorizontal:10 //Separa los iconos del borde del contenedor sombreado
+    paddingHorizontal: 10 //Separa los iconos del borde del contenedor sombreado
   },
   selectedItem: {
     backgroundColor: '#dbeafe', // Color de fondo cuando está seleccionado
@@ -194,4 +201,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SideMenu;
+export default SideMenu;
