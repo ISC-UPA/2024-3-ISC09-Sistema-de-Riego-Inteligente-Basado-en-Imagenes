@@ -9,3 +9,12 @@ export const GET_IRRIGATIONS = gql`
     }
   }
 `;
+
+export const GET_LAST_IRRIGATION = gql`
+  query Irrigations($where: IrrigationWhereInput!, $take: Int, $orderBy: [IrrigationOrderByInput!]) {
+    irrigations(where: $where, take: $take, orderBy: $orderBy) {
+      id
+      end_time
+    }
+  }
+`;
